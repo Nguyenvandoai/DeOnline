@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ÔN THI GIỮA KÌ I - THẦY ĐOÀI</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 15px; line-height: 1.6; padding-top: 70px; overflow-x: hidden; background: #f7fbff; }
+        .header-bar { position: fixed; top: 0; left: 0; width: 100%; background: #1e88e5; color: white; padding: 10px 15px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; box-shadow: 0 2px 6px rgba(30,136,229,0.2); }
+        .header-bar h2 { margin: 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%; }
+        #timer { font-size: 16px; font-weight: bold; background: #e53935; padding: 5px 10px; border-radius: 4px; white-space: nowrap; }
+        
+        .zalo-warning { background: #eef6fc; color: #1565c0; padding: 10px; border: 1px solid #b3d4fc; border-radius: 4px; margin-bottom: 15px; font-weight: bold; text-align: justify; font-size: 14px; }
+        
+        h3 { color: #1565c0; border-bottom: 2px solid #b3d4fc; padding-bottom: 5px; margin-top: 30px; text-transform: uppercase; font-size: 18px; }
+        .info-group { margin-bottom: 15px; }
+        .info-group input { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #b3d4fc; border-radius: 4px; font-size: 16px; background: #fff; }
+        .info-group input:focus { border-color: #1e88e5; outline: none; box-shadow: 0 0 0 3px rgba(30,136,229,0.12); }
+        
+        .question { background: #eef6fc; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #b3d4fc; box-sizing: border-box; width: 100%; overflow-x: auto; }
+        .question-text { margin-bottom: 15px; word-wrap: break-word; } 
+        
+        mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+        
+        .options label { display: block; padding: 10px; margin: 8px 0; background: #ffffff; border: 1px solid #b3d4fc; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        .options label:hover { background: #e3f0fb; border-color: #1e88e5; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 15px 0; }
+        .tf-table { width: 100%; border-collapse: collapse; background: #fff; min-width: 320px; }
+        .tf-table td { padding: 10px; border: 1px solid #b3d4fc; }
+        .tf-radio-group { display: flex; gap: 10px; justify-content: center; }
+        .tf-radio-group label { cursor: pointer; font-weight: bold; padding: 5px; border-radius: 3px; transition: 0.3s; }
+        
+        .short-ans-group { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+        .short-ans-box { width: 50px; height: 55px; font-size: 24px; text-align: center; border: 2px solid #1e88e5; border-radius: 5px; box-sizing: border-box; font-weight: bold; color: #1565c0; background: #fff; transition: 0.3s; }
+        .short-ans-box:focus { border-color: #0d47a1; outline: none; box-shadow: 0 0 6px rgba(30,136,229,0.3); }
+        
+        .essay-input { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #b3d4fc; border-radius: 4px; box-sizing: border-box; height: 150px; resize: vertical; background: #fff; }
+        .essay-input:focus { border-color: #1e88e5; outline: none; }
+        
+        .solution-box { display: none; margin-top: 15px; padding: 15px; background: #e8f4fc; border-left: 5px solid #0288d1; border-radius: 4px; overflow-x: auto; }
+        
+        button.submit-btn { width: 100%; padding: 15px; background: #1e88e5; color: white; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; margin-top: 15px; font-weight: bold; margin-bottom: 5px; }
+        button.submit-btn:hover { background: #1565c0; }
+        #result { display: none; margin-top: 20px; padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 18px; background: #eef6fc; color: #0d47a1; border: 1px solid #b3d4fc; margin-bottom: 20px;}
+        
+        #passwordPrompt { display: none; margin-top: 20px; padding: 20px; background: #eef6fc; border: 1px solid #b3d4fc; border-radius: 5px; text-align: center; margin-bottom: 40px; }
+        #passwordPrompt h4 { color: #1565c0; margin-top: 0; margin-bottom: 10px; }
+        #passwordPrompt input { padding: 10px; width: 60%; max-width: 250px; border: 1px solid #b3d4fc; border-radius: 4px; font-size: 16px; }
+        #passwordPrompt button { width: auto; padding: 10px 20px; background: #1e88e5; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; margin-left: 10px; }
+        
+        /* --- SVG / ẢNH + KHUNG ZOOM DÙNG CHUNG (khung tự co giãn, không đặt chiều cao cố định) --- */
+        :root {
+            --zoom-accent: #1e88e5; --zoom-accent-hover: #1565c0;
+            --zoom-border: #b3d4fc; --zoom-bar-bg: #eef6fc; --zoom-max-h: none;
+        }
+        svg { max-width: 100%; height: auto; display: block; margin: 10px auto; overflow: visible; }
+        svg text { font-family: Arial, sans-serif; }
+        img { max-width: 100%; height: auto; }
+        .zoom-container { display: flex; align-items: flex-start; gap: 10px; margin: 15px 0; }
+        .zoom-viewport {
+            flex: 1 1 auto; min-width: 0;
+            overflow: auto; -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--zoom-border); border-radius: 4px; background: #fff;
+            box-sizing: border-box; padding: 4px;
+        }
+        /* chỉ giới hạn chiều cao và giữ cuộn bên trong khi ảnh đang được phóng to */
+        .zoom-viewport.can-pan { cursor: grab; max-height: var(--zoom-max-h); overscroll-behavior: contain; }
+        .zoom-viewport.dragging { cursor: grabbing; user-select: none; }
+        .zoom-toolbar { display: flex; flex-direction: column; gap: 5px; background: var(--zoom-bar-bg); padding: 5px; border-radius: 4px; border: 1px solid var(--zoom-border); flex-shrink: 0; }
+        .zoom-btn { background: var(--zoom-accent); color: #fff; border: none; padding: 6px 10px; font-size: 14px; border-radius: 4px; cursor: pointer; transition: background .2s, opacity .2s; white-space: nowrap; }
+        .zoom-btn:hover:not(:disabled) { background: var(--zoom-accent-hover); }
+        .zoom-btn:disabled { background: #ccc; cursor: not-allowed; opacity: .6; }
+        .zoom-media { display: block; margin: 0 auto; max-width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+        .zoom-media.zoomed { width: var(--zw) !important; max-width: none !important; height: auto !important; }
+
+        
+        /* ===== Bổ sung của bộ chuyển đổi TeX2HTML (PyQt6) ===== */
+        .tp { margin: 6px 0; }
+        .center { text-align: center; }
+        .figure svg, .figure img { max-width: 100%; height: auto; }
+        .fig-error { color: #b00020; border: 1px dashed #b00020; padding: 6px 10px; text-align: center; margin: 8px 0; font-size: 14px; }
+        .fbox { border: 1px solid currentColor; padding: 0 4px; }
+        blockquote { margin: 8px 20px; }
+        img { max-width: 100%; height: auto; }
+        ul, ol { margin: 6px 0; padding-left: 24px; }
+        ul.desc, li.cl { list-style: none; }
+        li.cl .lbl { font-weight: bold; margin-right: .4em; }
+        ol[class^="paren-"] { list-style: none; counter-reset: pc; padding-left: 2.2em; }
+        ol[class^="paren-"] > li { counter-increment: pc; position: relative; margin: 4px 0; }
+        ol[class^="paren-"] > li::before { position: absolute; left: -2.2em; width: 2em; text-align: right; font-weight: bold; }
+        ol.paren-a > li::before { content: counter(pc, lower-alpha) ")"; }
+        ol.paren-A > li::before { content: counter(pc, upper-alpha) ")"; }
+        ol.paren-i > li::before { content: counter(pc, lower-roman) ")"; }
+        ol.paren-I > li::before { content: counter(pc, upper-roman) ")"; }
+        ol.paren-1 > li::before { content: counter(pc, decimal) ")"; }
+        table.tex-table { border-collapse: collapse; margin: 8px auto; }
+        table.tex-table td { padding: 4px 10px; }
+        table.tex-table.bordered td { border: 1px solid #555; }
+
+
+
+        .author-footer { margin: 30px 0 10px; padding-top: 10px; border-top: 1px solid #b3d4fc; text-align: center; color: #5f7b94; font-size: 13px; }
+        .author-footer:empty { display: none; }
+    </style>
+    
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            macros: {"wideparen": ["\\overset{\\frown}{#1}", 1], "overarc": ["\\overset{\\frown}{#1}", 1]}
+          },
+          options: { enableMenu: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+</head>
+<body>
+    <div class="header-bar">
+        <h2>ÔN THI GIỮA KÌ I - THẦY ĐOÀI</h2>
+        <div id="timer">Đang tải...</div>
+    </div>
+    
+    <div class="zalo-warning" id="zaloWarning">
+        ⚠️ CHÚ Ý: Nếu em đang mở bài này trực tiếp trên Zalo/Messenger, hãy bấm vào biểu tượng "Dấu 3 chấm" ở góc phải màn hình và chọn "Mở bằng trình duyệt" (Chrome/Safari) để không bị lỗi kết nối.
+    </div>
+
+    <div class="info-group">
+        <label>Họ và tên học sinh:</label>
+        <input type="text" id="studentName" placeholder="Nhập họ và tên..." required>
+    </div>
+    <div class="info-group">
+        <label>Lớp:</label>
+        <input type="text" id="studentClass" placeholder="Nhập lớp..." required>
+    </div>
+
+    <hr>
+    <form id="quizForm" onsubmit="return false;">
+        <h3>PHẦN 1. Câu trắc nghiệm nhiều phương án lựa chọn</h3>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 1:</b> Số nào sau đây là số hữu tỉ?</div></div><div class="options"><label><input type="radio" name="P1_Cau_1" value="A"> <b>A.</b> $\sqrt{2}$</label><label><input type="radio" name="P1_Cau_1" value="B"> <b>B.</b> $\sqrt{3}$</label><label><input type="radio" name="P1_Cau_1" value="C"> <b>C.</b> $\sqrt{5}$</label><label><input type="radio" name="P1_Cau_1" value="D"> <b>D.</b> $-\dfrac{7}{12}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $-\dfrac{7}{12}$ có tử và mẫu là các số nguyên, mẫu khác $0$. Ba số còn lại là các số vô tỉ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 2:</b> Theo định nghĩa, số hữu tỉ là số viết được dưới dạng $\dfrac{a}{b}$, trong đó</div></div><div class="options"><label><input type="radio" name="P1_Cau_2" value="A"> <b>A.</b> $a,b\in\mathbb{N}$ và $b\ne0$</label><label><input type="radio" name="P1_Cau_2" value="B"> <b>B.</b> $a,b\in\mathbb{R}$ và $b\ne0$</label><label><input type="radio" name="P1_Cau_2" value="C"> <b>C.</b> $a,b\in\mathbb{Z}$ và $b=0$</label><label><input type="radio" name="P1_Cau_2" value="D"> <b>D.</b> $a,b\in\mathbb{Z}$ và $b\ne0$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Theo định nghĩa, tử và mẫu phải là số nguyên, mẫu khác $0$. Chỉ dùng số tự nhiên thì không biểu diễn được các số hữu tỉ âm; cho phép tử, mẫu tùy ý là số thực thì phạm vi rộng hơn số hữu tỉ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 3:</b> Cách viết nào sau đây biểu diễn số nguyên $-8$ dưới dạng một phân số?</div></div><div class="options"><label><input type="radio" name="P1_Cau_3" value="A"> <b>A.</b> $-8=\dfrac{8}{1}$</label><label><input type="radio" name="P1_Cau_3" value="B"> <b>B.</b> $-8=\dfrac{1}{-8}$</label><label><input type="radio" name="P1_Cau_3" value="C"> <b>C.</b> $-8=\dfrac{0}{-8}$</label><label><input type="radio" name="P1_Cau_3" value="D"> <b>D.</b> $-8=\dfrac{-8}{1}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Mọi số nguyên $m$ đều viết được thành $\dfrac{m}{1}$, nên $-8=\dfrac{-8}{1}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 4:</b> Số thập phân $0{,}45$ bằng phân số nào sau đây?</div></div><div class="options"><label><input type="radio" name="P1_Cau_4" value="A"> <b>A.</b> $\dfrac{45}{10}$</label><label><input type="radio" name="P1_Cau_4" value="B"> <b>B.</b> $\dfrac{9}{20}$</label><label><input type="radio" name="P1_Cau_4" value="C"> <b>C.</b> $\dfrac{45}{1000}$</label><label><input type="radio" name="P1_Cau_4" value="D"> <b>D.</b> $-\dfrac{9}{20}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Ta có $0{,}45=\dfrac{45}{100}=\dfrac{9}{20}$. Có hai chữ số ở phần thập phân nên mẫu ban đầu là $100$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 5:</b> Trong các số $-5$; $0$; $\dfrac{2}{7}$; $0{,}(6)$, có bao nhiêu số hữu tỉ?</div></div><div class="options"><label><input type="radio" name="P1_Cau_5" value="A"> <b>A.</b> $1$</label><label><input type="radio" name="P1_Cau_5" value="B"> <b>B.</b> $2$</label><label><input type="radio" name="P1_Cau_5" value="C"> <b>C.</b> $4$</label><label><input type="radio" name="P1_Cau_5" value="D"> <b>D.</b> $3$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $-5$, $0$ là các số nguyên; $\dfrac{2}{7}$ là phân số; $0{,}(6)=\dfrac{2}{3}$. Cả bốn số đều là số hữu tỉ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 6:</b> Khẳng định nào sau đây đúng?</div></div><div class="options"><label><input type="radio" name="P1_Cau_6" value="A"> <b>A.</b> $-\dfrac{3}{7}\in\mathbb{Z}$</label><label><input type="radio" name="P1_Cau_6" value="B"> <b>B.</b> $-\dfrac{3}{7}\in\mathbb{Q}$</label><label><input type="radio" name="P1_Cau_6" value="C"> <b>C.</b> $-\dfrac{3}{7}\in\mathbb{N}$</label><label><input type="radio" name="P1_Cau_6" value="D"> <b>D.</b> $-\dfrac{3}{7}\notin\mathbb{Q}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $-\dfrac{3}{7}$ là số hữu tỉ nhưng không phải số nguyên, cũng không phải số tự nhiên.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 7:</b> Khẳng định nào sau đây <b>sai</b>?</div></div><div class="options"><label><input type="radio" name="P1_Cau_7" value="A"> <b>A.</b> $0\notin\mathbb{Q}$</label><label><input type="radio" name="P1_Cau_7" value="B"> <b>B.</b> $-4\in\mathbb{Q}$</label><label><input type="radio" name="P1_Cau_7" value="C"> <b>C.</b> $0{,}6\in\mathbb{Q}$</label><label><input type="radio" name="P1_Cau_7" value="D"> <b>D.</b> $\dfrac{7}{9}\in\mathbb{Q}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Vì $0=\dfrac{0}{1}$ nên $0\in\mathbb{Q}$. Ba khẳng định còn lại đều đúng.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 8:</b> Phân số nào sau đây biểu diễn số hữu tỉ $-0{,}6$?</div></div><div class="options"><label><input type="radio" name="P1_Cau_8" value="A"> <b>A.</b> $-\dfrac{3}{5}$</label><label><input type="radio" name="P1_Cau_8" value="B"> <b>B.</b> $\dfrac{3}{5}$</label><label><input type="radio" name="P1_Cau_8" value="C"> <b>C.</b> $-\dfrac{5}{3}$</label><label><input type="radio" name="P1_Cau_8" value="D"> <b>D.</b> $-\dfrac{3}{50}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $-0{,}6=-\dfrac{6}{10}=-\dfrac{3}{5}$. Chú ý giữ dấu âm và không đảo tử với mẫu.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 9:</b> Số nào sau đây thuộc $\mathbb{Q}$ nhưng không thuộc $\mathbb{Z}$?</div></div><div class="options"><label><input type="radio" name="P1_Cau_9" value="A"> <b>A.</b> $-\dfrac{8}{4}$</label><label><input type="radio" name="P1_Cau_9" value="B"> <b>B.</b> $\dfrac{5}{4}$</label><label><input type="radio" name="P1_Cau_9" value="C"> <b>C.</b> $\dfrac{6}{3}$</label><label><input type="radio" name="P1_Cau_9" value="D"> <b>D.</b> $\dfrac{0}{9}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\dfrac{5}{4}=1{,}25$ không phải số nguyên. Ba số còn lại lần lượt bằng $-2$, $2$, $0$, đều là số nguyên.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 10:</b> Cặp số nào sau đây đều thuộc tập hợp $\mathbb{Q}$?</div></div><div class="options"><label><input type="radio" name="P1_Cau_10" value="A"> <b>A.</b> $0{,}125$ và $-\dfrac{2}{3}$</label><label><input type="radio" name="P1_Cau_10" value="B"> <b>B.</b> $\sqrt{2}$ và $\dfrac{3}{4}$</label><label><input type="radio" name="P1_Cau_10" value="C"> <b>C.</b> $-5$ và $\sqrt{3}$</label><label><input type="radio" name="P1_Cau_10" value="D"> <b>D.</b> $\sqrt{5}$ và $\sqrt{7}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $0{,}125=\dfrac{1}{8}$ và $-\dfrac{2}{3}$ đều là số hữu tỉ. Mỗi cặp còn lại chứa ít nhất một số vô tỉ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 11:</b> Số đối của $-\dfrac{5}{9}$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_11" value="A"> <b>A.</b> $-\dfrac{5}{9}$</label><label><input type="radio" name="P1_Cau_11" value="B"> <b>B.</b> $-\dfrac{9}{5}$</label><label><input type="radio" name="P1_Cau_11" value="C"> <b>C.</b> $\dfrac{9}{5}$</label><label><input type="radio" name="P1_Cau_11" value="D"> <b>D.</b> $\dfrac{5}{9}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Vì $-\dfrac{5}{9}+\dfrac{5}{9}=0$ nên số cần tìm là $\dfrac{5}{9}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 12:</b> Số đối của $\dfrac{7}{-12}$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_12" value="A"> <b>A.</b> $-\dfrac{7}{12}$</label><label><input type="radio" name="P1_Cau_12" value="B"> <b>B.</b> $\dfrac{12}{7}$</label><label><input type="radio" name="P1_Cau_12" value="C"> <b>C.</b> $\dfrac{7}{12}$</label><label><input type="radio" name="P1_Cau_12" value="D"> <b>D.</b> $-\dfrac{12}{7}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\dfrac{7}{-12}=-\dfrac{7}{12}$ nên số đối là $\dfrac{7}{12}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 13:</b> Số đối của $0$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_13" value="A"> <b>A.</b> $0$</label><label><input type="radio" name="P1_Cau_13" value="B"> <b>B.</b> $1$</label><label><input type="radio" name="P1_Cau_13" value="C"> <b>C.</b> $-1$</label><label><input type="radio" name="P1_Cau_13" value="D"> <b>D.</b> Không có số nào</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $0+0=0$, vì vậy $0$ là số đối của chính nó.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 14:</b> Số đối của $1{,}25$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_14" value="A"> <b>A.</b> $1{,}25$</label><label><input type="radio" name="P1_Cau_14" value="B"> <b>B.</b> $-0{,}8$</label><label><input type="radio" name="P1_Cau_14" value="C"> <b>C.</b> $-1{,}25$</label><label><input type="radio" name="P1_Cau_14" value="D"> <b>D.</b> $0{,}8$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Đổi dấu của $1{,}25$ được $-1{,}25$; tổng hai số này bằng $0$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 15:</b> Biết $a=-\dfrac{3}{4}$ và $a+b=0$. Giá trị của $b$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_15" value="A"> <b>A.</b> $-\dfrac{3}{4}$</label><label><input type="radio" name="P1_Cau_15" value="B"> <b>B.</b> $\dfrac{4}{3}$</label><label><input type="radio" name="P1_Cau_15" value="C"> <b>C.</b> $-\dfrac{4}{3}$</label><label><input type="radio" name="P1_Cau_15" value="D"> <b>D.</b> $\dfrac{3}{4}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $a+b=0$ nên $b$ là số đối của $a$. Do đó $b=\dfrac{3}{4}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 16:</b> Trong các số $-\dfrac{7}{9}$; $-\dfrac{4}{9}$; $0$; $\dfrac{2}{9}$, số nhỏ nhất là</div></div><div class="options"><label><input type="radio" name="P1_Cau_16" value="A"> <b>A.</b> $-\dfrac{4}{9}$</label><label><input type="radio" name="P1_Cau_16" value="B"> <b>B.</b> $0$</label><label><input type="radio" name="P1_Cau_16" value="C"> <b>C.</b> $-\dfrac{7}{9}$</label><label><input type="radio" name="P1_Cau_16" value="D"> <b>D.</b> $\dfrac{2}{9}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $-\dfrac{7}{9}&lt;-\dfrac{4}{9}&lt;0&lt;\dfrac{2}{9}$, nên số nhỏ nhất là $-\dfrac{7}{9}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 17:</b> Kết quả so sánh $-\dfrac{3}{4}$ và $-\dfrac{2}{3}$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_17" value="A"> <b>A.</b> $-\dfrac{3}{4}&gt;-\dfrac{2}{3}$</label><label><input type="radio" name="P1_Cau_17" value="B"> <b>B.</b> $-\dfrac{3}{4}=-\dfrac{2}{3}$</label><label><input type="radio" name="P1_Cau_17" value="C"> <b>C.</b> Không thể so sánh vì khác mẫu</label><label><input type="radio" name="P1_Cau_17" value="D"> <b>D.</b> $-\dfrac{3}{4}&lt;-\dfrac{2}{3}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $-\dfrac{3}{4}=-\dfrac{9}{12}$ và $-\dfrac{2}{3}=-\dfrac{8}{12}$. Vì $-9&lt;-8$ nên $-\dfrac{3}{4}&lt;-\dfrac{2}{3}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 18:</b> Dãy nào sau đây được sắp xếp theo thứ tự tăng dần?</div></div><div class="options"><label><input type="radio" name="P1_Cau_18" value="A"> <b>A.</b> $-0{,}2;\ -\dfrac{1}{2};\ 0;\ \dfrac{2}{5}$</label><label><input type="radio" name="P1_Cau_18" value="B"> <b>B.</b> $-\dfrac{1}{2};\ -0{,}2;\ 0;\ \dfrac{2}{5}$</label><label><input type="radio" name="P1_Cau_18" value="C"> <b>C.</b> $\dfrac{2}{5};\ 0;\ -0{,}2;\ -\dfrac{1}{2}$</label><label><input type="radio" name="P1_Cau_18" value="D"> <b>D.</b> $0;\ -0{,}2;\ -\dfrac{1}{2};\ \dfrac{2}{5}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Đổi $-\dfrac{1}{2}=-0{,}5$, $\dfrac{2}{5}=0{,}4$. Ta có $-0{,}5&lt;-0{,}2&lt;0&lt;0{,}4$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 19:</b> Số nào sau đây lớn hơn $-\dfrac{1}{2}$ và nhỏ hơn $\dfrac{1}{4}$?</div></div><div class="options"><label><input type="radio" name="P1_Cau_19" value="A"> <b>A.</b> $-\dfrac{3}{4}$</label><label><input type="radio" name="P1_Cau_19" value="B"> <b>B.</b> $\dfrac{1}{2}$</label><label><input type="radio" name="P1_Cau_19" value="C"> <b>C.</b> $0$</label><label><input type="radio" name="P1_Cau_19" value="D"> <b>D.</b> $-\dfrac{1}{2}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $-\dfrac{1}{2}&lt;0&lt;\dfrac{1}{4}$. Số $-\dfrac{1}{2}$ không thỏa mãn dấu “lớn hơn”.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 20:</b> Trên trục số có chiều dương từ trái sang phải, các điểm $M$, $O$, $N$ lần lượt biểu diễn $m$, $0$, $n$ như hình. Khẳng định nào đúng?</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="107.574pt" height="43.83pt" viewBox="0 0 107.574 43.83" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f1_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f1_glyph0-1">
+<path style="stroke:none;" d="M 10.8125 -7.265625 C 10.921875 -7.671875 10.9375 -7.78125 11.78125 -7.78125 C 12.015625 -7.78125 12.125 -7.78125 12.125 -8.015625 C 12.125 -8.125 12.03125 -8.125 11.8125 -8.125 L 10.375 -8.125 C 10.078125 -8.125 10.078125 -8.125 9.9375 -7.921875 L 5.59375 -1.0625 L 4.703125 -7.875 C 4.671875 -8.125 4.65625 -8.125 4.34375 -8.125 L 2.875 -8.125 C 2.640625 -8.125 2.53125 -8.125 2.53125 -7.90625 C 2.53125 -7.78125 2.640625 -7.78125 2.828125 -7.78125 C 3.546875 -7.78125 3.546875 -7.6875 3.546875 -7.5625 C 3.546875 -7.53125 3.546875 -7.46875 3.5 -7.28125 L 1.96875 -1.21875 C 1.828125 -0.640625 1.5625 -0.375 0.765625 -0.34375 C 0.71875 -0.34375 0.578125 -0.328125 0.578125 -0.125 C 0.578125 0 0.6875 0 0.734375 0 C 0.96875 0 1.578125 -0.03125 1.828125 -0.03125 L 2.390625 -0.03125 C 2.5625 -0.03125 2.765625 0 2.921875 0 C 3.015625 0 3.140625 0 3.140625 -0.21875 C 3.140625 -0.328125 3.03125 -0.34375 2.96875 -0.34375 C 2.578125 -0.359375 2.203125 -0.421875 2.203125 -0.859375 C 2.203125 -0.96875 2.203125 -0.984375 2.25 -1.15625 L 3.890625 -7.71875 L 3.90625 -7.71875 L 4.890625 -0.328125 C 4.921875 -0.03125 4.9375 0 5.046875 0 C 5.171875 0 5.234375 -0.09375 5.296875 -0.203125 L 10.078125 -7.78125 L 10.09375 -7.78125 L 8.375 -0.875 C 8.265625 -0.46875 8.234375 -0.34375 7.40625 -0.34375 C 7.171875 -0.34375 7.0625 -0.34375 7.0625 -0.125 C 7.0625 0 7.171875 0 7.234375 0 C 7.4375 0 7.671875 -0.03125 7.875 -0.03125 L 9.28125 -0.03125 C 9.484375 -0.03125 9.734375 0 9.9375 0 C 10.03125 0 10.171875 0 10.171875 -0.21875 C 10.171875 -0.34375 10.0625 -0.34375 9.875 -0.34375 C 9.15625 -0.34375 9.15625 -0.4375 9.15625 -0.5625 C 9.15625 -0.578125 9.15625 -0.65625 9.171875 -0.75 Z M 10.8125 -7.265625 "/>
+</symbol>
+<symbol overflow="visible" id="f1_glyph0-2">
+<path style="stroke:none;" d="M 2.453125 -3.484375 C 2.46875 -3.5625 2.78125 -4.15625 3.21875 -4.53125 C 3.53125 -4.828125 3.921875 -5.015625 4.390625 -5.015625 C 4.875 -5.015625 5.03125 -4.65625 5.03125 -4.171875 C 5.03125 -4.109375 5.03125 -3.875 4.890625 -3.3125 L 4.59375 -2.078125 C 4.5 -1.71875 4.28125 -0.84375 4.25 -0.71875 C 4.203125 -0.53125 4.125 -0.21875 4.125 -0.171875 C 4.125 -0.015625 4.265625 0.125 4.4375 0.125 C 4.796875 0.125 4.859375 -0.15625 4.96875 -0.578125 L 5.671875 -3.421875 C 5.703125 -3.53125 6.328125 -5.015625 7.625 -5.015625 C 8.109375 -5.015625 8.28125 -4.65625 8.28125 -4.171875 C 8.28125 -3.515625 7.8125 -2.21875 7.546875 -1.5 C 7.4375 -1.21875 7.375 -1.0625 7.375 -0.84375 C 7.375 -0.3125 7.75 0.125 8.328125 0.125 C 9.421875 0.125 9.84375 -1.625 9.84375 -1.703125 C 9.84375 -1.765625 9.796875 -1.8125 9.734375 -1.8125 C 9.625 -1.8125 9.609375 -1.78125 9.546875 -1.578125 C 9.28125 -0.625 8.828125 -0.125 8.359375 -0.125 C 8.234375 -0.125 8.046875 -0.125 8.046875 -0.515625 C 8.046875 -0.828125 8.1875 -1.203125 8.234375 -1.328125 C 8.453125 -1.90625 8.984375 -3.3125 8.984375 -4 C 8.984375 -4.71875 8.578125 -5.25 7.671875 -5.25 C 6.875 -5.25 6.234375 -4.796875 5.75 -4.09375 C 5.71875 -4.734375 5.328125 -5.25 4.421875 -5.25 C 3.375 -5.25 2.8125 -4.5 2.59375 -4.203125 C 2.5625 -4.875 2.078125 -5.25 1.546875 -5.25 C 1.203125 -5.25 0.921875 -5.078125 0.703125 -4.625 C 0.484375 -4.203125 0.328125 -3.484375 0.328125 -3.421875 C 0.328125 -3.375 0.375 -3.328125 0.453125 -3.328125 C 0.546875 -3.328125 0.5625 -3.328125 0.625 -3.609375 C 0.8125 -4.3125 1.03125 -5.015625 1.515625 -5.015625 C 1.78125 -5.015625 1.875 -4.828125 1.875 -4.46875 C 1.875 -4.203125 1.765625 -3.734375 1.671875 -3.375 L 1.34375 -2.078125 C 1.296875 -1.859375 1.171875 -1.328125 1.109375 -1.109375 C 1.03125 -0.796875 0.890625 -0.234375 0.890625 -0.171875 C 0.890625 -0.015625 1.03125 0.125 1.203125 0.125 C 1.34375 0.125 1.515625 0.046875 1.609375 -0.125 C 1.625 -0.1875 1.734375 -0.609375 1.796875 -0.84375 L 2.0625 -1.921875 Z M 2.453125 -3.484375 "/>
+</symbol>
+<symbol overflow="visible" id="f1_glyph0-3">
+<path style="stroke:none;" d="M 8.640625 -5.21875 C 8.640625 -7.171875 7.359375 -8.375 5.6875 -8.375 C 3.140625 -8.375 0.578125 -5.640625 0.578125 -2.890625 C 0.578125 -1.03125 1.8125 0.25 3.53125 0.25 C 6.03125 0.25 8.640625 -2.359375 8.640625 -5.21875 Z M 3.609375 -0.03125 C 2.625 -0.03125 1.59375 -0.734375 1.59375 -2.59375 C 1.59375 -3.671875 1.984375 -5.453125 2.96875 -6.640625 C 3.828125 -7.6875 4.828125 -8.125 5.625 -8.125 C 6.671875 -8.125 7.6875 -7.359375 7.6875 -5.640625 C 7.6875 -4.578125 7.234375 -2.921875 6.4375 -1.796875 C 5.578125 -0.578125 4.484375 -0.03125 3.609375 -0.03125 Z M 3.609375 -0.03125 "/>
+</symbol>
+<symbol overflow="visible" id="f1_glyph0-4">
+<path style="stroke:none;" d="M 8.8125 -6.875 C 8.9375 -7.390625 9.125 -7.75 10.03125 -7.78125 C 10.078125 -7.78125 10.21875 -7.796875 10.21875 -8 C 10.21875 -8.125 10.109375 -8.125 10.0625 -8.125 C 9.828125 -8.125 9.21875 -8.109375 8.984375 -8.109375 L 8.40625 -8.109375 C 8.234375 -8.109375 8.03125 -8.125 7.859375 -8.125 C 7.78125 -8.125 7.640625 -8.125 7.640625 -7.90625 C 7.640625 -7.78125 7.734375 -7.78125 7.828125 -7.78125 C 8.53125 -7.765625 8.578125 -7.484375 8.578125 -7.28125 C 8.578125 -7.171875 8.578125 -7.125 8.53125 -6.96875 L 7.1875 -1.59375 L 4.640625 -7.921875 C 4.5625 -8.125 4.546875 -8.125 4.28125 -8.125 L 2.828125 -8.125 C 2.59375 -8.125 2.484375 -8.125 2.484375 -7.90625 C 2.484375 -7.78125 2.578125 -7.78125 2.796875 -7.78125 C 2.859375 -7.78125 3.5625 -7.78125 3.5625 -7.671875 C 3.5625 -7.65625 3.53125 -7.5625 3.53125 -7.53125 L 1.9375 -1.21875 C 1.796875 -0.625 1.515625 -0.375 0.71875 -0.34375 C 0.671875 -0.34375 0.546875 -0.328125 0.546875 -0.125 C 0.546875 0 0.671875 0 0.703125 0 C 0.9375 0 1.546875 -0.03125 1.78125 -0.03125 L 2.359375 -0.03125 C 2.53125 -0.03125 2.71875 0 2.890625 0 C 2.96875 0 3.109375 0 3.109375 -0.21875 C 3.109375 -0.328125 2.984375 -0.34375 2.9375 -0.34375 C 2.546875 -0.359375 2.171875 -0.421875 2.171875 -0.859375 C 2.171875 -0.953125 2.1875 -1.0625 2.21875 -1.15625 L 3.828125 -7.53125 C 3.890625 -7.40625 3.890625 -7.375 3.9375 -7.28125 L 6.78125 -0.21875 C 6.828125 -0.078125 6.859375 0 6.96875 0 C 7.078125 0 7.09375 -0.03125 7.140625 -0.234375 Z M 8.8125 -6.875 "/>
+</symbol>
+<symbol overflow="visible" id="f1_glyph0-5">
+<path style="stroke:none;" d="M 2.453125 -3.484375 C 2.46875 -3.5625 2.78125 -4.15625 3.21875 -4.53125 C 3.53125 -4.828125 3.921875 -5.015625 4.390625 -5.015625 C 4.875 -5.015625 5.03125 -4.65625 5.03125 -4.171875 C 5.03125 -3.5 4.546875 -2.140625 4.3125 -1.5 C 4.203125 -1.21875 4.140625 -1.0625 4.140625 -0.84375 C 4.140625 -0.3125 4.515625 0.125 5.078125 0.125 C 6.1875 0.125 6.609375 -1.625 6.609375 -1.703125 C 6.609375 -1.765625 6.5625 -1.8125 6.484375 -1.8125 C 6.375 -1.8125 6.375 -1.78125 6.3125 -1.578125 C 6.03125 -0.59375 5.578125 -0.125 5.125 -0.125 C 5 -0.125 4.8125 -0.125 4.8125 -0.515625 C 4.8125 -0.8125 4.9375 -1.171875 5.015625 -1.328125 C 5.25 -1.984375 5.75 -3.328125 5.75 -4 C 5.75 -4.71875 5.328125 -5.25 4.421875 -5.25 C 3.375 -5.25 2.8125 -4.5 2.59375 -4.203125 C 2.5625 -4.875 2.078125 -5.25 1.546875 -5.25 C 1.171875 -5.25 0.90625 -5.03125 0.703125 -4.625 C 0.484375 -4.1875 0.328125 -3.484375 0.328125 -3.421875 C 0.328125 -3.375 0.375 -3.328125 0.453125 -3.328125 C 0.546875 -3.328125 0.5625 -3.328125 0.625 -3.609375 C 0.828125 -4.328125 1.03125 -5.015625 1.515625 -5.015625 C 1.78125 -5.015625 1.875 -4.828125 1.875 -4.46875 C 1.875 -4.203125 1.765625 -3.734375 1.671875 -3.375 L 1.34375 -2.078125 C 1.296875 -1.859375 1.171875 -1.328125 1.109375 -1.109375 C 1.03125 -0.796875 0.890625 -0.234375 0.890625 -0.171875 C 0.890625 -0.015625 1.03125 0.125 1.203125 0.125 C 1.34375 0.125 1.515625 0.046875 1.609375 -0.125 C 1.625 -0.1875 1.734375 -0.609375 1.796875 -0.84375 L 2.0625 -1.921875 Z M 2.453125 -3.484375 "/>
+</symbol>
+<symbol overflow="visible" id="f1_glyph1-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f1_glyph1-1">
+<path style="stroke:none;" d="M 5.328125 -3.8125 C 5.328125 -4.796875 5.28125 -5.765625 4.84375 -6.671875 C 4.359375 -7.65625 3.5 -7.921875 2.921875 -7.921875 C 2.21875 -7.921875 1.375 -7.578125 0.9375 -6.578125 C 0.609375 -5.828125 0.484375 -5.09375 0.484375 -3.8125 C 0.484375 -2.65625 0.578125 -1.78125 1 -0.9375 C 1.46875 -0.03125 2.28125 0.25 2.90625 0.25 C 3.9375 0.25 4.53125 -0.375 4.875 -1.0625 C 5.3125 -1.953125 5.328125 -3.125 5.328125 -3.8125 Z M 2.90625 0.015625 C 2.53125 0.015625 1.75 -0.203125 1.53125 -1.5 C 1.390625 -2.21875 1.390625 -3.125 1.390625 -3.953125 C 1.390625 -4.921875 1.390625 -5.8125 1.578125 -6.515625 C 1.78125 -7.3125 2.390625 -7.671875 2.90625 -7.671875 C 3.359375 -7.671875 4.046875 -7.40625 4.28125 -6.375 C 4.421875 -5.703125 4.421875 -4.765625 4.421875 -3.953125 C 4.421875 -3.15625 4.421875 -2.25 4.296875 -1.53125 C 4.078125 -0.21875 3.328125 0.015625 2.90625 0.015625 Z M 2.90625 0.015625 "/>
+</symbol>
+</g>
+<clipPath id="f1_clip1">
+  <path d="M 94 15 L 107.148438 15 L 107.148438 30 L 94 30 Z M 94 15 "/>
+</clipPath>
+</defs>
+<g id="f1_surface1">
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:miter;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M -50.598642 -0.00108411 L 47.534532 -0.00108411 " transform="matrix(0.996056,0,0,-0.996056,53.57484,22.06142)"/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 103.410156 22.0625 L 99.851563 20.722656 L 101.023438 22.0625 L 99.851563 23.402344 Z M 103.410156 22.0625 "/>
+<g clip-path="url(#f1_clip1)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:miter;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 4.215227 -0.00108411 L 0.642541 1.344066 L 1.819057 -0.00108411 L 0.642541 -1.346234 Z M 4.215227 -0.00108411 " transform="matrix(0.996056,0,0,-0.996056,99.211556,22.06142)"/>
+</g>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 23.808594 22.0625 C 23.808594 21.269531 23.167969 20.628906 22.375 20.628906 C 21.582031 20.628906 20.941406 21.269531 20.941406 22.0625 C 20.941406 22.851563 21.582031 23.496094 22.375 23.496094 C 23.167969 23.496094 23.808594 22.851563 23.808594 22.0625 Z M 23.808594 22.0625 "/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f1_glyph0-1" x="16.113191" y="15.001378"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f1_glyph0-2" x="17.275588" y="34.249156"/>
+</g>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 55.007813 22.0625 C 55.007813 21.269531 54.367188 20.628906 53.574219 20.628906 C 52.78125 20.628906 52.140625 21.269531 52.140625 22.0625 C 52.140625 22.851563 52.78125 23.496094 53.574219 23.496094 C 54.367188 23.496094 55.007813 22.851563 55.007813 22.0625 Z M 55.007813 22.0625 "/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f1_glyph0-3" x="48.957127" y="15.001378"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f1_glyph1-1" x="50.659386" y="36.797066"/>
+</g>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 85.007813 22.0625 C 85.007813 21.269531 84.367188 20.628906 83.574219 20.628906 C 82.78125 20.628906 82.140625 21.269531 82.140625 22.0625 C 82.140625 22.851563 82.78125 23.496094 83.574219 23.496094 C 84.367188 23.496094 85.007813 22.851563 85.007813 22.0625 Z M 85.007813 22.0625 "/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f1_glyph0-4" x="78.28399" y="15.001378"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f1_glyph0-5" x="80.093823" y="34.249156"/>
+</g>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_20" value="A"> <b>A.</b> $n&lt;0&lt;m$</label><label><input type="radio" name="P1_Cau_20" value="B"> <b>B.</b> $m&lt;0&lt;n$</label><label><input type="radio" name="P1_Cau_20" value="C"> <b>C.</b> $0&lt;m&lt;n$</label><label><input type="radio" name="P1_Cau_20" value="D"> <b>D.</b> $m&lt;n&lt;0$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $M$ nằm bên trái $O$, còn $N$ nằm bên phải $O$, nên $m&lt;0&lt;n$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 21:</b> Căn bậc hai số học của $81$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_21" value="A"> <b>A.</b> $-9$</label><label><input type="radio" name="P1_Cau_21" value="B"> <b>B.</b> $\pm9$</label><label><input type="radio" name="P1_Cau_21" value="C"> <b>C.</b> $\dfrac{81}{2}$</label><label><input type="radio" name="P1_Cau_21" value="D"> <b>D.</b> $9$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $9\ge0$ và $9^2=81$ nên $\sqrt{81}=9$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 22:</b> Giá trị của $\sqrt{0{,}49}$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_22" value="A"> <b>A.</b> $0{,}07$</label><label><input type="radio" name="P1_Cau_22" value="B"> <b>B.</b> $-0{,}7$</label><label><input type="radio" name="P1_Cau_22" value="C"> <b>C.</b> $0{,}245$</label><label><input type="radio" name="P1_Cau_22" value="D"> <b>D.</b> $0{,}7$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $0{,}7\ge0$ và $(0{,}7)^2=0{,}49$, nên $\sqrt{0{,}49}=0{,}7$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 23:</b> Căn bậc hai số học của $0$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_23" value="A"> <b>A.</b> $0$</label><label><input type="radio" name="P1_Cau_23" value="B"> <b>B.</b> $1$</label><label><input type="radio" name="P1_Cau_23" value="C"> <b>C.</b> Không tồn tại</label><label><input type="radio" name="P1_Cau_23" value="D"> <b>D.</b> $-1$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $0\ge0$ và $0^2=0$, vì vậy $\sqrt{0}=0$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 24:</b> Biết $x\ge0$ và $x^2=64$. Giá trị của $x$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_24" value="A"> <b>A.</b> $8$</label><label><input type="radio" name="P1_Cau_24" value="B"> <b>B.</b> $-8$</label><label><input type="radio" name="P1_Cau_24" value="C"> <b>C.</b> $\pm8$</label><label><input type="radio" name="P1_Cau_24" value="D"> <b>D.</b> $32$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Từ $x\ge0$, $x^2=64$ suy ra $x=\sqrt{64}=8$. Điều kiện $x\ge0$ loại giá trị $-8$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 25:</b> Giá trị của $\sqrt{\dfrac{9}{16}}$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_25" value="A"> <b>A.</b> $\dfrac{3}{4}$</label><label><input type="radio" name="P1_Cau_25" value="B"> <b>B.</b> $-\dfrac{3}{4}$</label><label><input type="radio" name="P1_Cau_25" value="C"> <b>C.</b> $\dfrac{9}{4}$</label><label><input type="radio" name="P1_Cau_25" value="D"> <b>D.</b> $\dfrac{81}{256}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\dfrac{3}{4}&gt;0$ và $\left(\dfrac{3}{4}\right)^2=\dfrac{9}{16}$, nên $\sqrt{\dfrac{9}{16}}=\dfrac{3}{4}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 26:</b> Số nào sau đây <b>không thể</b> là căn bậc hai số học của một số không âm?</div></div><div class="options"><label><input type="radio" name="P1_Cau_26" value="A"> <b>A.</b> $0$</label><label><input type="radio" name="P1_Cau_26" value="B"> <b>B.</b> $-3$</label><label><input type="radio" name="P1_Cau_26" value="C"> <b>C.</b> $2$</label><label><input type="radio" name="P1_Cau_26" value="D"> <b>D.</b> $\dfrac{1}{2}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Căn bậc hai số học luôn không âm, nên không thể bằng $-3$. Các số còn lại lần lượt là căn bậc hai số học của $0$, $4$, $\dfrac{1}{4}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 27:</b> Khẳng định nào sau đây đúng?</div></div><div class="options"><label><input type="radio" name="P1_Cau_27" value="A"> <b>A.</b> $\sqrt{36}=-6$</label><label><input type="radio" name="P1_Cau_27" value="B"> <b>B.</b> $\sqrt{36}=6$</label><label><input type="radio" name="P1_Cau_27" value="C"> <b>C.</b> $\sqrt{36}=\pm6$</label><label><input type="radio" name="P1_Cau_27" value="D"> <b>D.</b> $\sqrt{36}=18$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $6\ge0$ và $6^2=36$, do đó $\sqrt{36}=6$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 28:</b> Số nào sau đây là số vô tỉ?</div></div><div class="options"><label><input type="radio" name="P1_Cau_28" value="A"> <b>A.</b> $\sqrt{7}$</label><label><input type="radio" name="P1_Cau_28" value="B"> <b>B.</b> $\sqrt{25}$</label><label><input type="radio" name="P1_Cau_28" value="C"> <b>C.</b> $-0{,}4$</label><label><input type="radio" name="P1_Cau_28" value="D"> <b>D.</b> $\dfrac{2}{3}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $7$ không phải số chính phương nên $\sqrt{7}$ là số vô tỉ. Các số còn lại là $5$, $-\dfrac{2}{5}$, $\dfrac{2}{3}$, đều hữu tỉ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 29:</b> Số vô tỉ được viết dưới dạng nào sau đây?</div></div><div class="options"><label><input type="radio" name="P1_Cau_29" value="A"> <b>A.</b> Số thập phân hữu hạn</label><label><input type="radio" name="P1_Cau_29" value="B"> <b>B.</b> Số thập phân vô hạn tuần hoàn</label><label><input type="radio" name="P1_Cau_29" value="C"> <b>C.</b> Số thập phân vô hạn không tuần hoàn</label><label><input type="radio" name="P1_Cau_29" value="D"> <b>D.</b> Phân số có tử và mẫu nguyên, mẫu khác $0$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Theo định nghĩa, số vô tỉ là số thập phân vô hạn không tuần hoàn. Ba dạng còn lại đều biểu diễn số hữu tỉ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 30:</b> Trong các số $0{,}2$; $0{,}(3)$; $\sqrt{2}$; $\sqrt{9}$, có bao nhiêu số vô tỉ?</div></div><div class="options"><label><input type="radio" name="P1_Cau_30" value="A"> <b>A.</b> $2$</label><label><input type="radio" name="P1_Cau_30" value="B"> <b>B.</b> $1$</label><label><input type="radio" name="P1_Cau_30" value="C"> <b>C.</b> $3$</label><label><input type="radio" name="P1_Cau_30" value="D"> <b>D.</b> $4$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Chỉ có $\sqrt{2}$ là số vô tỉ; $0{,}2=\dfrac{1}{5}$, $0{,}(3)=\dfrac{1}{3}$, $\sqrt{9}=3$ đều là số hữu tỉ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 31:</b> Hai góc đối đỉnh là hai góc</div></div><div class="options"><label><input type="radio" name="P1_Cau_31" value="A"> <b>A.</b> chỉ cần có chung đỉnh</label><label><input type="radio" name="P1_Cau_31" value="B"> <b>B.</b> có một cạnh chung và hai cạnh còn lại là hai tia đối nhau</label><label><input type="radio" name="P1_Cau_31" value="C"> <b>C.</b> chỉ cần có tổng số đo bằng $180^\circ$</label><label><input type="radio" name="P1_Cau_31" value="D"> <b>D.</b> có mỗi cạnh của góc này là tia đối của một cạnh của góc kia</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Định nghĩa yêu cầu cả hai cặp cạnh tương ứng là các tia đối nhau. Có chung đỉnh hoặc có tổng số đo $180^\circ$ chưa đủ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 32:</b> Hai đường thẳng $AB$ và $CD$ cắt nhau tại $O$ như hình. Biết $\widehat{AOC}=125^\circ$. Số đo $\widehat{BOD}$ bằng</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="126.989pt" height="105.19pt" viewBox="0 0 126.989 105.19" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f2_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f2_glyph0-1">
+<path style="stroke:none;" d="M 2.015625 -1.3125 C 1.59375 -0.609375 1.203125 -0.375 0.625 -0.34375 C 0.5 -0.328125 0.40625 -0.328125 0.40625 -0.125 C 0.40625 -0.046875 0.46875 0 0.546875 0 C 0.765625 0 1.296875 -0.03125 1.5 -0.03125 C 1.84375 -0.03125 2.234375 0 2.5625 0 C 2.625 0 2.78125 0 2.78125 -0.21875 C 2.78125 -0.328125 2.6875 -0.34375 2.609375 -0.34375 C 2.34375 -0.375 2.109375 -0.46875 2.109375 -0.75 C 2.109375 -0.90625 2.1875 -1.046875 2.34375 -1.296875 L 3.234375 -2.796875 L 6.265625 -2.796875 C 6.28125 -2.6875 6.28125 -2.59375 6.28125 -2.484375 C 6.328125 -2.1875 6.46875 -0.953125 6.46875 -0.71875 C 6.46875 -0.375 5.859375 -0.34375 5.671875 -0.34375 C 5.53125 -0.34375 5.40625 -0.34375 5.40625 -0.125 C 5.40625 0 5.515625 0 5.578125 0 C 5.78125 0 6.03125 -0.03125 6.21875 -0.03125 L 6.90625 -0.03125 C 7.625 -0.03125 8.140625 0 8.15625 0 C 8.25 0 8.375 0 8.375 -0.21875 C 8.375 -0.34375 8.265625 -0.34375 8.09375 -0.34375 C 7.4375 -0.34375 7.421875 -0.453125 7.390625 -0.8125 L 6.671875 -8.203125 C 6.640625 -8.4375 6.59375 -8.46875 6.46875 -8.46875 C 6.34375 -8.46875 6.28125 -8.4375 6.171875 -8.265625 Z M 3.4375 -3.140625 L 5.828125 -7.125 L 6.21875 -3.140625 Z M 3.4375 -3.140625 "/>
+</symbol>
+<symbol overflow="visible" id="f2_glyph0-2">
+<path style="stroke:none;" d="M 4.34375 -7.296875 C 4.453125 -7.734375 4.5 -7.75 4.953125 -7.75 L 6.5 -7.75 C 7.84375 -7.75 7.84375 -6.625 7.84375 -6.515625 C 7.84375 -5.546875 6.875 -4.328125 5.3125 -4.328125 L 3.609375 -4.328125 Z M 6.34375 -4.234375 C 7.640625 -4.46875 8.8125 -5.375 8.8125 -6.46875 C 8.8125 -7.390625 8 -8.09375 6.65625 -8.09375 L 2.84375 -8.09375 C 2.625 -8.09375 2.515625 -8.09375 2.515625 -7.875 C 2.515625 -7.75 2.625 -7.75 2.796875 -7.75 C 3.515625 -7.75 3.515625 -7.65625 3.515625 -7.53125 C 3.515625 -7.5 3.515625 -7.4375 3.46875 -7.265625 L 1.875 -0.875 C 1.765625 -0.46875 1.75 -0.34375 0.90625 -0.34375 C 0.6875 -0.34375 0.5625 -0.34375 0.5625 -0.125 C 0.5625 0 0.640625 0 0.875 0 L 4.953125 0 C 6.765625 0 8.15625 -1.375 8.15625 -2.578125 C 8.15625 -3.546875 7.3125 -4.140625 6.34375 -4.234375 Z M 4.65625 -0.34375 L 3.0625 -0.34375 C 2.890625 -0.34375 2.875 -0.34375 2.796875 -0.359375 C 2.671875 -0.375 2.65625 -0.390625 2.65625 -0.484375 C 2.65625 -0.5625 2.6875 -0.640625 2.703125 -0.75 L 3.53125 -4.09375 L 5.765625 -4.09375 C 7.15625 -4.09375 7.15625 -2.78125 7.15625 -2.6875 C 7.15625 -1.546875 6.125 -0.34375 4.65625 -0.34375 Z M 4.65625 -0.34375 "/>
+</symbol>
+<symbol overflow="visible" id="f2_glyph0-3">
+<path style="stroke:none;" d="M 8.859375 -8.25 C 8.859375 -8.34375 8.78125 -8.34375 8.75 -8.34375 C 8.734375 -8.34375 8.6875 -8.34375 8.59375 -8.234375 L 7.765625 -7.234375 C 7.359375 -7.953125 6.703125 -8.34375 5.8125 -8.34375 C 3.25 -8.34375 0.59375 -5.75 0.59375 -2.96875 C 0.59375 -0.984375 1.984375 0.25 3.71875 0.25 C 4.65625 0.25 5.484375 -0.15625 6.171875 -0.734375 C 7.203125 -1.59375 7.515625 -2.75 7.515625 -2.84375 C 7.515625 -2.953125 7.421875 -2.953125 7.390625 -2.953125 C 7.28125 -2.953125 7.265625 -2.875 7.25 -2.828125 C 6.703125 -0.984375 5.09375 -0.09375 3.90625 -0.09375 C 2.65625 -0.09375 1.5625 -0.90625 1.5625 -2.578125 C 1.5625 -2.96875 1.6875 -5.03125 3.03125 -6.578125 C 3.671875 -7.34375 4.796875 -8 5.921875 -8 C 7.21875 -8 7.796875 -6.921875 7.796875 -5.71875 C 7.796875 -5.40625 7.765625 -5.140625 7.765625 -5.09375 C 7.765625 -5 7.890625 -5 7.921875 -5 C 8.046875 -5 8.0625 -5 8.109375 -5.21875 Z M 8.859375 -8.25 "/>
+</symbol>
+<symbol overflow="visible" id="f2_glyph0-4">
+<path style="stroke:none;" d="M 1.859375 -0.875 C 1.75 -0.46875 1.734375 -0.34375 0.90625 -0.34375 C 0.671875 -0.34375 0.5625 -0.34375 0.5625 -0.125 C 0.5625 0 0.625 0 0.859375 0 L 4.625 0 C 7.015625 0 9.359375 -2.484375 9.359375 -5.125 C 9.359375 -6.828125 8.34375 -8.09375 6.640625 -8.09375 L 2.828125 -8.09375 C 2.609375 -8.09375 2.5 -8.09375 2.5 -7.875 C 2.5 -7.75 2.609375 -7.75 2.78125 -7.75 C 3.515625 -7.75 3.515625 -7.65625 3.515625 -7.53125 C 3.515625 -7.5 3.515625 -7.4375 3.46875 -7.265625 Z M 4.359375 -7.296875 C 4.46875 -7.734375 4.515625 -7.75 4.984375 -7.75 L 6.28125 -7.75 C 7.40625 -7.75 8.421875 -7.15625 8.421875 -5.515625 C 8.421875 -4.921875 8.1875 -2.859375 7.03125 -1.546875 C 6.703125 -1.15625 5.796875 -0.34375 4.4375 -0.34375 L 3.078125 -0.34375 C 2.921875 -0.34375 2.890625 -0.34375 2.828125 -0.359375 C 2.6875 -0.375 2.6875 -0.390625 2.6875 -0.484375 C 2.6875 -0.5625 2.703125 -0.640625 2.734375 -0.75 Z M 4.359375 -7.296875 "/>
+</symbol>
+<symbol overflow="visible" id="f2_glyph0-5">
+<path style="stroke:none;" d="M 8.609375 -5.1875 C 8.609375 -7.15625 7.328125 -8.34375 5.671875 -8.34375 C 3.125 -8.34375 0.5625 -5.625 0.5625 -2.875 C 0.5625 -1.015625 1.796875 0.25 3.515625 0.25 C 6.015625 0.25 8.609375 -2.34375 8.609375 -5.1875 Z M 3.59375 -0.03125 C 2.625 -0.03125 1.59375 -0.734375 1.59375 -2.578125 C 1.59375 -3.671875 1.984375 -5.4375 2.953125 -6.625 C 3.8125 -7.65625 4.8125 -8.09375 5.609375 -8.09375 C 6.65625 -8.09375 7.65625 -7.328125 7.65625 -5.625 C 7.65625 -4.5625 7.203125 -2.921875 6.421875 -1.796875 C 5.546875 -0.578125 4.46875 -0.03125 3.59375 -0.03125 Z M 3.59375 -0.03125 "/>
+</symbol>
+</g>
+</defs>
+<g id="f2_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -43.368951 0.00170156 L 43.372006 0.00170156 " transform="matrix(0.992358,0,0,-0.992358,63.131297,52.193095)"/>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(69.999695%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 23.410879 33.436884 L -23.41176 -33.437418 " transform="matrix(0.992358,0,0,-0.992358,63.131297,52.193095)"/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 64.464844 52.191406 C 64.464844 51.457031 63.867188 50.859375 63.132813 50.859375 C 62.394531 50.859375 61.796875 51.457031 61.796875 52.191406 C 61.796875 52.929688 62.394531 53.527344 63.132813 53.527344 C 63.867188 53.527344 64.464844 52.929688 64.464844 52.191406 Z M 64.464844 52.191406 "/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f2_glyph0-1" x="7.316093" y="48.124425"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f2_glyph0-2" x="110.238554" y="48.124425"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f2_glyph0-3" x="81.783667" y="14.943927"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f2_glyph0-4" x="34.913583" y="97.549832"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f2_glyph0-5" x="67.199967" y="64.368341"/>
+</g>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_32" value="A"> <b>A.</b> $125^\circ$</label><label><input type="radio" name="P1_Cau_32" value="B"> <b>B.</b> $55^\circ$</label><label><input type="radio" name="P1_Cau_32" value="C"> <b>C.</b> $62{,}5^\circ$</label><label><input type="radio" name="P1_Cau_32" value="D"> <b>D.</b> $180^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat{AOC}$ và $\widehat{BOD}$ là hai góc đối đỉnh, nên $\widehat{BOD}=\widehat{AOC}=125^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 33:</b> Hai đường thẳng $AB$ và $CD$ cắt nhau tại $O$ như hình. Góc đối đỉnh với $\widehat{AOC}$ là</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="126.989pt" height="105.19pt" viewBox="0 0 126.989 105.19" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f3_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f3_glyph0-1">
+<path style="stroke:none;" d="M 2.015625 -1.3125 C 1.59375 -0.609375 1.203125 -0.375 0.625 -0.34375 C 0.5 -0.328125 0.40625 -0.328125 0.40625 -0.125 C 0.40625 -0.046875 0.46875 0 0.546875 0 C 0.765625 0 1.296875 -0.03125 1.5 -0.03125 C 1.84375 -0.03125 2.234375 0 2.5625 0 C 2.625 0 2.78125 0 2.78125 -0.21875 C 2.78125 -0.328125 2.6875 -0.34375 2.609375 -0.34375 C 2.34375 -0.375 2.109375 -0.46875 2.109375 -0.75 C 2.109375 -0.90625 2.1875 -1.046875 2.34375 -1.296875 L 3.234375 -2.796875 L 6.265625 -2.796875 C 6.28125 -2.6875 6.28125 -2.59375 6.28125 -2.484375 C 6.328125 -2.1875 6.46875 -0.953125 6.46875 -0.71875 C 6.46875 -0.375 5.859375 -0.34375 5.671875 -0.34375 C 5.53125 -0.34375 5.40625 -0.34375 5.40625 -0.125 C 5.40625 0 5.515625 0 5.578125 0 C 5.78125 0 6.03125 -0.03125 6.21875 -0.03125 L 6.90625 -0.03125 C 7.625 -0.03125 8.140625 0 8.15625 0 C 8.25 0 8.375 0 8.375 -0.21875 C 8.375 -0.34375 8.265625 -0.34375 8.09375 -0.34375 C 7.4375 -0.34375 7.421875 -0.453125 7.390625 -0.8125 L 6.671875 -8.203125 C 6.640625 -8.4375 6.59375 -8.46875 6.46875 -8.46875 C 6.34375 -8.46875 6.28125 -8.4375 6.171875 -8.265625 Z M 3.4375 -3.140625 L 5.828125 -7.125 L 6.21875 -3.140625 Z M 3.4375 -3.140625 "/>
+</symbol>
+<symbol overflow="visible" id="f3_glyph0-2">
+<path style="stroke:none;" d="M 4.34375 -7.296875 C 4.453125 -7.734375 4.5 -7.75 4.953125 -7.75 L 6.5 -7.75 C 7.84375 -7.75 7.84375 -6.625 7.84375 -6.515625 C 7.84375 -5.546875 6.875 -4.328125 5.3125 -4.328125 L 3.609375 -4.328125 Z M 6.34375 -4.234375 C 7.640625 -4.46875 8.8125 -5.375 8.8125 -6.46875 C 8.8125 -7.390625 8 -8.09375 6.65625 -8.09375 L 2.84375 -8.09375 C 2.625 -8.09375 2.515625 -8.09375 2.515625 -7.875 C 2.515625 -7.75 2.625 -7.75 2.796875 -7.75 C 3.515625 -7.75 3.515625 -7.65625 3.515625 -7.53125 C 3.515625 -7.5 3.515625 -7.4375 3.46875 -7.265625 L 1.875 -0.875 C 1.765625 -0.46875 1.75 -0.34375 0.90625 -0.34375 C 0.6875 -0.34375 0.5625 -0.34375 0.5625 -0.125 C 0.5625 0 0.640625 0 0.875 0 L 4.953125 0 C 6.765625 0 8.15625 -1.375 8.15625 -2.578125 C 8.15625 -3.546875 7.3125 -4.140625 6.34375 -4.234375 Z M 4.65625 -0.34375 L 3.0625 -0.34375 C 2.890625 -0.34375 2.875 -0.34375 2.796875 -0.359375 C 2.671875 -0.375 2.65625 -0.390625 2.65625 -0.484375 C 2.65625 -0.5625 2.6875 -0.640625 2.703125 -0.75 L 3.53125 -4.09375 L 5.765625 -4.09375 C 7.15625 -4.09375 7.15625 -2.78125 7.15625 -2.6875 C 7.15625 -1.546875 6.125 -0.34375 4.65625 -0.34375 Z M 4.65625 -0.34375 "/>
+</symbol>
+<symbol overflow="visible" id="f3_glyph0-3">
+<path style="stroke:none;" d="M 8.859375 -8.25 C 8.859375 -8.34375 8.78125 -8.34375 8.75 -8.34375 C 8.734375 -8.34375 8.6875 -8.34375 8.59375 -8.234375 L 7.765625 -7.234375 C 7.359375 -7.953125 6.703125 -8.34375 5.8125 -8.34375 C 3.25 -8.34375 0.59375 -5.75 0.59375 -2.96875 C 0.59375 -0.984375 1.984375 0.25 3.71875 0.25 C 4.65625 0.25 5.484375 -0.15625 6.171875 -0.734375 C 7.203125 -1.59375 7.515625 -2.75 7.515625 -2.84375 C 7.515625 -2.953125 7.421875 -2.953125 7.390625 -2.953125 C 7.28125 -2.953125 7.265625 -2.875 7.25 -2.828125 C 6.703125 -0.984375 5.09375 -0.09375 3.90625 -0.09375 C 2.65625 -0.09375 1.5625 -0.90625 1.5625 -2.578125 C 1.5625 -2.96875 1.6875 -5.03125 3.03125 -6.578125 C 3.671875 -7.34375 4.796875 -8 5.921875 -8 C 7.21875 -8 7.796875 -6.921875 7.796875 -5.71875 C 7.796875 -5.40625 7.765625 -5.140625 7.765625 -5.09375 C 7.765625 -5 7.890625 -5 7.921875 -5 C 8.046875 -5 8.0625 -5 8.109375 -5.21875 Z M 8.859375 -8.25 "/>
+</symbol>
+<symbol overflow="visible" id="f3_glyph0-4">
+<path style="stroke:none;" d="M 1.859375 -0.875 C 1.75 -0.46875 1.734375 -0.34375 0.90625 -0.34375 C 0.671875 -0.34375 0.5625 -0.34375 0.5625 -0.125 C 0.5625 0 0.625 0 0.859375 0 L 4.625 0 C 7.015625 0 9.359375 -2.484375 9.359375 -5.125 C 9.359375 -6.828125 8.34375 -8.09375 6.640625 -8.09375 L 2.828125 -8.09375 C 2.609375 -8.09375 2.5 -8.09375 2.5 -7.875 C 2.5 -7.75 2.609375 -7.75 2.78125 -7.75 C 3.515625 -7.75 3.515625 -7.65625 3.515625 -7.53125 C 3.515625 -7.5 3.515625 -7.4375 3.46875 -7.265625 Z M 4.359375 -7.296875 C 4.46875 -7.734375 4.515625 -7.75 4.984375 -7.75 L 6.28125 -7.75 C 7.40625 -7.75 8.421875 -7.15625 8.421875 -5.515625 C 8.421875 -4.921875 8.1875 -2.859375 7.03125 -1.546875 C 6.703125 -1.15625 5.796875 -0.34375 4.4375 -0.34375 L 3.078125 -0.34375 C 2.921875 -0.34375 2.890625 -0.34375 2.828125 -0.359375 C 2.6875 -0.375 2.6875 -0.390625 2.6875 -0.484375 C 2.6875 -0.5625 2.703125 -0.640625 2.734375 -0.75 Z M 4.359375 -7.296875 "/>
+</symbol>
+<symbol overflow="visible" id="f3_glyph0-5">
+<path style="stroke:none;" d="M 8.609375 -5.1875 C 8.609375 -7.15625 7.328125 -8.34375 5.671875 -8.34375 C 3.125 -8.34375 0.5625 -5.625 0.5625 -2.875 C 0.5625 -1.015625 1.796875 0.25 3.515625 0.25 C 6.015625 0.25 8.609375 -2.34375 8.609375 -5.1875 Z M 3.59375 -0.03125 C 2.625 -0.03125 1.59375 -0.734375 1.59375 -2.578125 C 1.59375 -3.671875 1.984375 -5.4375 2.953125 -6.625 C 3.8125 -7.65625 4.8125 -8.09375 5.609375 -8.09375 C 6.65625 -8.09375 7.65625 -7.328125 7.65625 -5.625 C 7.65625 -4.5625 7.203125 -2.921875 6.421875 -1.796875 C 5.546875 -0.578125 4.46875 -0.03125 3.59375 -0.03125 Z M 3.59375 -0.03125 "/>
+</symbol>
+</g>
+</defs>
+<g id="f3_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -43.368951 0.00170156 L 43.372006 0.00170156 " transform="matrix(0.992358,0,0,-0.992358,63.131297,52.193095)"/>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(69.999695%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 23.410879 33.436884 L -23.41176 -33.437418 " transform="matrix(0.992358,0,0,-0.992358,63.131297,52.193095)"/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 64.464844 52.191406 C 64.464844 51.457031 63.867188 50.859375 63.132813 50.859375 C 62.394531 50.859375 61.796875 51.457031 61.796875 52.191406 C 61.796875 52.929688 62.394531 53.527344 63.132813 53.527344 C 63.867188 53.527344 64.464844 52.929688 64.464844 52.191406 Z M 64.464844 52.191406 "/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f3_glyph0-1" x="7.316093" y="48.124425"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f3_glyph0-2" x="110.238554" y="48.124425"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f3_glyph0-3" x="81.783667" y="14.943927"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f3_glyph0-4" x="34.913583" y="97.549832"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f3_glyph0-5" x="67.199967" y="64.368341"/>
+</g>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_33" value="A"> <b>A.</b> $\widehat{AOD}$</label><label><input type="radio" name="P1_Cau_33" value="B"> <b>B.</b> $\widehat{BOD}$</label><label><input type="radio" name="P1_Cau_33" value="C"> <b>C.</b> $\widehat{BOC}$</label><label><input type="radio" name="P1_Cau_33" value="D"> <b>D.</b> $\widehat{AOB}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tia đối của $OA$ là $OB$; tia đối của $OC$ là $OD$. Vì vậy góc cần tìm là $\widehat{BOD}$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 34:</b> Hai góc đối đỉnh có một góc bằng $38^\circ$. Góc còn lại bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_34" value="A"> <b>A.</b> $142^\circ$</label><label><input type="radio" name="P1_Cau_34" value="B"> <b>B.</b> $76^\circ$</label><label><input type="radio" name="P1_Cau_34" value="C"> <b>C.</b> $38^\circ$</label><label><input type="radio" name="P1_Cau_34" value="D"> <b>D.</b> $19^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hai góc đối đỉnh bằng nhau, nên góc còn lại bằng $38^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 35:</b> Khẳng định nào sau đây đúng?</div></div><div class="options"><label><input type="radio" name="P1_Cau_35" value="A"> <b>A.</b> Hai góc đối đỉnh thì bằng nhau</label><label><input type="radio" name="P1_Cau_35" value="B"> <b>B.</b> Hai góc bằng nhau thì đối đỉnh</label><label><input type="radio" name="P1_Cau_35" value="C"> <b>C.</b> Hai góc có chung một cạnh thì đối đỉnh</label><label><input type="radio" name="P1_Cau_35" value="D"> <b>D.</b> Hai góc đối đỉnh luôn có tổng số đo bằng $180^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tính chất đúng là: hai góc đối đỉnh thì bằng nhau. Không được đảo chiều tính chất này; tổng hai góc đối đỉnh không nhất thiết bằng $180^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 36:</b> Điều kiện nào sau đây xác định hai góc kề bù?</div></div><div class="options"><label><input type="radio" name="P1_Cau_36" value="A"> <b>A.</b> Hai góc có số đo bằng nhau</label><label><input type="radio" name="P1_Cau_36" value="B"> <b>B.</b> Hai góc kề nhau và có tổng số đo bằng $90^\circ$</label><label><input type="radio" name="P1_Cau_36" value="C"> <b>C.</b> Hai góc có tổng số đo bằng $180^\circ$, không cần kề nhau</label><label><input type="radio" name="P1_Cau_36" value="D"> <b>D.</b> Hai góc có một cạnh chung, hai cạnh còn lại là hai tia đối nhau</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Theo định nghĩa, hai góc phải có một cạnh chung và hai cạnh còn lại là hai tia đối nhau.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 37:</b> Một góc bằng $52^\circ$. Góc kề bù với nó bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_37" value="A"> <b>A.</b> $52^\circ$</label><label><input type="radio" name="P1_Cau_37" value="B"> <b>B.</b> $128^\circ$</label><label><input type="radio" name="P1_Cau_37" value="C"> <b>C.</b> $38^\circ$</label><label><input type="radio" name="P1_Cau_37" value="D"> <b>D.</b> $104^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Góc cần tìm bằng $180^\circ-52^\circ=128^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 38:</b> Hai tia $Ox$, $Oy$ đối nhau; tia $Oz$ nằm như hình. Biết $\widehat{xOz}=120^\circ$. Số đo $\widehat{zOy}$ bằng</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="106.912pt" height="72.854pt" viewBox="0 0 106.912 72.854" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f4_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f4_glyph0-1">
+<path style="stroke:none;" d="M 8.671875 -5.234375 C 8.671875 -7.203125 7.375 -8.40625 5.703125 -8.40625 C 3.15625 -8.40625 0.578125 -5.65625 0.578125 -2.90625 C 0.578125 -1.03125 1.8125 0.25 3.546875 0.25 C 6.046875 0.25 8.671875 -2.359375 8.671875 -5.234375 Z M 3.609375 -0.03125 C 2.640625 -0.03125 1.59375 -0.734375 1.59375 -2.609375 C 1.59375 -3.6875 2 -5.46875 2.96875 -6.65625 C 3.84375 -7.71875 4.84375 -8.140625 5.640625 -8.140625 C 6.703125 -8.140625 7.71875 -7.375 7.71875 -5.65625 C 7.71875 -4.59375 7.265625 -2.9375 6.453125 -1.796875 C 5.59375 -0.578125 4.5 -0.03125 3.609375 -0.03125 Z M 3.609375 -0.03125 "/>
+</symbol>
+<symbol overflow="visible" id="f4_glyph0-2">
+<path style="stroke:none;" d="M 5.65625 -4.875 C 5.28125 -4.796875 5.140625 -4.515625 5.140625 -4.28125 C 5.140625 -4 5.359375 -3.90625 5.53125 -3.90625 C 5.890625 -3.90625 6.140625 -4.21875 6.140625 -4.53125 C 6.140625 -5.03125 5.5625 -5.265625 5.0625 -5.265625 C 4.328125 -5.265625 3.921875 -4.546875 3.8125 -4.328125 C 3.546875 -5.21875 2.8125 -5.265625 2.59375 -5.265625 C 1.375 -5.265625 0.734375 -3.703125 0.734375 -3.4375 C 0.734375 -3.390625 0.78125 -3.328125 0.859375 -3.328125 C 0.953125 -3.328125 0.984375 -3.40625 1 -3.453125 C 1.40625 -4.78125 2.203125 -5.03125 2.546875 -5.03125 C 3.09375 -5.03125 3.203125 -4.53125 3.203125 -4.234375 C 3.203125 -3.96875 3.125 -3.703125 2.984375 -3.125 L 2.578125 -1.5 C 2.40625 -0.78125 2.046875 -0.125 1.421875 -0.125 C 1.359375 -0.125 1.0625 -0.125 0.8125 -0.28125 C 1.234375 -0.359375 1.34375 -0.71875 1.34375 -0.859375 C 1.34375 -1.09375 1.15625 -1.234375 0.9375 -1.234375 C 0.640625 -1.234375 0.328125 -0.984375 0.328125 -0.609375 C 0.328125 -0.109375 0.890625 0.125 1.40625 0.125 C 1.984375 0.125 2.390625 -0.328125 2.640625 -0.828125 C 2.828125 -0.125 3.421875 0.125 3.875 0.125 C 5.078125 0.125 5.734375 -1.4375 5.734375 -1.703125 C 5.734375 -1.765625 5.6875 -1.8125 5.609375 -1.8125 C 5.5 -1.8125 5.484375 -1.75 5.453125 -1.65625 C 5.140625 -0.609375 4.4375 -0.125 3.90625 -0.125 C 3.484375 -0.125 3.265625 -0.4375 3.265625 -0.921875 C 3.265625 -1.1875 3.3125 -1.375 3.5 -2.15625 L 3.921875 -3.78125 C 4.09375 -4.5 4.5 -5.03125 5.046875 -5.03125 C 5.078125 -5.03125 5.40625 -5.03125 5.65625 -4.875 Z M 5.65625 -4.875 "/>
+</symbol>
+<symbol overflow="visible" id="f4_glyph0-3">
+<path style="stroke:none;" d="M 3.140625 1.34375 C 2.8125 1.796875 2.359375 2.203125 1.765625 2.203125 C 1.625 2.203125 1.046875 2.171875 0.875 1.625 C 0.90625 1.640625 0.96875 1.640625 0.984375 1.640625 C 1.34375 1.640625 1.59375 1.328125 1.59375 1.046875 C 1.59375 0.78125 1.359375 0.6875 1.1875 0.6875 C 0.984375 0.6875 0.578125 0.828125 0.578125 1.40625 C 0.578125 2.015625 1.09375 2.4375 1.765625 2.4375 C 2.953125 2.4375 4.171875 1.34375 4.5 0.015625 L 5.671875 -4.640625 C 5.6875 -4.703125 5.703125 -4.78125 5.703125 -4.84375 C 5.703125 -5.03125 5.5625 -5.140625 5.390625 -5.140625 C 5.28125 -5.140625 5.03125 -5.09375 4.9375 -4.734375 L 4.046875 -1.234375 C 3.984375 -1.015625 3.984375 -0.984375 3.890625 -0.859375 C 3.65625 -0.53125 3.265625 -0.125 2.6875 -0.125 C 2.015625 -0.125 1.953125 -0.78125 1.953125 -1.09375 C 1.953125 -1.78125 2.28125 -2.703125 2.609375 -3.5625 C 2.734375 -3.90625 2.8125 -4.078125 2.8125 -4.3125 C 2.8125 -4.8125 2.453125 -5.265625 1.859375 -5.265625 C 0.765625 -5.265625 0.328125 -3.53125 0.328125 -3.4375 C 0.328125 -3.390625 0.375 -3.328125 0.453125 -3.328125 C 0.5625 -3.328125 0.578125 -3.375 0.625 -3.546875 C 0.90625 -4.546875 1.359375 -5.03125 1.828125 -5.03125 C 1.9375 -5.03125 2.140625 -5.03125 2.140625 -4.625 C 2.140625 -4.328125 2 -3.96875 1.828125 -3.515625 C 1.234375 -1.953125 1.234375 -1.5625 1.234375 -1.28125 C 1.234375 -0.140625 2.046875 0.125 2.65625 0.125 C 3 0.125 3.421875 0.015625 3.84375 -0.4375 L 3.859375 -0.421875 C 3.671875 0.28125 3.5625 0.75 3.140625 1.34375 Z M 3.140625 1.34375 "/>
+</symbol>
+<symbol overflow="visible" id="f4_glyph0-4">
+<path style="stroke:none;" d="M 1.515625 -0.96875 C 2.03125 -1.546875 2.453125 -1.921875 3.046875 -2.453125 C 3.765625 -3.078125 4.078125 -3.375 4.234375 -3.5625 C 5.078125 -4.375 5.484375 -5.078125 5.484375 -5.171875 C 5.484375 -5.265625 5.390625 -5.265625 5.375 -5.265625 C 5.28125 -5.265625 5.265625 -5.21875 5.203125 -5.140625 C 4.90625 -4.625 4.625 -4.375 4.3125 -4.375 C 4.0625 -4.375 3.921875 -4.484375 3.703125 -4.765625 C 3.453125 -5.0625 3.25 -5.265625 2.90625 -5.265625 C 2.03125 -5.265625 1.5 -4.171875 1.5 -3.921875 C 1.5 -3.890625 1.515625 -3.8125 1.625 -3.8125 C 1.71875 -3.8125 1.734375 -3.875 1.765625 -3.953125 C 1.96875 -4.421875 2.546875 -4.515625 2.765625 -4.515625 C 3.015625 -4.515625 3.265625 -4.421875 3.515625 -4.328125 C 3.96875 -4.125 4.15625 -4.125 4.28125 -4.125 C 4.359375 -4.125 4.40625 -4.125 4.46875 -4.140625 C 4.078125 -3.671875 3.421875 -3.109375 2.890625 -2.609375 L 1.6875 -1.5 C 0.953125 -0.765625 0.515625 -0.0625 0.515625 0.03125 C 0.515625 0.09375 0.578125 0.125 0.640625 0.125 C 0.71875 0.125 0.734375 0.109375 0.8125 -0.03125 C 1 -0.328125 1.390625 -0.78125 1.828125 -0.78125 C 2.078125 -0.78125 2.203125 -0.6875 2.4375 -0.390625 C 2.65625 -0.125 2.859375 0.125 3.25 0.125 C 4.421875 0.125 5.078125 -1.390625 5.078125 -1.671875 C 5.078125 -1.71875 5.078125 -1.796875 4.953125 -1.796875 C 4.859375 -1.796875 4.84375 -1.75 4.8125 -1.625 C 4.546875 -0.921875 3.84375 -0.625 3.375 -0.625 C 3.125 -0.625 2.890625 -0.71875 2.640625 -0.828125 C 2.15625 -1.015625 2.03125 -1.015625 1.875 -1.015625 C 1.75 -1.015625 1.625 -1.015625 1.515625 -0.96875 Z M 1.515625 -0.96875 "/>
+</symbol>
+</g>
+</defs>
+<g id="f4_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -43.369757 0.00167585 L 43.370129 0.00167585 " transform="matrix(0.998,0,0,-0.998,53.54083,53.58761)"/>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(69.999695%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M -0.00177104 0.00167585 L 21.686136 37.56117 " transform="matrix(0.998,0,0,-0.998,53.54083,53.58761)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 10.84414 0.00167585 C 10.84414 3.872699 8.773592 7.454081 5.423141 9.391549 " transform="matrix(0.998,0,0,-0.998,53.54083,53.58761)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f4_glyph0-1" x="48.914102" y="65.83307"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f4_glyph0-2" x="6.938222" y="49.49581"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f4_glyph0-3" x="93.761228" y="47.176458"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f4_glyph0-4" x="72.202432" y="12.012926"/>
+</g>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 54.808594 53.585938 C 54.808594 52.886719 54.242188 52.320313 53.539063 52.320313 C 52.839844 52.320313 52.273438 52.886719 52.273438 53.585938 C 52.273438 54.289063 52.839844 54.855469 53.539063 54.855469 C 54.242188 54.855469 54.808594 54.289063 54.808594 53.585938 Z M 54.808594 53.585938 "/>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_38" value="A"> <b>A.</b> $120^\circ$</label><label><input type="radio" name="P1_Cau_38" value="B"> <b>B.</b> $30^\circ$</label><label><input type="radio" name="P1_Cau_38" value="C"> <b>C.</b> $180^\circ$</label><label><input type="radio" name="P1_Cau_38" value="D"> <b>D.</b> $60^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat{xOz}$ và $\widehat{zOy}$ kề bù, nên $\widehat{zOy}=180^\circ-120^\circ=60^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 39:</b> Hai góc kề nhau có cặp số đo nào sau đây thì là hai góc kề bù?</div></div><div class="options"><label><input type="radio" name="P1_Cau_39" value="A"> <b>A.</b> $35^\circ$ và $55^\circ$</label><label><input type="radio" name="P1_Cau_39" value="B"> <b>B.</b> $35^\circ$ và $35^\circ$</label><label><input type="radio" name="P1_Cau_39" value="C"> <b>C.</b> $35^\circ$ và $145^\circ$</label><label><input type="radio" name="P1_Cau_39" value="D"> <b>D.</b> $35^\circ$ và $125^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Vì hai góc đã kề nhau, chỉ cần kiểm tra tổng số đo. Ta có $35^\circ+145^\circ=180^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 40:</b> Hai góc $\widehat{aOb}$ và $\widehat{bOc}$ kề bù. Biết $\widehat{aOb}=93^\circ$. Số đo $\widehat{bOc}$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_40" value="A"> <b>A.</b> $87^\circ$</label><label><input type="radio" name="P1_Cau_40" value="B"> <b>B.</b> $93^\circ$</label><label><input type="radio" name="P1_Cau_40" value="C"> <b>C.</b> $3^\circ$</label><label><input type="radio" name="P1_Cau_40" value="D"> <b>D.</b> $177^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat{bOc}=180^\circ-93^\circ=87^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 41:</b> Tia $Ot$ là tia phân giác của $\widehat{xOy}$ khi</div></div><div class="options"><label><input type="radio" name="P1_Cau_41" value="A"> <b>A.</b> chỉ cần $\widehat{xOt}=\widehat{tOy}$</label><label><input type="radio" name="P1_Cau_41" value="B"> <b>B.</b> $Ot$ nằm trong $\widehat{xOy}$ và $\widehat{xOt}=\widehat{tOy}$</label><label><input type="radio" name="P1_Cau_41" value="C"> <b>C.</b> chỉ cần $Ot$ nằm trong $\widehat{xOy}$</label><label><input type="radio" name="P1_Cau_41" value="D"> <b>D.</b> $Ot$ nằm trong $\widehat{xOy}$ và $\widehat{xOt}=2\widehat{tOy}$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Cần đồng thời có hai điều kiện: tia $Ot$ nằm trong góc và tạo với hai cạnh của góc hai góc bằng nhau.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 42:</b> Cho $\widehat{AOB}=86^\circ$ và tia $OM$ là tia phân giác của góc đó. Số đo $\widehat{AOM}$ bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_42" value="A"> <b>A.</b> $43^\circ$</label><label><input type="radio" name="P1_Cau_42" value="B"> <b>B.</b> $86^\circ$</label><label><input type="radio" name="P1_Cau_42" value="C"> <b>C.</b> $172^\circ$</label><label><input type="radio" name="P1_Cau_42" value="D"> <b>D.</b> $47^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat{AOM}=\dfrac{1}{2}\widehat{AOB}=\dfrac{86^\circ}{2}=43^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 43:</b> Tia $Ot$ là tia phân giác của $\widehat{xOy}$. Biết $\widehat{xOt}=32^\circ$. Số đo $\widehat{xOy}$ bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_43" value="A"> <b>A.</b> $16^\circ$</label><label><input type="radio" name="P1_Cau_43" value="B"> <b>B.</b> $32^\circ$</label><label><input type="radio" name="P1_Cau_43" value="C"> <b>C.</b> $64^\circ$</label><label><input type="radio" name="P1_Cau_43" value="D"> <b>D.</b> $148^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat{xOy}=2\widehat{xOt}=2\cdot32^\circ=64^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 44:</b> Tia $OM$ nằm trong $\widehat{AOB}$; $ON$ là tia đối của $OM$. Biết $\widehat{AOM}=\widehat{MOB}=60^\circ$. Tia phân giác của $\widehat{AOB}$ là</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="116.785pt" height="100.179pt" viewBox="0 0 116.785 100.179" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f5_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f5_glyph0-1">
+<path style="stroke:none;" d="M 8.609375 -5.1875 C 8.609375 -7.15625 7.328125 -8.34375 5.671875 -8.34375 C 3.125 -8.34375 0.5625 -5.625 0.5625 -2.875 C 0.5625 -1.015625 1.796875 0.25 3.515625 0.25 C 6.015625 0.25 8.609375 -2.34375 8.609375 -5.1875 Z M 3.59375 -0.03125 C 2.625 -0.03125 1.59375 -0.734375 1.59375 -2.578125 C 1.59375 -3.671875 1.984375 -5.4375 2.953125 -6.625 C 3.8125 -7.65625 4.8125 -8.09375 5.609375 -8.09375 C 6.65625 -8.09375 7.65625 -7.328125 7.65625 -5.625 C 7.65625 -4.5625 7.203125 -2.921875 6.421875 -1.796875 C 5.546875 -0.578125 4.46875 -0.03125 3.59375 -0.03125 Z M 3.59375 -0.03125 "/>
+</symbol>
+<symbol overflow="visible" id="f5_glyph0-2">
+<path style="stroke:none;" d="M 2.015625 -1.3125 C 1.59375 -0.609375 1.203125 -0.375 0.625 -0.34375 C 0.5 -0.328125 0.40625 -0.328125 0.40625 -0.125 C 0.40625 -0.046875 0.46875 0 0.546875 0 C 0.765625 0 1.296875 -0.03125 1.5 -0.03125 C 1.84375 -0.03125 2.234375 0 2.5625 0 C 2.625 0 2.78125 0 2.78125 -0.21875 C 2.78125 -0.328125 2.6875 -0.34375 2.609375 -0.34375 C 2.34375 -0.375 2.109375 -0.46875 2.109375 -0.75 C 2.109375 -0.90625 2.1875 -1.046875 2.34375 -1.296875 L 3.234375 -2.796875 L 6.265625 -2.796875 C 6.28125 -2.6875 6.28125 -2.59375 6.28125 -2.484375 C 6.328125 -2.1875 6.46875 -0.953125 6.46875 -0.71875 C 6.46875 -0.375 5.859375 -0.34375 5.671875 -0.34375 C 5.53125 -0.34375 5.40625 -0.34375 5.40625 -0.125 C 5.40625 0 5.515625 0 5.578125 0 C 5.78125 0 6.03125 -0.03125 6.21875 -0.03125 L 6.90625 -0.03125 C 7.625 -0.03125 8.140625 0 8.15625 0 C 8.25 0 8.375 0 8.375 -0.21875 C 8.375 -0.34375 8.265625 -0.34375 8.09375 -0.34375 C 7.4375 -0.34375 7.421875 -0.453125 7.390625 -0.8125 L 6.671875 -8.203125 C 6.640625 -8.4375 6.59375 -8.46875 6.46875 -8.46875 C 6.34375 -8.46875 6.28125 -8.4375 6.171875 -8.265625 Z M 3.4375 -3.140625 L 5.828125 -7.125 L 6.21875 -3.140625 Z M 3.4375 -3.140625 "/>
+</symbol>
+<symbol overflow="visible" id="f5_glyph0-3">
+<path style="stroke:none;" d="M 4.34375 -7.296875 C 4.453125 -7.734375 4.5 -7.75 4.953125 -7.75 L 6.5 -7.75 C 7.84375 -7.75 7.84375 -6.625 7.84375 -6.515625 C 7.84375 -5.546875 6.875 -4.328125 5.3125 -4.328125 L 3.609375 -4.328125 Z M 6.34375 -4.234375 C 7.640625 -4.46875 8.8125 -5.375 8.8125 -6.46875 C 8.8125 -7.390625 8 -8.09375 6.65625 -8.09375 L 2.84375 -8.09375 C 2.625 -8.09375 2.515625 -8.09375 2.515625 -7.875 C 2.515625 -7.75 2.625 -7.75 2.796875 -7.75 C 3.515625 -7.75 3.515625 -7.65625 3.515625 -7.53125 C 3.515625 -7.5 3.515625 -7.4375 3.46875 -7.265625 L 1.875 -0.875 C 1.765625 -0.46875 1.75 -0.34375 0.90625 -0.34375 C 0.6875 -0.34375 0.5625 -0.34375 0.5625 -0.125 C 0.5625 0 0.640625 0 0.875 0 L 4.953125 0 C 6.765625 0 8.15625 -1.375 8.15625 -2.578125 C 8.15625 -3.546875 7.3125 -4.140625 6.34375 -4.234375 Z M 4.65625 -0.34375 L 3.0625 -0.34375 C 2.890625 -0.34375 2.875 -0.34375 2.796875 -0.359375 C 2.671875 -0.375 2.65625 -0.390625 2.65625 -0.484375 C 2.65625 -0.5625 2.6875 -0.640625 2.703125 -0.75 L 3.53125 -4.09375 L 5.765625 -4.09375 C 7.15625 -4.09375 7.15625 -2.78125 7.15625 -2.6875 C 7.15625 -1.546875 6.125 -0.34375 4.65625 -0.34375 Z M 4.65625 -0.34375 "/>
+</symbol>
+<symbol overflow="visible" id="f5_glyph0-4">
+<path style="stroke:none;" d="M 10.765625 -7.234375 C 10.875 -7.640625 10.90625 -7.75 11.734375 -7.75 C 11.96875 -7.75 12.078125 -7.75 12.078125 -7.984375 C 12.078125 -8.09375 11.984375 -8.09375 11.765625 -8.09375 L 10.34375 -8.09375 C 10.046875 -8.09375 10.03125 -8.09375 9.90625 -7.890625 L 5.578125 -1.0625 L 4.6875 -7.84375 C 4.65625 -8.09375 4.640625 -8.09375 4.328125 -8.09375 L 2.859375 -8.09375 C 2.625 -8.09375 2.53125 -8.09375 2.53125 -7.875 C 2.53125 -7.75 2.625 -7.75 2.8125 -7.75 C 3.53125 -7.75 3.53125 -7.65625 3.53125 -7.53125 C 3.53125 -7.5 3.53125 -7.4375 3.484375 -7.265625 L 1.96875 -1.203125 C 1.828125 -0.640625 1.546875 -0.375 0.765625 -0.34375 C 0.71875 -0.34375 0.578125 -0.328125 0.578125 -0.125 C 0.578125 0 0.6875 0 0.734375 0 C 0.96875 0 1.578125 -0.03125 1.8125 -0.03125 L 2.390625 -0.03125 C 2.546875 -0.03125 2.75 0 2.921875 0 C 3 0 3.125 0 3.125 -0.21875 C 3.125 -0.328125 3.015625 -0.34375 2.96875 -0.34375 C 2.578125 -0.359375 2.1875 -0.421875 2.1875 -0.859375 C 2.1875 -0.96875 2.1875 -0.984375 2.234375 -1.15625 L 3.875 -7.6875 L 3.890625 -7.6875 L 4.875 -0.3125 C 4.90625 -0.03125 4.921875 0 5.03125 0 C 5.15625 0 5.21875 -0.09375 5.28125 -0.203125 L 10.046875 -7.75 L 10.0625 -7.75 L 8.34375 -0.875 C 8.234375 -0.46875 8.203125 -0.34375 7.375 -0.34375 C 7.15625 -0.34375 7.03125 -0.34375 7.03125 -0.125 C 7.03125 0 7.140625 0 7.203125 0 C 7.40625 0 7.65625 -0.03125 7.84375 -0.03125 L 9.25 -0.03125 C 9.453125 -0.03125 9.703125 0 9.90625 0 C 10 0 10.125 0 10.125 -0.21875 C 10.125 -0.34375 10.015625 -0.34375 9.84375 -0.34375 C 9.125 -0.34375 9.125 -0.4375 9.125 -0.5625 C 9.125 -0.5625 9.125 -0.65625 9.140625 -0.75 Z M 10.765625 -7.234375 "/>
+</symbol>
+<symbol overflow="visible" id="f5_glyph0-5">
+<path style="stroke:none;" d="M 8.78125 -6.859375 C 8.90625 -7.359375 9.09375 -7.71875 10 -7.75 C 10.03125 -7.75 10.171875 -7.765625 10.171875 -7.96875 C 10.171875 -8.09375 10.0625 -8.09375 10.015625 -8.09375 C 9.78125 -8.09375 9.171875 -8.078125 8.9375 -8.078125 L 8.375 -8.078125 C 8.203125 -8.078125 8 -8.09375 7.828125 -8.09375 C 7.75 -8.09375 7.609375 -8.09375 7.609375 -7.875 C 7.609375 -7.75 7.703125 -7.75 7.796875 -7.75 C 8.5 -7.734375 8.546875 -7.453125 8.546875 -7.25 C 8.546875 -7.140625 8.53125 -7.109375 8.5 -6.9375 L 7.15625 -1.59375 L 4.625 -7.890625 C 4.546875 -8.09375 4.53125 -8.09375 4.265625 -8.09375 L 2.828125 -8.09375 C 2.578125 -8.09375 2.484375 -8.09375 2.484375 -7.875 C 2.484375 -7.75 2.5625 -7.75 2.78125 -7.75 C 2.84375 -7.75 3.546875 -7.75 3.546875 -7.65625 C 3.546875 -7.625 3.515625 -7.53125 3.515625 -7.5 L 1.9375 -1.203125 C 1.796875 -0.625 1.5 -0.375 0.71875 -0.34375 C 0.671875 -0.34375 0.546875 -0.328125 0.546875 -0.125 C 0.546875 0 0.671875 0 0.703125 0 C 0.9375 0 1.546875 -0.03125 1.78125 -0.03125 L 2.34375 -0.03125 C 2.515625 -0.03125 2.71875 0 2.875 0 C 2.96875 0 3.09375 0 3.09375 -0.21875 C 3.09375 -0.328125 2.984375 -0.34375 2.921875 -0.34375 C 2.53125 -0.359375 2.15625 -0.421875 2.15625 -0.859375 C 2.15625 -0.953125 2.1875 -1.0625 2.203125 -1.15625 L 3.8125 -7.5 C 3.875 -7.375 3.875 -7.359375 3.921875 -7.25 L 6.75 -0.21875 C 6.8125 -0.078125 6.828125 0 6.9375 0 C 7.0625 0 7.0625 -0.03125 7.109375 -0.234375 Z M 8.78125 -6.859375 "/>
+</symbol>
+</g>
+</defs>
+<g id="f5_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 0.00106284 -0.000960503 L 51.025198 -0.000960503 " transform="matrix(0.991871,0,0,-0.991871,45.991133,62.831079)"/>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 0.00106284 -0.000960503 L -25.511005 44.18635 " transform="matrix(0.991871,0,0,-0.991871,45.991133,62.831079)"/>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(69.999695%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 0.00106284 -0.000960503 L 25.513131 44.18635 " transform="matrix(0.991871,0,0,-0.991871,45.991133,62.831079)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(50%,50%,50%);stroke-opacity:1;stroke-dasharray:2.98883,2.98883;stroke-miterlimit:10;" d="M 0.00106284 -0.000960503 L -8.670992 -15.021496 " transform="matrix(0.991871,0,0,-0.991871,45.991133,62.831079)"/>
+<path style="fill-rule:nonzero;fill:rgb(50%,50%,50%);fill-opacity:1;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:miter;stroke:rgb(50%,50%,50%);stroke-opacity:1;stroke-miterlimit:10;" d="M 4.214118 0.00130811 L 0.641627 1.344924 L 1.818041 0.000432124 L 0.6443 -1.345709 Z M 4.214118 0.00130811 " transform="matrix(-0.495916,0.85897,0.85897,0.495916,38.241068,76.254549)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 12.757097 -0.000960503 C 12.757097 4.55561 10.32325 8.769551 6.377111 11.045867 " transform="matrix(0.991871,0,0,-0.991871,45.991133,62.831079)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 7.909095 13.696318 C 3.013834 16.523991 -3.015647 16.523991 -7.906969 13.696318 " transform="matrix(0.991871,0,0,-0.991871,45.991133,62.831079)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f5_glyph0-1" x="50.057806" y="75.000347"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f5_glyph0-2" x="100.666054" y="66.881881"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f5_glyph0-3" x="7.201031" y="14.935598"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f5_glyph0-4" x="75.361434" y="14.935598"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f5_glyph0-5" x="21.266758" y="92.531672"/>
+</g>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 47.324219 62.832031 C 47.324219 62.09375 46.726563 61.496094 45.992188 61.496094 C 45.253906 61.496094 44.65625 62.09375 44.65625 62.832031 C 44.65625 63.566406 45.253906 64.164063 45.992188 64.164063 C 46.726563 64.164063 47.324219 63.566406 47.324219 62.832031 Z M 47.324219 62.832031 "/>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_44" value="A"> <b>A.</b> Tia $OA$</label><label><input type="radio" name="P1_Cau_44" value="B"> <b>B.</b> Tia $OB$</label><label><input type="radio" name="P1_Cau_44" value="C"> <b>C.</b> Tia $OM$</label><label><input type="radio" name="P1_Cau_44" value="D"> <b>D.</b> Tia $ON$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $OM$ nằm trong $\widehat{AOB}$ và tạo với hai cạnh hai góc bằng nhau, nên $OM$ là tia phân giác. Tia $ON$ nằm ngoài góc đó.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 45:</b> Tia $Oz$ là tia phân giác của góc vuông $xOy$. Số đo $\widehat{xOz}$ bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_45" value="A"> <b>A.</b> $90^\circ$</label><label><input type="radio" name="P1_Cau_45" value="B"> <b>B.</b> $45^\circ$</label><label><input type="radio" name="P1_Cau_45" value="C"> <b>C.</b> $180^\circ$</label><label><input type="radio" name="P1_Cau_45" value="D"> <b>D.</b> $135^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Góc vuông bằng $90^\circ$, nên $\widehat{xOz}=\dfrac{90^\circ}{2}=45^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 46:</b> Cho điểm $M$ không thuộc đường thẳng $d$. Có bao nhiêu đường thẳng đi qua $M$ và song song với $d$?</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="112.501pt" height="55.711pt" viewBox="0 0 112.501 55.711" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f6_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f6_glyph0-1">
+<path style="stroke:none;" d="M 5.984375 -7.953125 C 6 -8 6.015625 -8.078125 6.015625 -8.140625 C 6.015625 -8.25 5.890625 -8.25 5.875 -8.25 C 5.859375 -8.25 5.28125 -8.203125 5.21875 -8.1875 C 5.015625 -8.1875 4.84375 -8.15625 4.625 -8.140625 C 4.328125 -8.125 4.25 -8.109375 4.25 -7.890625 C 4.25 -7.78125 4.34375 -7.78125 4.5 -7.78125 C 5.09375 -7.78125 5.09375 -7.671875 5.09375 -7.546875 C 5.09375 -7.484375 5.078125 -7.390625 5.0625 -7.34375 L 4.34375 -4.453125 C 4.203125 -4.765625 3.890625 -5.25 3.265625 -5.25 C 1.921875 -5.25 0.46875 -3.5 0.46875 -1.75 C 0.46875 -0.578125 1.171875 0.125 1.96875 0.125 C 2.625 0.125 3.1875 -0.390625 3.515625 -0.78125 C 3.640625 -0.078125 4.203125 0.125 4.546875 0.125 C 4.90625 0.125 5.203125 -0.09375 5.40625 -0.515625 C 5.59375 -0.921875 5.765625 -1.65625 5.765625 -1.703125 C 5.765625 -1.765625 5.71875 -1.8125 5.640625 -1.8125 C 5.546875 -1.8125 5.53125 -1.75 5.484375 -1.5625 C 5.296875 -0.875 5.078125 -0.125 4.59375 -0.125 C 4.25 -0.125 4.21875 -0.421875 4.21875 -0.671875 C 4.21875 -0.71875 4.21875 -0.96875 4.296875 -1.296875 Z M 3.578125 -1.421875 C 3.515625 -1.21875 3.515625 -1.1875 3.359375 -0.96875 C 3.09375 -0.625 2.5625 -0.125 2.015625 -0.125 C 1.515625 -0.125 1.25 -0.5625 1.25 -1.265625 C 1.25 -1.921875 1.609375 -3.25 1.84375 -3.75 C 2.25 -4.578125 2.8125 -5 3.265625 -5 C 4.0625 -5 4.203125 -4.03125 4.203125 -3.9375 C 4.203125 -3.921875 4.171875 -3.765625 4.15625 -3.75 Z M 3.578125 -1.421875 "/>
+</symbol>
+<symbol overflow="visible" id="f6_glyph0-2">
+<path style="stroke:none;" d="M 10.796875 -7.25 C 10.90625 -7.65625 10.921875 -7.78125 11.765625 -7.78125 C 12 -7.78125 12.109375 -7.78125 12.109375 -8 C 12.109375 -8.125 12.015625 -8.125 11.796875 -8.125 L 10.375 -8.125 C 10.078125 -8.125 10.0625 -8.109375 9.921875 -7.921875 L 5.59375 -1.0625 L 4.703125 -7.859375 C 4.65625 -8.125 4.65625 -8.125 4.34375 -8.125 L 2.859375 -8.125 C 2.640625 -8.125 2.53125 -8.125 2.53125 -7.890625 C 2.53125 -7.78125 2.640625 -7.78125 2.8125 -7.78125 C 3.546875 -7.78125 3.546875 -7.6875 3.546875 -7.546875 C 3.546875 -7.53125 3.546875 -7.453125 3.5 -7.28125 L 1.96875 -1.21875 C 1.828125 -0.640625 1.5625 -0.375 0.765625 -0.34375 C 0.71875 -0.34375 0.578125 -0.328125 0.578125 -0.125 C 0.578125 0 0.6875 0 0.734375 0 C 0.96875 0 1.578125 -0.03125 1.8125 -0.03125 L 2.390625 -0.03125 C 2.5625 -0.03125 2.765625 0 2.921875 0 C 3.015625 0 3.140625 0 3.140625 -0.21875 C 3.140625 -0.328125 3.015625 -0.34375 2.96875 -0.34375 C 2.578125 -0.359375 2.203125 -0.421875 2.203125 -0.859375 C 2.203125 -0.96875 2.203125 -0.984375 2.25 -1.15625 L 3.890625 -7.703125 L 3.90625 -7.703125 L 4.890625 -0.328125 C 4.921875 -0.03125 4.9375 0 5.046875 0 C 5.171875 0 5.234375 -0.09375 5.296875 -0.203125 L 10.078125 -7.765625 L 8.359375 -0.875 C 8.25 -0.46875 8.234375 -0.34375 7.390625 -0.34375 C 7.171875 -0.34375 7.046875 -0.34375 7.046875 -0.125 C 7.046875 0 7.15625 0 7.234375 0 C 7.4375 0 7.671875 -0.03125 7.875 -0.03125 L 9.28125 -0.03125 C 9.484375 -0.03125 9.71875 0 9.921875 0 C 10.03125 0 10.15625 0 10.15625 -0.21875 C 10.15625 -0.34375 10.046875 -0.34375 9.875 -0.34375 C 9.140625 -0.34375 9.140625 -0.4375 9.140625 -0.5625 C 9.140625 -0.578125 9.140625 -0.65625 9.171875 -0.75 Z M 10.796875 -7.25 "/>
+</symbol>
+</g>
+</defs>
+<g id="f6_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:miter;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -45.922452 -0.0019454 L 45.922628 -0.0019454 " transform="matrix(0.994839,0,0,-0.994839,49.095616,44.439471)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f6_glyph0-1" x="99.056445" y="48.570044"/>
+</g>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 40.550781 19.058594 C 40.550781 18.171875 39.832031 17.453125 38.945313 17.453125 C 38.058594 17.453125 37.339844 18.171875 37.339844 19.058594 C 37.339844 19.945313 38.058594 20.664063 38.945313 20.664063 C 39.832031 20.664063 40.550781 19.945313 40.550781 19.058594 Z M 40.550781 19.058594 "/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f6_glyph0-2" x="32.689721" y="14.981285"/>
+</g>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_46" value="A"> <b>A.</b> $0$</label><label><input type="radio" name="P1_Cau_46" value="B"> <b>B.</b> $2$</label><label><input type="radio" name="P1_Cau_46" value="C"> <b>C.</b> Vô số</label><label><input type="radio" name="P1_Cau_46" value="D"> <b>D.</b> $1$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Theo tiên đề Euclid, qua điểm $M$ ở ngoài $d$, chỉ có một đường thẳng song song với $d$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 47:</b> Phát biểu nào sau đây đúng với tiên đề Euclid?</div></div><div class="options"><label><input type="radio" name="P1_Cau_47" value="A"> <b>A.</b> Qua một điểm ở ngoài một đường thẳng, có hai đường thẳng song song với đường thẳng đó</label><label><input type="radio" name="P1_Cau_47" value="B"> <b>B.</b> Qua một điểm thuộc một đường thẳng, có một đường thẳng song song với đường thẳng đó</label><label><input type="radio" name="P1_Cau_47" value="C"> <b>C.</b> Qua một điểm ở ngoài một đường thẳng, chỉ có một đường thẳng song song với đường thẳng đó</label><label><input type="radio" name="P1_Cau_47" value="D"> <b>D.</b> Qua một điểm ở ngoài một đường thẳng, có vô số đường thẳng song song với đường thẳng đó</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tiên đề Euclid khẳng định sự tồn tại và tính duy nhất của đường thẳng song song đi qua một điểm ở ngoài đường thẳng đã cho.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 48:</b> Cho $P\notin d$. Hai đường thẳng $a$, $b$ đều đi qua $P$ và đều song song với $d$. Kết luận nào đúng?</div></div><div class="options"><label><input type="radio" name="P1_Cau_48" value="A"> <b>A.</b> $a$ và $b$ trùng nhau</label><label><input type="radio" name="P1_Cau_48" value="B"> <b>B.</b> $a\perp b$</label><label><input type="radio" name="P1_Cau_48" value="C"> <b>C.</b> $a$ và $b$ là hai đường thẳng song song phân biệt</label><label><input type="radio" name="P1_Cau_48" value="D"> <b>D.</b> Một trong hai đường thẳng $a$, $b$ cắt $d$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Qua $P$ chỉ có một đường thẳng song song với $d$. Vì vậy $a$ và $b$ phải trùng nhau.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 49:</b> Cho $a\parallel b$. Hai góc được đánh dấu trong hình ở vị trí đồng vị. Số đo góc $x$ bằng</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="104.909pt" height="73.452pt" viewBox="0 0 104.909 73.452" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f7_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph0-1">
+<path style="stroke:none;" d="M 3.5625 -1.40625 C 3.515625 -1.203125 3.515625 -1.1875 3.34375 -0.953125 C 3.078125 -0.625 2.5625 -0.125 2 -0.125 C 1.515625 -0.125 1.25 -0.5625 1.25 -1.25 C 1.25 -1.90625 1.609375 -3.234375 1.84375 -3.734375 C 2.234375 -4.5625 2.796875 -5 3.265625 -5 C 4.046875 -5 4.203125 -4.015625 4.203125 -3.921875 C 4.203125 -3.90625 4.15625 -3.765625 4.15625 -3.734375 Z M 4.328125 -4.453125 C 4.203125 -4.75 3.875 -5.234375 3.265625 -5.234375 C 1.921875 -5.234375 0.46875 -3.5 0.46875 -1.75 C 0.46875 -0.5625 1.15625 0.125 1.96875 0.125 C 2.625 0.125 3.171875 -0.390625 3.515625 -0.78125 C 3.625 -0.078125 4.1875 0.125 4.546875 0.125 C 4.890625 0.125 5.1875 -0.09375 5.390625 -0.515625 C 5.578125 -0.921875 5.75 -1.65625 5.75 -1.703125 C 5.75 -1.75 5.703125 -1.796875 5.640625 -1.796875 C 5.53125 -1.796875 5.515625 -1.75 5.46875 -1.5625 C 5.296875 -0.859375 5.0625 -0.125 4.578125 -0.125 C 4.234375 -0.125 4.203125 -0.421875 4.203125 -0.671875 C 4.203125 -0.9375 4.25 -1.0625 4.359375 -1.53125 C 4.4375 -1.828125 4.5 -2.09375 4.59375 -2.4375 C 5.03125 -4.203125 5.140625 -4.640625 5.140625 -4.703125 C 5.140625 -4.875 5 -5 4.828125 -5 C 4.453125 -5 4.359375 -4.59375 4.328125 -4.453125 Z M 4.328125 -4.453125 "/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph0-2">
+<path style="stroke:none;" d="M 2.734375 -7.9375 C 2.75 -7.984375 2.78125 -8.046875 2.78125 -8.109375 C 2.78125 -8.234375 2.65625 -8.234375 2.625 -8.234375 C 2.625 -8.234375 2.1875 -8.1875 1.984375 -8.171875 C 1.78125 -8.15625 1.59375 -8.140625 1.390625 -8.125 C 1.109375 -8.09375 1.015625 -8.09375 1.015625 -7.875 C 1.015625 -7.75 1.140625 -7.75 1.25 -7.75 C 1.859375 -7.75 1.859375 -7.65625 1.859375 -7.53125 C 1.859375 -7.453125 1.765625 -7.109375 1.71875 -6.890625 L 1.4375 -5.75 C 1.3125 -5.28125 0.640625 -2.578125 0.59375 -2.375 C 0.53125 -2.078125 0.53125 -1.875 0.53125 -1.71875 C 0.53125 -0.515625 1.203125 0.125 1.984375 0.125 C 3.359375 0.125 4.78125 -1.65625 4.78125 -3.375 C 4.78125 -4.453125 4.15625 -5.234375 3.265625 -5.234375 C 2.65625 -5.234375 2.09375 -4.71875 1.875 -4.484375 Z M 2 -0.125 C 1.609375 -0.125 1.203125 -0.40625 1.203125 -1.328125 C 1.203125 -1.71875 1.234375 -1.9375 1.453125 -2.78125 C 1.484375 -2.921875 1.671875 -3.6875 1.71875 -3.84375 C 1.75 -3.9375 2.4375 -5 3.25 -5 C 3.765625 -5 4.015625 -4.46875 4.015625 -3.859375 C 4.015625 -3.28125 3.671875 -1.9375 3.375 -1.328125 C 3.078125 -0.6875 2.53125 -0.125 2 -0.125 Z M 2 -0.125 "/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph0-3">
+<path style="stroke:none;" d="M 5.625 -4.84375 C 5.234375 -4.765625 5.09375 -4.484375 5.09375 -4.25 C 5.09375 -3.96875 5.328125 -3.875 5.484375 -3.875 C 5.84375 -3.875 6.09375 -4.1875 6.09375 -4.5 C 6.09375 -5 5.53125 -5.234375 5.03125 -5.234375 C 4.3125 -5.234375 3.90625 -4.515625 3.796875 -4.296875 C 3.515625 -5.1875 2.78125 -5.234375 2.578125 -5.234375 C 1.359375 -5.234375 0.71875 -3.671875 0.71875 -3.421875 C 0.71875 -3.375 0.765625 -3.3125 0.859375 -3.3125 C 0.953125 -3.3125 0.96875 -3.375 1 -3.421875 C 1.40625 -4.75 2.1875 -5 2.53125 -5 C 3.078125 -5 3.171875 -4.5 3.171875 -4.203125 C 3.171875 -3.953125 3.109375 -3.671875 2.96875 -3.109375 L 2.5625 -1.484375 C 2.390625 -0.765625 2.046875 -0.125 1.40625 -0.125 C 1.359375 -0.125 1.0625 -0.125 0.8125 -0.265625 C 1.234375 -0.359375 1.328125 -0.71875 1.328125 -0.859375 C 1.328125 -1.09375 1.15625 -1.234375 0.921875 -1.234375 C 0.640625 -1.234375 0.328125 -0.984375 0.328125 -0.609375 C 0.328125 -0.109375 0.890625 0.125 1.40625 0.125 C 1.96875 0.125 2.375 -0.328125 2.625 -0.8125 C 2.8125 -0.125 3.40625 0.125 3.84375 0.125 C 5.046875 0.125 5.6875 -1.4375 5.6875 -1.703125 C 5.6875 -1.75 5.640625 -1.796875 5.578125 -1.796875 C 5.46875 -1.796875 5.453125 -1.75 5.421875 -1.65625 C 5.09375 -0.609375 4.40625 -0.125 3.875 -0.125 C 3.46875 -0.125 3.234375 -0.421875 3.234375 -0.90625 C 3.234375 -1.171875 3.28125 -1.359375 3.46875 -2.140625 L 3.890625 -3.765625 C 4.0625 -4.46875 4.46875 -5 5.015625 -5 C 5.046875 -5 5.375 -5 5.625 -4.84375 Z M 5.625 -4.84375 "/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph0-4">
+<path style="stroke:none;" d="M 2.015625 -1.3125 C 1.59375 -0.609375 1.203125 -0.375 0.625 -0.34375 C 0.5 -0.328125 0.40625 -0.328125 0.40625 -0.125 C 0.40625 -0.046875 0.46875 0 0.546875 0 C 0.765625 0 1.296875 -0.03125 1.5 -0.03125 C 1.84375 -0.03125 2.234375 0 2.5625 0 C 2.625 0 2.78125 0 2.78125 -0.21875 C 2.78125 -0.328125 2.6875 -0.34375 2.609375 -0.34375 C 2.34375 -0.375 2.109375 -0.46875 2.109375 -0.75 C 2.109375 -0.90625 2.1875 -1.046875 2.34375 -1.296875 L 3.234375 -2.796875 L 6.265625 -2.796875 C 6.28125 -2.6875 6.28125 -2.59375 6.28125 -2.484375 C 6.328125 -2.1875 6.46875 -0.953125 6.46875 -0.71875 C 6.46875 -0.375 5.859375 -0.34375 5.671875 -0.34375 C 5.53125 -0.34375 5.40625 -0.34375 5.40625 -0.125 C 5.40625 0 5.515625 0 5.578125 0 C 5.78125 0 6.03125 -0.03125 6.21875 -0.03125 L 6.90625 -0.03125 C 7.625 -0.03125 8.140625 0 8.15625 0 C 8.25 0 8.375 0 8.375 -0.21875 C 8.375 -0.34375 8.265625 -0.34375 8.09375 -0.34375 C 7.4375 -0.34375 7.421875 -0.453125 7.390625 -0.8125 L 6.671875 -8.203125 C 6.640625 -8.4375 6.59375 -8.46875 6.46875 -8.46875 C 6.34375 -8.46875 6.28125 -8.4375 6.171875 -8.265625 Z M 3.4375 -3.140625 L 5.828125 -7.125 L 6.21875 -3.140625 Z M 3.4375 -3.140625 "/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph0-5">
+<path style="stroke:none;" d="M 4.34375 -7.296875 C 4.453125 -7.734375 4.5 -7.75 4.953125 -7.75 L 6.5 -7.75 C 7.84375 -7.75 7.84375 -6.625 7.84375 -6.515625 C 7.84375 -5.546875 6.875 -4.328125 5.3125 -4.328125 L 3.609375 -4.328125 Z M 6.34375 -4.234375 C 7.640625 -4.46875 8.8125 -5.375 8.8125 -6.46875 C 8.8125 -7.390625 8 -8.09375 6.65625 -8.09375 L 2.84375 -8.09375 C 2.625 -8.09375 2.515625 -8.09375 2.515625 -7.875 C 2.515625 -7.75 2.625 -7.75 2.796875 -7.75 C 3.515625 -7.75 3.515625 -7.65625 3.515625 -7.53125 C 3.515625 -7.5 3.515625 -7.4375 3.46875 -7.265625 L 1.875 -0.875 C 1.765625 -0.46875 1.75 -0.34375 0.90625 -0.34375 C 0.6875 -0.34375 0.5625 -0.34375 0.5625 -0.125 C 0.5625 0 0.640625 0 0.875 0 L 4.953125 0 C 6.765625 0 8.15625 -1.375 8.15625 -2.578125 C 8.15625 -3.546875 7.3125 -4.140625 6.34375 -4.234375 Z M 4.65625 -0.34375 L 3.0625 -0.34375 C 2.890625 -0.34375 2.875 -0.34375 2.796875 -0.359375 C 2.671875 -0.375 2.65625 -0.390625 2.65625 -0.484375 C 2.65625 -0.5625 2.6875 -0.640625 2.703125 -0.75 L 3.53125 -4.09375 L 5.765625 -4.09375 C 7.15625 -4.09375 7.15625 -2.78125 7.15625 -2.6875 C 7.15625 -1.546875 6.125 -0.34375 4.65625 -0.34375 Z M 4.65625 -0.34375 "/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph1-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph1-1">
+<path style="stroke:none;" d="M 1.453125 -4.125 C 1.453125 -7.125 2.921875 -7.609375 3.5625 -7.609375 C 3.984375 -7.609375 4.40625 -7.46875 4.640625 -7.109375 C 4.5 -7.109375 4.046875 -7.109375 4.046875 -6.625 C 4.046875 -6.375 4.21875 -6.140625 4.53125 -6.140625 C 4.828125 -6.140625 5.03125 -6.328125 5.03125 -6.671875 C 5.03125 -7.28125 4.578125 -7.890625 3.546875 -7.890625 C 2.046875 -7.890625 0.484375 -6.359375 0.484375 -3.75 C 0.484375 -0.484375 1.90625 0.25 2.921875 0.25 C 4.203125 0.25 5.3125 -0.875 5.3125 -2.421875 C 5.3125 -4 4.203125 -5.046875 3.03125 -5.046875 C 1.96875 -5.046875 1.578125 -4.140625 1.453125 -3.8125 Z M 2.921875 -0.078125 C 2.171875 -0.078125 1.8125 -0.734375 1.703125 -0.984375 C 1.59375 -1.296875 1.484375 -1.875 1.484375 -2.703125 C 1.484375 -3.640625 1.90625 -4.8125 2.984375 -4.8125 C 3.625 -4.8125 3.96875 -4.375 4.15625 -3.96875 C 4.34375 -3.53125 4.34375 -2.9375 4.34375 -2.4375 C 4.34375 -1.828125 4.34375 -1.296875 4.109375 -0.84375 C 3.8125 -0.265625 3.390625 -0.078125 2.921875 -0.078125 Z M 2.921875 -0.078125 "/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph1-2">
+<path style="stroke:none;" d="M 5.3125 -3.796875 C 5.3125 -4.78125 5.25 -5.734375 4.828125 -6.640625 C 4.34375 -7.625 3.484375 -7.890625 2.90625 -7.890625 C 2.21875 -7.890625 1.375 -7.546875 0.9375 -6.5625 C 0.609375 -5.8125 0.484375 -5.078125 0.484375 -3.796875 C 0.484375 -2.640625 0.5625 -1.78125 1 -0.9375 C 1.453125 -0.03125 2.28125 0.25 2.890625 0.25 C 3.921875 0.25 4.515625 -0.375 4.859375 -1.0625 C 5.296875 -1.9375 5.3125 -3.109375 5.3125 -3.796875 Z M 2.890625 0.015625 C 2.515625 0.015625 1.75 -0.203125 1.515625 -1.5 C 1.390625 -2.203125 1.390625 -3.109375 1.390625 -3.9375 C 1.390625 -4.90625 1.390625 -5.78125 1.578125 -6.484375 C 1.78125 -7.28125 2.390625 -7.65625 2.890625 -7.65625 C 3.34375 -7.65625 4.03125 -7.375 4.25 -6.359375 C 4.40625 -5.6875 4.40625 -4.75 4.40625 -3.9375 C 4.40625 -3.140625 4.40625 -2.234375 4.28125 -1.515625 C 4.0625 -0.21875 3.3125 0.015625 2.890625 0.015625 Z M 2.890625 0.015625 "/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph2-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f7_glyph2-1">
+<path style="stroke:none;" d="M 3.71875 -1.96875 C 3.71875 -2.890625 3 -3.609375 2.09375 -3.609375 C 1.1875 -3.609375 0.46875 -2.890625 0.46875 -1.96875 C 0.46875 -1.0625 1.1875 -0.34375 2.09375 -0.34375 C 3 -0.34375 3.71875 -1.0625 3.71875 -1.96875 Z M 2.09375 -0.703125 C 1.390625 -0.703125 0.828125 -1.265625 0.828125 -1.96875 C 0.828125 -2.6875 1.390625 -3.25 2.09375 -3.25 C 2.796875 -3.25 3.359375 -2.6875 3.359375 -1.96875 C 3.359375 -1.265625 2.796875 -0.703125 2.09375 -0.703125 Z M 2.09375 -0.703125 "/>
+</symbol>
+</g>
+</defs>
+<g id="f7_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -40.821092 33.1675 L 43.368774 33.1675 " transform="matrix(0.992595,0,0,-0.992595,44.22192,53.085944)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f7_glyph0-1" x="91.537912" y="22.721483"/>
+</g>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -40.821092 0.00000665741 L 43.368774 0.00000665741 " transform="matrix(0.992595,0,0,-0.992595,44.22192,53.085944)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f7_glyph0-2" x="91.537912" y="57.206204"/>
+</g>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(69.999695%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M -28.700081 -16.58374 L 9.567682 49.747312 " transform="matrix(0.992595,0,0,-0.992595,44.22192,53.085944)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 10.205216 33.1675 C 10.205216 36.811674 8.257196 40.180371 5.101011 42.002458 " transform="matrix(0.992595,0,0,-0.992595,44.22192,53.085944)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f7_glyph1-1" x="51.510543" y="14.756904"/>
+  <use xlink:href="#f7_glyph1-2" x="57.320463" y="14.756904"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f7_glyph2-1" x="63.129855" y="10.450036"/>
+</g>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M -8.928666 0.00000665741 C -8.928666 3.644181 -10.876685 7.016813 -14.032871 8.8389 " transform="matrix(0.992595,0,0,-0.992595,44.22192,53.085944)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f7_glyph0-3" x="37.121891" y="46.524894"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f7_glyph0-4" x="48.291558" y="32.34568"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f7_glyph0-5" x="29.299253" y="65.26508"/>
+</g>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_49" value="A"> <b>A.</b> $120^\circ$</label><label><input type="radio" name="P1_Cau_49" value="B"> <b>B.</b> $30^\circ$</label><label><input type="radio" name="P1_Cau_49" value="C"> <b>C.</b> $180^\circ$</label><label><input type="radio" name="P1_Cau_49" value="D"> <b>D.</b> $60^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Một đường thẳng cắt hai đường thẳng song song tạo ra hai góc đồng vị bằng nhau, nên $x=60^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 50:</b> Hai đường thẳng phân biệt $a$, $b$ cùng vuông góc với đường thẳng $c$ như hình. Kết luận nào đúng?</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="93.004pt" height="78.754pt" viewBox="0 0 93.004 78.754" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f8_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f8_glyph0-1">
+<path style="stroke:none;" d="M 3.5625 -1.40625 C 3.5 -1.203125 3.5 -1.1875 3.328125 -0.953125 C 3.078125 -0.625 2.5625 -0.125 2 -0.125 C 1.515625 -0.125 1.234375 -0.5625 1.234375 -1.25 C 1.234375 -1.90625 1.609375 -3.234375 1.828125 -3.71875 C 2.234375 -4.546875 2.796875 -4.984375 3.25 -4.984375 C 4.03125 -4.984375 4.1875 -4.015625 4.1875 -3.921875 C 4.1875 -3.90625 4.15625 -3.75 4.140625 -3.71875 Z M 4.3125 -4.4375 C 4.1875 -4.75 3.875 -5.21875 3.25 -5.21875 C 1.921875 -5.21875 0.46875 -3.484375 0.46875 -1.734375 C 0.46875 -0.5625 1.15625 0.125 1.96875 0.125 C 2.609375 0.125 3.171875 -0.390625 3.5 -0.78125 C 3.625 -0.078125 4.171875 0.125 4.53125 0.125 C 4.890625 0.125 5.171875 -0.09375 5.375 -0.515625 C 5.578125 -0.921875 5.734375 -1.640625 5.734375 -1.6875 C 5.734375 -1.75 5.6875 -1.796875 5.625 -1.796875 C 5.515625 -1.796875 5.5 -1.734375 5.453125 -1.5625 C 5.28125 -0.859375 5.046875 -0.125 4.5625 -0.125 C 4.21875 -0.125 4.203125 -0.421875 4.203125 -0.65625 C 4.203125 -0.9375 4.234375 -1.0625 4.34375 -1.53125 C 4.421875 -1.828125 4.484375 -2.078125 4.578125 -2.421875 C 5.015625 -4.203125 5.125 -4.625 5.125 -4.703125 C 5.125 -4.859375 4.984375 -4.984375 4.8125 -4.984375 C 4.4375 -4.984375 4.34375 -4.578125 4.3125 -4.4375 Z M 4.3125 -4.4375 "/>
+</symbol>
+<symbol overflow="visible" id="f8_glyph0-2">
+<path style="stroke:none;" d="M 2.734375 -7.90625 C 2.75 -7.953125 2.765625 -8.03125 2.765625 -8.09375 C 2.765625 -8.203125 2.65625 -8.203125 2.625 -8.203125 C 2.609375 -8.203125 2.1875 -8.171875 1.96875 -8.15625 C 1.78125 -8.140625 1.59375 -8.109375 1.390625 -8.109375 C 1.09375 -8.078125 1.015625 -8.0625 1.015625 -7.859375 C 1.015625 -7.734375 1.140625 -7.734375 1.25 -7.734375 C 1.859375 -7.734375 1.859375 -7.625 1.859375 -7.515625 C 1.859375 -7.421875 1.765625 -7.078125 1.71875 -6.875 L 1.4375 -5.734375 C 1.3125 -5.265625 0.640625 -2.578125 0.59375 -2.359375 C 0.53125 -2.0625 0.53125 -1.875 0.53125 -1.71875 C 0.53125 -0.515625 1.203125 0.125 1.96875 0.125 C 3.34375 0.125 4.765625 -1.640625 4.765625 -3.359375 C 4.765625 -4.453125 4.15625 -5.21875 3.265625 -5.21875 C 2.65625 -5.21875 2.09375 -4.703125 1.875 -4.46875 Z M 1.984375 -0.125 C 1.609375 -0.125 1.1875 -0.40625 1.1875 -1.328125 C 1.1875 -1.71875 1.234375 -1.9375 1.4375 -2.765625 C 1.484375 -2.921875 1.671875 -3.671875 1.71875 -3.828125 C 1.734375 -3.921875 2.4375 -4.984375 3.234375 -4.984375 C 3.765625 -4.984375 4 -4.453125 4 -3.84375 C 4 -3.28125 3.671875 -1.9375 3.375 -1.328125 C 3.078125 -0.6875 2.53125 -0.125 1.984375 -0.125 Z M 1.984375 -0.125 "/>
+</symbol>
+<symbol overflow="visible" id="f8_glyph0-3">
+<path style="stroke:none;" d="M 4.625 -4.453125 C 4.40625 -4.453125 4.296875 -4.453125 4.125 -4.3125 C 4.0625 -4.25 3.921875 -4.0625 3.921875 -3.875 C 3.921875 -3.640625 4.109375 -3.5 4.328125 -3.5 C 4.609375 -3.5 4.9375 -3.734375 4.9375 -4.203125 C 4.9375 -4.78125 4.390625 -5.21875 3.578125 -5.21875 C 2.015625 -5.21875 0.46875 -3.53125 0.46875 -1.84375 C 0.46875 -0.8125 1.109375 0.125 2.3125 0.125 C 3.921875 0.125 4.9375 -1.140625 4.9375 -1.296875 C 4.9375 -1.359375 4.875 -1.421875 4.828125 -1.421875 C 4.796875 -1.421875 4.78125 -1.40625 4.671875 -1.296875 C 3.921875 -0.296875 2.796875 -0.125 2.34375 -0.125 C 1.53125 -0.125 1.265625 -0.828125 1.265625 -1.421875 C 1.265625 -1.828125 1.46875 -2.984375 1.890625 -3.78125 C 2.203125 -4.34375 2.84375 -4.984375 3.578125 -4.984375 C 3.734375 -4.984375 4.390625 -4.953125 4.625 -4.453125 Z M 4.625 -4.453125 "/>
+</symbol>
+</g>
+</defs>
+<g id="f8_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -36.141545 31.323214 L 36.139956 31.323214 " transform="matrix(0.989404,0,0,-0.989404,39.110161,64.135852)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f8_glyph0-1" x="79.122658" y="35.691469"/>
+</g>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M -36.141545 -0.000875946 L 36.139956 -0.000875946 " transform="matrix(0.989404,0,0,-0.989404,39.110161,64.135852)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f8_glyph0-2" x="79.122658" y="68.242869"/>
+</g>
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(69.999695%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M -16.867004 -10.842312 L -16.867004 48.189424 " transform="matrix(0.989404,0,0,-0.989404,39.110161,64.135852)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f8_glyph0-3" x="19.930559" y="12.204991"/>
+</g>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M -10.889607 31.323214 L -10.889607 37.300611 L -16.867004 37.300611 " transform="matrix(0.989404,0,0,-0.989404,39.110161,64.135852)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M -10.889607 -0.000875946 L -10.889607 5.976522 L -16.867004 5.976522 " transform="matrix(0.989404,0,0,-0.989404,39.110161,64.135852)"/>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_50" value="A"> <b>A.</b> $a\perp b$</label><label><input type="radio" name="P1_Cau_50" value="B"> <b>B.</b> $a$ và $b$ cắt nhau</label><label><input type="radio" name="P1_Cau_50" value="C"> <b>C.</b> $a$ và $b$ trùng nhau</label><label><input type="radio" name="P1_Cau_50" value="D"> <b>D.</b> $a\parallel b$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hai đường thẳng phân biệt cùng vuông góc với một đường thẳng thứ ba thì song song với nhau, nên $a\parallel b$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 51:</b> Định lí là</div></div><div class="options"><label><input type="radio" name="P1_Cau_51" value="A"> <b>A.</b> một khẳng định được suy ra từ những khẳng định được coi là đúng bằng suy luận</label><label><input type="radio" name="P1_Cau_51" value="B"> <b>B.</b> một dự đoán có được chỉ từ một hình vẽ</label><label><input type="radio" name="P1_Cau_51" value="C"> <b>C.</b> một khẳng định đúng vì đã đo được trên một hình</label><label><input type="radio" name="P1_Cau_51" value="D"> <b>D.</b> một quy ước dùng để đặt tên cho một đối tượng</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Định lí được hình thành bằng suy luận từ những khẳng định được coi là đúng; không chỉ dựa vào hình vẽ hoặc một phép đo.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 52:</b> Trong định lí “Nếu hai góc đối đỉnh thì hai góc đó bằng nhau”, giả thiết là</div></div><div class="options"><label><input type="radio" name="P1_Cau_52" value="A"> <b>A.</b> Hai góc bằng nhau</label><label><input type="radio" name="P1_Cau_52" value="B"> <b>B.</b> Hai góc đối đỉnh</label><label><input type="radio" name="P1_Cau_52" value="C"> <b>C.</b> Hai góc có tổng số đo bằng $180^\circ$</label><label><input type="radio" name="P1_Cau_52" value="D"> <b>D.</b> Hai góc có số đo bằng $90^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Phần điều kiện sau “nếu” là giả thiết: hai góc đối đỉnh. Phần sau “thì” là kết luận: hai góc bằng nhau.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 53:</b> Xét định lí: “Nếu $a$, $b$ là hai đường thẳng phân biệt cùng vuông góc với đường thẳng $c$ thì $a$ song song với $b$”. Kết luận của định lí là</div></div><div class="options"><label><input type="radio" name="P1_Cau_53" value="A"> <b>A.</b> $a\parallel b$</label><label><input type="radio" name="P1_Cau_53" value="B"> <b>B.</b> $a\perp c$ và $b\perp c$</label><label><input type="radio" name="P1_Cau_53" value="C"> <b>C.</b> $a\perp b$</label><label><input type="radio" name="P1_Cau_53" value="D"> <b>D.</b> $a$ và $b$ phân biệt</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Kết luận là điều sau từ “thì”: $a\parallel b$. Các điều kiện $a$, $b$ phân biệt, $a\perp c$, $b\perp c$ thuộc giả thiết.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 54:</b> Cách nào sau đây được dùng để chứng minh một định lí?</div></div><div class="options"><label><input type="radio" name="P1_Cau_54" value="A"> <b>A.</b> Chỉ đo thật chính xác trên một hình vẽ</label><label><input type="radio" name="P1_Cau_54" value="B"> <b>B.</b> Chỉ kiểm tra một số hình rồi khẳng định mọi trường hợp đều đúng</label><label><input type="radio" name="P1_Cau_54" value="C"> <b>C.</b> Lập luận từ giả thiết đến kết luận dựa trên các kiến thức đã biết</label><label><input type="radio" name="P1_Cau_54" value="D"> <b>D.</b> Chỉ quan sát thấy hình vẽ phù hợp với kết luận</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Chứng minh phải có lập luận áp dụng cho mọi trường hợp thỏa mãn giả thiết. Một số kết quả đo hoặc quan sát chưa bảo đảm điều đó.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 55:</b> Khẳng định nào sau đây là một định lí đúng?</div></div><div class="options"><label><input type="radio" name="P1_Cau_55" value="A"> <b>A.</b> Hai góc bằng nhau thì đối đỉnh</label><label><input type="radio" name="P1_Cau_55" value="B"> <b>B.</b> Hai góc kề bù thì bằng nhau</label><label><input type="radio" name="P1_Cau_55" value="C"> <b>C.</b> Qua một điểm ở ngoài một đường thẳng có hai đường thẳng song song với đường thẳng đó</label><label><input type="radio" name="P1_Cau_55" value="D"> <b>D.</b> Hai góc đối đỉnh thì bằng nhau</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hai góc đối đỉnh thì bằng nhau là định lí đã học. Hai góc bằng nhau chưa chắc đối đỉnh; hai góc kề bù chỉ cần có tổng $180^\circ$; tiên đề Euclid khẳng định tính duy nhất.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 56:</b> Tổng số đo ba góc trong một tam giác bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_56" value="A"> <b>A.</b> $90^\circ$</label><label><input type="radio" name="P1_Cau_56" value="B"> <b>B.</b> $180^\circ$</label><label><input type="radio" name="P1_Cau_56" value="C"> <b>C.</b> $360^\circ$</label><label><input type="radio" name="P1_Cau_56" value="D"> <b>D.</b> $100^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Theo định lí tổng các góc trong một tam giác, tổng ba góc bằng $180^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 57:</b> Tam giác $ABC$ có $\widehat{B}=60^\circ$, $\widehat{C}=50^\circ$ như hình. Số đo $\widehat{A}$ bằng</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="109.59pt" height="86.948pt" viewBox="0 0 109.59 86.948" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f9_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph0-1">
+<path style="stroke:none;" d="M 1.46875 -4.140625 C 1.46875 -7.15625 2.921875 -7.625 3.578125 -7.625 C 4 -7.625 4.421875 -7.5 4.65625 -7.140625 C 4.515625 -7.140625 4.0625 -7.140625 4.0625 -6.65625 C 4.0625 -6.390625 4.234375 -6.171875 4.546875 -6.171875 C 4.84375 -6.171875 5.046875 -6.34375 5.046875 -6.6875 C 5.046875 -7.3125 4.59375 -7.921875 3.5625 -7.921875 C 2.0625 -7.921875 0.484375 -6.375 0.484375 -3.765625 C 0.484375 -0.484375 1.921875 0.25 2.921875 0.25 C 4.234375 0.25 5.328125 -0.875 5.328125 -2.421875 C 5.328125 -4.015625 4.234375 -5.078125 3.03125 -5.078125 C 1.96875 -5.078125 1.578125 -4.15625 1.46875 -3.828125 Z M 2.921875 -0.078125 C 2.171875 -0.078125 1.828125 -0.734375 1.71875 -0.984375 C 1.609375 -1.296875 1.484375 -1.875 1.484375 -2.71875 C 1.484375 -3.65625 1.921875 -4.828125 2.984375 -4.828125 C 3.640625 -4.828125 3.984375 -4.390625 4.171875 -3.984375 C 4.359375 -3.546875 4.359375 -2.953125 4.359375 -2.4375 C 4.359375 -1.828125 4.359375 -1.296875 4.125 -0.84375 C 3.828125 -0.28125 3.40625 -0.078125 2.921875 -0.078125 Z M 2.921875 -0.078125 "/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph0-2">
+<path style="stroke:none;" d="M 5.328125 -3.8125 C 5.328125 -4.796875 5.28125 -5.765625 4.84375 -6.671875 C 4.359375 -7.65625 3.5 -7.921875 2.921875 -7.921875 C 2.21875 -7.921875 1.375 -7.578125 0.9375 -6.578125 C 0.609375 -5.828125 0.484375 -5.09375 0.484375 -3.8125 C 0.484375 -2.65625 0.578125 -1.78125 1 -0.9375 C 1.46875 -0.03125 2.28125 0.25 2.90625 0.25 C 3.9375 0.25 4.53125 -0.375 4.875 -1.0625 C 5.3125 -1.953125 5.328125 -3.125 5.328125 -3.8125 Z M 2.90625 0.015625 C 2.53125 0.015625 1.75 -0.203125 1.53125 -1.5 C 1.390625 -2.21875 1.390625 -3.125 1.390625 -3.953125 C 1.390625 -4.921875 1.390625 -5.8125 1.578125 -6.515625 C 1.78125 -7.3125 2.390625 -7.671875 2.90625 -7.671875 C 3.359375 -7.671875 4.046875 -7.40625 4.28125 -6.375 C 4.421875 -5.703125 4.421875 -4.765625 4.421875 -3.953125 C 4.421875 -3.15625 4.421875 -2.25 4.296875 -1.53125 C 4.078125 -0.21875 3.328125 0.015625 2.90625 0.015625 Z M 2.90625 0.015625 "/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph0-3">
+<path style="stroke:none;" d="M 1.53125 -6.828125 C 2.03125 -6.65625 2.453125 -6.640625 2.578125 -6.640625 C 3.921875 -6.640625 4.78125 -7.625 4.78125 -7.796875 C 4.78125 -7.84375 4.765625 -7.90625 4.6875 -7.90625 C 4.671875 -7.90625 4.640625 -7.90625 4.53125 -7.859375 C 3.875 -7.578125 3.296875 -7.53125 2.984375 -7.53125 C 2.203125 -7.53125 1.640625 -7.78125 1.421875 -7.875 C 1.328125 -7.90625 1.3125 -7.90625 1.296875 -7.90625 C 1.203125 -7.90625 1.203125 -7.828125 1.203125 -7.640625 L 1.203125 -4.109375 C 1.203125 -3.890625 1.203125 -3.828125 1.34375 -3.828125 C 1.40625 -3.828125 1.421875 -3.828125 1.53125 -3.984375 C 1.875 -4.46875 2.421875 -4.75 3.03125 -4.75 C 3.65625 -4.75 3.96875 -4.171875 4.0625 -3.96875 C 4.265625 -3.5 4.28125 -2.921875 4.28125 -2.46875 C 4.28125 -2.015625 4.28125 -1.328125 3.9375 -0.796875 C 3.671875 -0.375 3.21875 -0.078125 2.6875 -0.078125 C 1.90625 -0.078125 1.125 -0.609375 0.921875 -1.46875 C 0.96875 -1.453125 1.046875 -1.4375 1.109375 -1.4375 C 1.3125 -1.4375 1.625 -1.5625 1.625 -1.96875 C 1.625 -2.296875 1.40625 -2.484375 1.109375 -2.484375 C 0.890625 -2.484375 0.578125 -2.375 0.578125 -1.921875 C 0.578125 -0.90625 1.390625 0.25 2.71875 0.25 C 4.0625 0.25 5.234375 -0.875 5.234375 -2.390625 C 5.234375 -3.8125 4.28125 -4.984375 3.03125 -4.984375 C 2.359375 -4.984375 1.828125 -4.6875 1.53125 -4.359375 Z M 1.53125 -6.828125 "/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph1-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph1-1">
+<path style="stroke:none;" d="M 3.734375 -1.984375 C 3.734375 -2.890625 3.015625 -3.625 2.109375 -3.625 C 1.203125 -3.625 0.46875 -2.890625 0.46875 -1.984375 C 0.46875 -1.078125 1.203125 -0.34375 2.109375 -0.34375 C 3.015625 -0.34375 3.734375 -1.078125 3.734375 -1.984375 Z M 2.109375 -0.703125 C 1.390625 -0.703125 0.828125 -1.265625 0.828125 -1.984375 C 0.828125 -2.703125 1.390625 -3.265625 2.109375 -3.265625 C 2.8125 -3.265625 3.375 -2.703125 3.375 -1.984375 C 3.375 -1.265625 2.8125 -0.703125 2.109375 -0.703125 Z M 2.109375 -0.703125 "/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph2-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph2-1">
+<path style="stroke:none;" d="M 2.03125 -1.328125 C 1.609375 -0.625 1.203125 -0.375 0.625 -0.34375 C 0.5 -0.328125 0.40625 -0.328125 0.40625 -0.125 C 0.40625 -0.046875 0.46875 0 0.546875 0 C 0.765625 0 1.296875 -0.03125 1.515625 -0.03125 C 1.859375 -0.03125 2.234375 0 2.578125 0 C 2.640625 0 2.78125 0 2.78125 -0.21875 C 2.78125 -0.328125 2.6875 -0.34375 2.625 -0.34375 C 2.34375 -0.375 2.125 -0.46875 2.125 -0.75 C 2.125 -0.921875 2.1875 -1.046875 2.34375 -1.3125 L 3.25 -2.8125 L 6.28125 -2.8125 C 6.296875 -2.703125 6.296875 -2.609375 6.3125 -2.5 C 6.34375 -2.1875 6.484375 -0.953125 6.484375 -0.71875 C 6.484375 -0.375 5.875 -0.34375 5.6875 -0.34375 C 5.5625 -0.34375 5.421875 -0.34375 5.421875 -0.125 C 5.421875 0 5.53125 0 5.609375 0 C 5.8125 0 6.046875 -0.03125 6.25 -0.03125 L 6.921875 -0.03125 C 7.65625 -0.03125 8.171875 0 8.1875 0 C 8.28125 0 8.40625 0 8.40625 -0.21875 C 8.40625 -0.34375 8.296875 -0.34375 8.125 -0.34375 C 7.46875 -0.34375 7.453125 -0.453125 7.421875 -0.8125 L 6.6875 -8.234375 C 6.671875 -8.484375 6.625 -8.5 6.484375 -8.5 C 6.375 -8.5 6.296875 -8.484375 6.1875 -8.296875 Z M 3.453125 -3.15625 L 5.84375 -7.15625 L 6.25 -3.15625 Z M 3.453125 -3.15625 "/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph2-2">
+<path style="stroke:none;" d="M 4.359375 -7.328125 C 4.46875 -7.765625 4.515625 -7.78125 4.984375 -7.78125 L 6.53125 -7.78125 C 7.875 -7.78125 7.875 -6.640625 7.875 -6.53125 C 7.875 -5.578125 6.90625 -4.34375 5.328125 -4.34375 L 3.625 -4.34375 Z M 6.375 -4.25 C 7.671875 -4.484375 8.84375 -5.390625 8.84375 -6.484375 C 8.84375 -7.421875 8.03125 -8.125 6.671875 -8.125 L 2.859375 -8.125 C 2.625 -8.125 2.53125 -8.125 2.53125 -7.90625 C 2.53125 -7.78125 2.625 -7.78125 2.8125 -7.78125 C 3.53125 -7.78125 3.53125 -7.6875 3.53125 -7.5625 C 3.53125 -7.53125 3.53125 -7.46875 3.484375 -7.28125 L 1.875 -0.875 C 1.78125 -0.46875 1.75 -0.34375 0.921875 -0.34375 C 0.6875 -0.34375 0.578125 -0.34375 0.578125 -0.125 C 0.578125 0 0.640625 0 0.875 0 L 4.96875 0 C 6.78125 0 8.1875 -1.375 8.1875 -2.578125 C 8.1875 -3.5625 7.328125 -4.15625 6.375 -4.25 Z M 4.671875 -0.34375 L 3.078125 -0.34375 C 2.90625 -0.34375 2.875 -0.34375 2.8125 -0.359375 C 2.671875 -0.375 2.671875 -0.390625 2.671875 -0.484375 C 2.671875 -0.578125 2.6875 -0.640625 2.71875 -0.75 L 3.546875 -4.109375 L 5.78125 -4.109375 C 7.1875 -4.109375 7.1875 -2.796875 7.1875 -2.703125 C 7.1875 -1.5625 6.15625 -0.34375 4.671875 -0.34375 Z M 4.671875 -0.34375 "/>
+</symbol>
+<symbol overflow="visible" id="f9_glyph2-3">
+<path style="stroke:none;" d="M 8.890625 -8.28125 C 8.890625 -8.375 8.8125 -8.375 8.78125 -8.375 C 8.765625 -8.375 8.71875 -8.375 8.625 -8.265625 L 7.796875 -7.265625 C 7.375 -7.984375 6.734375 -8.375 5.828125 -8.375 C 3.265625 -8.375 0.59375 -5.78125 0.59375 -2.96875 C 0.59375 -0.984375 1.984375 0.25 3.734375 0.25 C 4.671875 0.25 5.515625 -0.15625 6.203125 -0.734375 C 7.234375 -1.609375 7.546875 -2.765625 7.546875 -2.859375 C 7.546875 -2.96875 7.453125 -2.96875 7.421875 -2.96875 C 7.3125 -2.96875 7.296875 -2.890625 7.28125 -2.84375 C 6.734375 -0.984375 5.125 -0.09375 3.921875 -0.09375 C 2.671875 -0.09375 1.578125 -0.90625 1.578125 -2.59375 C 1.578125 -2.96875 1.6875 -5.046875 3.03125 -6.609375 C 3.6875 -7.375 4.8125 -8.03125 5.9375 -8.03125 C 7.25 -8.03125 7.828125 -6.953125 7.828125 -5.734375 C 7.828125 -5.421875 7.796875 -5.171875 7.796875 -5.125 C 7.796875 -5.015625 7.921875 -5.015625 7.953125 -5.015625 C 8.078125 -5.015625 8.09375 -5.03125 8.140625 -5.234375 Z M 8.890625 -8.28125 "/>
+</symbol>
+</g>
+</defs>
+<g id="f9_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 28.077823 48.631073 L 0.000515079 0.000595492 L 68.882256 0.000595492 Z M 28.077823 48.631073 " transform="matrix(0.996273,0,0,-0.996273,20.409643,67.672468)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 10.771129 0.000595492 C 10.771129 3.846963 8.716596 7.403187 5.383862 9.328331 " transform="matrix(0.996273,0,0,-0.996273,20.409643,67.672468)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 61.95801 8.250094 C 59.519233 6.207323 58.111642 3.184337 58.111642 0.000595492 " transform="matrix(0.996273,0,0,-0.996273,20.409643,67.672468)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f9_glyph0-1" x="26.708079" y="65.546422"/>
+  <use xlink:href="#f9_glyph0-2" x="32.539528" y="65.546422"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f9_glyph1-1" x="38.370448" y="61.224591"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f9_glyph0-3" x="64.324349" y="65.292373"/>
+  <use xlink:href="#f9_glyph0-2" x="70.155798" y="65.292373"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f9_glyph1-1" x="75.986717" y="60.970542"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f9_glyph2-1" x="44.010348" y="15.139007"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f9_glyph2-2" x="6.863323" y="79.895738"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f9_glyph2-3" x="93.118623" y="79.895738"/>
+</g>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_57" value="A"> <b>A.</b> $110^\circ$</label><label><input type="radio" name="P1_Cau_57" value="B"> <b>B.</b> $10^\circ$</label><label><input type="radio" name="P1_Cau_57" value="C"> <b>C.</b> $70^\circ$</label><label><input type="radio" name="P1_Cau_57" value="D"> <b>D.</b> $120^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat{A}=180^\circ-(60^\circ+50^\circ)=70^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 58:</b> Tam giác $ABC$ vuông tại $A$, có $\widehat{B}=35^\circ$. Số đo $\widehat{C}$ bằng</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="112.533pt" height="88.928pt" viewBox="0 0 112.533 88.928" version="1.2">
+<defs>
+<g>
+<symbol overflow="visible" id="f10_glyph0-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph0-1">
+<path style="stroke:none;" d="M 2.1875 -4.28125 C 1.984375 -4.265625 1.9375 -4.25 1.9375 -4.140625 C 1.9375 -4.03125 2 -4.03125 2.21875 -4.03125 L 2.765625 -4.03125 C 3.78125 -4.03125 4.234375 -3.1875 4.234375 -2.046875 C 4.234375 -0.484375 3.421875 -0.078125 2.828125 -0.078125 C 2.265625 -0.078125 1.28125 -0.34375 0.9375 -1.125 C 1.328125 -1.078125 1.671875 -1.28125 1.671875 -1.71875 C 1.671875 -2.0625 1.421875 -2.296875 1.078125 -2.296875 C 0.796875 -2.296875 0.484375 -2.125 0.484375 -1.671875 C 0.484375 -0.625 1.546875 0.25 2.875 0.25 C 4.28125 0.25 5.328125 -0.828125 5.328125 -2.03125 C 5.328125 -3.125 4.453125 -3.984375 3.3125 -4.1875 C 4.34375 -4.484375 5.015625 -5.359375 5.015625 -6.28125 C 5.015625 -7.234375 4.03125 -7.921875 2.875 -7.921875 C 1.6875 -7.921875 0.8125 -7.1875 0.8125 -6.328125 C 0.8125 -5.84375 1.171875 -5.75 1.359375 -5.75 C 1.609375 -5.75 1.890625 -5.921875 1.890625 -6.28125 C 1.890625 -6.671875 1.609375 -6.828125 1.34375 -6.828125 C 1.28125 -6.828125 1.25 -6.828125 1.21875 -6.828125 C 1.671875 -7.625 2.78125 -7.625 2.84375 -7.625 C 3.234375 -7.625 4.015625 -7.453125 4.015625 -6.28125 C 4.015625 -6.0625 3.984375 -5.390625 3.625 -4.875 C 3.28125 -4.359375 2.875 -4.328125 2.546875 -4.3125 Z M 2.1875 -4.28125 "/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph0-2">
+<path style="stroke:none;" d="M 1.53125 -6.828125 C 2.03125 -6.65625 2.453125 -6.640625 2.578125 -6.640625 C 3.921875 -6.640625 4.78125 -7.625 4.78125 -7.796875 C 4.78125 -7.84375 4.765625 -7.90625 4.6875 -7.90625 C 4.671875 -7.90625 4.640625 -7.90625 4.53125 -7.859375 C 3.875 -7.578125 3.296875 -7.53125 2.984375 -7.53125 C 2.203125 -7.53125 1.640625 -7.78125 1.421875 -7.875 C 1.328125 -7.90625 1.3125 -7.90625 1.296875 -7.90625 C 1.203125 -7.90625 1.203125 -7.828125 1.203125 -7.640625 L 1.203125 -4.109375 C 1.203125 -3.890625 1.203125 -3.828125 1.34375 -3.828125 C 1.40625 -3.828125 1.421875 -3.828125 1.53125 -3.984375 C 1.875 -4.46875 2.421875 -4.75 3.03125 -4.75 C 3.65625 -4.75 3.96875 -4.171875 4.0625 -3.96875 C 4.265625 -3.5 4.28125 -2.921875 4.28125 -2.46875 C 4.28125 -2.015625 4.28125 -1.328125 3.9375 -0.796875 C 3.671875 -0.375 3.21875 -0.078125 2.6875 -0.078125 C 1.90625 -0.078125 1.125 -0.609375 0.921875 -1.46875 C 0.96875 -1.453125 1.046875 -1.4375 1.109375 -1.4375 C 1.3125 -1.4375 1.625 -1.5625 1.625 -1.96875 C 1.625 -2.296875 1.40625 -2.484375 1.109375 -2.484375 C 0.890625 -2.484375 0.578125 -2.375 0.578125 -1.921875 C 0.578125 -0.90625 1.390625 0.25 2.71875 0.25 C 4.0625 0.25 5.234375 -0.875 5.234375 -2.390625 C 5.234375 -3.8125 4.28125 -4.984375 3.03125 -4.984375 C 2.359375 -4.984375 1.828125 -4.6875 1.53125 -4.359375 Z M 1.53125 -6.828125 "/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph1-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph1-1">
+<path style="stroke:none;" d="M 3.734375 -1.984375 C 3.734375 -2.890625 3.015625 -3.625 2.109375 -3.625 C 1.203125 -3.625 0.46875 -2.890625 0.46875 -1.984375 C 0.46875 -1.078125 1.203125 -0.34375 2.109375 -0.34375 C 3.015625 -0.34375 3.734375 -1.078125 3.734375 -1.984375 Z M 2.109375 -0.703125 C 1.390625 -0.703125 0.828125 -1.265625 0.828125 -1.984375 C 0.828125 -2.703125 1.390625 -3.265625 2.109375 -3.265625 C 2.8125 -3.265625 3.375 -2.703125 3.375 -1.984375 C 3.375 -1.265625 2.8125 -0.703125 2.109375 -0.703125 Z M 2.109375 -0.703125 "/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph2-0">
+<path style="stroke:none;" d=""/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph2-1">
+<path style="stroke:none;" d="M 2.03125 -1.328125 C 1.609375 -0.625 1.203125 -0.375 0.625 -0.34375 C 0.5 -0.328125 0.40625 -0.328125 0.40625 -0.125 C 0.40625 -0.046875 0.46875 0 0.546875 0 C 0.765625 0 1.296875 -0.03125 1.515625 -0.03125 C 1.859375 -0.03125 2.234375 0 2.578125 0 C 2.640625 0 2.78125 0 2.78125 -0.21875 C 2.78125 -0.328125 2.6875 -0.34375 2.625 -0.34375 C 2.34375 -0.375 2.125 -0.46875 2.125 -0.75 C 2.125 -0.921875 2.1875 -1.046875 2.34375 -1.3125 L 3.25 -2.8125 L 6.28125 -2.8125 C 6.296875 -2.703125 6.296875 -2.609375 6.3125 -2.5 C 6.34375 -2.1875 6.484375 -0.953125 6.484375 -0.71875 C 6.484375 -0.375 5.875 -0.34375 5.6875 -0.34375 C 5.5625 -0.34375 5.421875 -0.34375 5.421875 -0.125 C 5.421875 0 5.53125 0 5.609375 0 C 5.8125 0 6.046875 -0.03125 6.25 -0.03125 L 6.921875 -0.03125 C 7.65625 -0.03125 8.171875 0 8.1875 0 C 8.28125 0 8.40625 0 8.40625 -0.21875 C 8.40625 -0.34375 8.296875 -0.34375 8.125 -0.34375 C 7.46875 -0.34375 7.453125 -0.453125 7.421875 -0.8125 L 6.6875 -8.234375 C 6.671875 -8.484375 6.625 -8.5 6.484375 -8.5 C 6.375 -8.5 6.296875 -8.484375 6.1875 -8.296875 Z M 3.453125 -3.15625 L 5.84375 -7.15625 L 6.25 -3.15625 Z M 3.453125 -3.15625 "/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph2-2">
+<path style="stroke:none;" d="M 4.359375 -7.328125 C 4.46875 -7.765625 4.515625 -7.78125 4.984375 -7.78125 L 6.53125 -7.78125 C 7.875 -7.78125 7.875 -6.640625 7.875 -6.53125 C 7.875 -5.578125 6.90625 -4.34375 5.328125 -4.34375 L 3.625 -4.34375 Z M 6.375 -4.25 C 7.671875 -4.484375 8.84375 -5.390625 8.84375 -6.484375 C 8.84375 -7.421875 8.03125 -8.125 6.671875 -8.125 L 2.859375 -8.125 C 2.625 -8.125 2.53125 -8.125 2.53125 -7.90625 C 2.53125 -7.78125 2.625 -7.78125 2.8125 -7.78125 C 3.53125 -7.78125 3.53125 -7.6875 3.53125 -7.5625 C 3.53125 -7.53125 3.53125 -7.46875 3.484375 -7.28125 L 1.875 -0.875 C 1.78125 -0.46875 1.75 -0.34375 0.921875 -0.34375 C 0.6875 -0.34375 0.578125 -0.34375 0.578125 -0.125 C 0.578125 0 0.640625 0 0.875 0 L 4.96875 0 C 6.78125 0 8.1875 -1.375 8.1875 -2.578125 C 8.1875 -3.5625 7.328125 -4.15625 6.375 -4.25 Z M 4.671875 -0.34375 L 3.078125 -0.34375 C 2.90625 -0.34375 2.875 -0.34375 2.8125 -0.359375 C 2.671875 -0.375 2.671875 -0.390625 2.671875 -0.484375 C 2.671875 -0.578125 2.6875 -0.640625 2.71875 -0.75 L 3.546875 -4.109375 L 5.78125 -4.109375 C 7.1875 -4.109375 7.1875 -2.796875 7.1875 -2.703125 C 7.1875 -1.5625 6.15625 -0.34375 4.671875 -0.34375 Z M 4.671875 -0.34375 "/>
+</symbol>
+<symbol overflow="visible" id="f10_glyph2-3">
+<path style="stroke:none;" d="M 8.890625 -8.28125 C 8.890625 -8.375 8.8125 -8.375 8.78125 -8.375 C 8.765625 -8.375 8.71875 -8.375 8.625 -8.265625 L 7.796875 -7.265625 C 7.375 -7.984375 6.734375 -8.375 5.828125 -8.375 C 3.265625 -8.375 0.59375 -5.78125 0.59375 -2.96875 C 0.59375 -0.984375 1.984375 0.25 3.734375 0.25 C 4.671875 0.25 5.515625 -0.15625 6.203125 -0.734375 C 7.234375 -1.609375 7.546875 -2.765625 7.546875 -2.859375 C 7.546875 -2.96875 7.453125 -2.96875 7.421875 -2.96875 C 7.3125 -2.96875 7.296875 -2.890625 7.28125 -2.84375 C 6.734375 -0.984375 5.125 -0.09375 3.921875 -0.09375 C 2.671875 -0.09375 1.578125 -0.90625 1.578125 -2.59375 C 1.578125 -2.96875 1.6875 -5.046875 3.03125 -6.609375 C 3.6875 -7.375 4.8125 -8.03125 5.9375 -8.03125 C 7.25 -8.03125 7.828125 -6.953125 7.828125 -5.734375 C 7.828125 -5.421875 7.796875 -5.171875 7.796875 -5.125 C 7.796875 -5.015625 7.921875 -5.015625 7.953125 -5.015625 C 8.078125 -5.015625 8.09375 -5.03125 8.140625 -5.234375 Z M 8.890625 -8.28125 "/>
+</symbol>
+</g>
+</defs>
+<g id="f10_surface1">
+<path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 0.000278574 -0.000337939 L 72.283381 -0.000337939 L 0.000278574 50.61117 Z M 0.000278574 -0.000337939 " transform="matrix(0.995867,0,0,-0.995867,19.683316,69.62857)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 6.974413 -0.000337939 L 6.974413 6.973797 L 0.000278574 6.973797 " transform="matrix(0.995867,0,0,-0.995867,19.683316,69.62857)"/>
+<path style="fill:none;stroke-width:0.3985;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 60.672898 8.130923 C 59.005852 5.746067 58.111531 2.906205 58.111531 -0.000337939 " transform="matrix(0.995867,0,0,-0.995867,19.683316,69.62857)"/>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f10_glyph0-1" x="63.807207" y="68.081988"/>
+  <use xlink:href="#f10_glyph0-2" x="69.636283" y="68.081988"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f10_glyph1-1" x="75.464829" y="63.761916"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f10_glyph2-1" x="6.86053" y="81.847861"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f10_glyph2-2" x="95.749649" y="81.847861"/>
+</g>
+<g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
+  <use xlink:href="#f10_glyph2-3" x="15.085397" y="15.144672"/>
+</g>
+</g>
+</svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_58" value="A"> <b>A.</b> $145^\circ$</label><label><input type="radio" name="P1_Cau_58" value="B"> <b>B.</b> $65^\circ$</label><label><input type="radio" name="P1_Cau_58" value="C"> <b>C.</b> $55^\circ$</label><label><input type="radio" name="P1_Cau_58" value="D"> <b>D.</b> $35^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tổng hai góc nhọn của tam giác vuông bằng $90^\circ$, nên $\widehat{C}=90^\circ-35^\circ=55^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 59:</b> Tam giác $ABC$ có $\widehat{A}=40^\circ$ và $\widehat{B}=\widehat{C}$. Số đo $\widehat{B}$ bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_59" value="A"> <b>A.</b> $140^\circ$</label><label><input type="radio" name="P1_Cau_59" value="B"> <b>B.</b> $70^\circ$</label><label><input type="radio" name="P1_Cau_59" value="C"> <b>C.</b> $20^\circ$</label><label><input type="radio" name="P1_Cau_59" value="D"> <b>D.</b> $80^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat{B}+\widehat{C}=180^\circ-40^\circ=140^\circ$. Vì $\widehat{B}=\widehat{C}$ nên $\widehat{B}=\dfrac{140^\circ}{2}=70^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 60:</b> Bộ ba số đo nào sau đây có thể là ba góc trong của một tam giác?</div></div><div class="options"><label><input type="radio" name="P1_Cau_60" value="A"> <b>A.</b> $40^\circ;\ 65^\circ;\ 85^\circ$</label><label><input type="radio" name="P1_Cau_60" value="B"> <b>B.</b> $30^\circ;\ 60^\circ;\ 60^\circ$</label><label><input type="radio" name="P1_Cau_60" value="C"> <b>C.</b> $40^\circ;\ 65^\circ;\ 75^\circ$</label><label><input type="radio" name="P1_Cau_60" value="D"> <b>D.</b> $90^\circ;\ 60^\circ;\ 60^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $40^\circ+65^\circ+75^\circ=180^\circ$. Tổng các bộ còn lại lần lượt là $190^\circ$, $150^\circ$, $210^\circ$, nên không thỏa mãn.</div></div></div>
+        <button type="button" class="submit-btn" id="submitBtn" onclick="submitQuiz()">Nộp Bài</button>
+        <button type="button" class="submit-btn" id="viewSolBtn" onclick="showPasswordPrompt()" style="background: #17a2b8;">Xem Đáp Án & Lời Giải</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <div id="passwordPrompt">
+        <h4>Mở Khóa Lời Giải</h4>
+        <p style="color: #856404; font-size: 14px; margin-top: 0;">Nhập mật khẩu từ Giáo viên để xem đáp án chi tiết.</p>
+        <input type="password" id="solPassword" placeholder="Nhập mật khẩu...">
+        <button type="button" onclick="checkPassword()">Xem</button>
+    </div>
+
+    <footer class="author-footer">Liên hệ Nguyễn Văn Đoài - 0936644768</footer>
+
+    <script>
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        if ((ua.indexOf("FBAN") === -1) && (ua.indexOf("FBAV") === -1) && (ua.indexOf("Zalo") === -1)) {
+            document.getElementById("zaloWarning").style.display = "none";
+        }
+
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzm0UEZDb41ICnXt3zv6jT7h4rhTdaUztutEs7wlZYigfPxZSFixCpqNUh-V846Gl0kXA/exec"; 
+        const correctAnswers = {"P1_Cau_1": "D", "P1_Cau_2": "D", "P1_Cau_3": "D", "P1_Cau_4": "B", "P1_Cau_5": "C", "P1_Cau_6": "B", "P1_Cau_7": "A", "P1_Cau_8": "A", "P1_Cau_9": "B", "P1_Cau_10": "A", "P1_Cau_11": "D", "P1_Cau_12": "C", "P1_Cau_13": "A", "P1_Cau_14": "C", "P1_Cau_15": "D", "P1_Cau_16": "C", "P1_Cau_17": "D", "P1_Cau_18": "B", "P1_Cau_19": "C", "P1_Cau_20": "B", "P1_Cau_21": "D", "P1_Cau_22": "D", "P1_Cau_23": "A", "P1_Cau_24": "A", "P1_Cau_25": "A", "P1_Cau_26": "B", "P1_Cau_27": "B", "P1_Cau_28": "A", "P1_Cau_29": "C", "P1_Cau_30": "B", "P1_Cau_31": "D", "P1_Cau_32": "A", "P1_Cau_33": "B", "P1_Cau_34": "C", "P1_Cau_35": "A", "P1_Cau_36": "D", "P1_Cau_37": "B", "P1_Cau_38": "D", "P1_Cau_39": "C", "P1_Cau_40": "A", "P1_Cau_41": "B", "P1_Cau_42": "A", "P1_Cau_43": "C", "P1_Cau_44": "C", "P1_Cau_45": "B", "P1_Cau_46": "D", "P1_Cau_47": "C", "P1_Cau_48": "A", "P1_Cau_49": "D", "P1_Cau_50": "D", "P1_Cau_51": "A", "P1_Cau_52": "B", "P1_Cau_53": "A", "P1_Cau_54": "C", "P1_Cau_55": "D", "P1_Cau_56": "B", "P1_Cau_57": "C", "P1_Cau_58": "C", "P1_Cau_59": "B", "P1_Cau_60": "C"};
+        let isSubmitted = false;
+        
+        function moveNext(current, nextId) {
+            if (current.value.length > 1) current.value = current.value.slice(0, 1);
+            if (current.value.length === 1 && nextId) document.getElementById(nextId).focus();
+        }
+        function movePrev(e, current, prevId) {
+            if (e.key === "Backspace" && current.value === "" && prevId) document.getElementById(prevId).focus();
+        }
+
+        // =====================================================================
+        // LƯU TRẠNG THÁI (tải lại trang không mất bài, không reset đồng hồ)
+        // Thêm ?reset=1 vào đường dẫn để xóa trạng thái khi giáo viên muốn thử lại.
+        // =====================================================================
+        function hashStr(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+        const STORE_KEY = 'quizstate:v2:' + location.pathname + '|' + document.title + '|' + hashStr(JSON.stringify(correctAnswers) + '|' + 90);
+        if (/[?&]reset=1(&|$)/.test(location.search)) { try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
+
+        function loadState() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { return null; } }
+        let state = loadState() || {};
+        function saveState(patch) {
+            Object.assign(state, patch);
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}   // bị chặn lưu (chế độ riêng tư...) thì chạy bằng bộ nhớ tạm
+        }
+        function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)); }
+
+        const DURATION_MS = 90 * 60 * 1000;
+        if (!state.endTime) saveState({ endTime: Date.now() + DURATION_MS });
+        if (!state.attemptId) saveState({ attemptId: newId() });
+
+        function formFields() { return Array.from(document.querySelectorAll('#studentName, #studentClass, #quizForm input, #quizForm textarea')); }
+        function collectAnswers() { return formFields().map(el => (el.type === 'radio' || el.type === 'checkbox') ? (el.checked ? 1 : 0) : el.value); }
+        function restoreAnswers(arr) {
+            const f = formFields();
+            if (!Array.isArray(arr) || arr.length !== f.length) return;
+            f.forEach((el, i) => { if (el.type === 'radio' || el.type === 'checkbox') el.checked = !!arr[i]; else el.value = arr[i]; });
+        }
+
+        let saveTimer;
+        function scheduleSave() {
+            if (isSubmitted) return;
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => saveState({ answers: collectAnswers() }), 250);
+        }
+        document.addEventListener('input', scheduleSave);
+        document.addEventListener('change', scheduleSave);
+        window.addEventListener('pagehide', () => { if (!isSubmitted) saveState({ answers: collectAnswers() }); });
+
+        const resDiv = document.getElementById('result');
+        function showResult(html) { resDiv.style.display = 'block'; resDiv.innerHTML = html; }
+        function lockForm() {
+            document.getElementById('submitBtn').style.display = 'none';
+            document.querySelectorAll('#quizForm input, #quizForm textarea, #studentName, #studentClass').forEach(el => el.disabled = true);
+        }
+        const scoreSpan = s => `<span style="font-size: 24px; color: red;">${s}</span>`;
+
+        // Gửi kết quả; mất mạng thì giữ lại và tự gửi lại (khi có mạng, hoặc mỗi 15 giây)
+        let sending = false;
+        function sendPayload() {
+            const finalScoreString = state.finalScore;
+            if (!GAS_URL) {
+                saveState({ sent: true });
+                showResult(`Đã chấm xong (chưa cấu hình nơi nhận kết quả).<br>Điểm của bạn: ${scoreSpan(finalScoreString)}`);
+                return;
+            }
+            if (sending) return;
+            sending = true;
+            fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                keepalive: true,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(state.payload)
+            }).then(() => {
+                sending = false;
+                saveState({ sent: true });
+                showResult(`Nộp bài thành công!<br>Điểm của bạn: ${scoreSpan(finalScoreString)}`);
+            }).catch(() => {
+                sending = false;
+                showResult(`Đã chấm xong nhưng <b>chưa gửi được</b> kết quả (mạng yếu).<br>Em hãy giữ nguyên trang này, bài sẽ tự gửi lại khi có mạng.<br>Điểm của bạn: ${scoreSpan(finalScoreString)}`);
+            });
+        }
+        function retryPending() { if (state.submitted && !state.sent) sendPayload(); }
+        window.addEventListener('online', retryPending);
+        setInterval(retryPending, 15000);
+
+        // Đồng hồ tính theo giờ kết thúc nên không lệch khi tab ở nền hoặc điện thoại khóa màn hình
+        const timerEl = document.getElementById("timer");
+        let timeoutFired = false;
+        const countdown = setInterval(tick, 500);
+        document.addEventListener('visibilitychange', tick);
+        function tick() {
+            if (isSubmitted) { clearInterval(countdown); return; }
+            const remain = Math.ceil((state.endTime - Date.now()) / 1000);
+            if (remain <= 0) {
+                if (timeoutFired) return;
+                timeoutFired = true;
+                clearInterval(countdown);
+                timerEl.innerHTML = "HẾT GIỜ!";
+                alert("Đã hết thời gian làm bài. Hệ thống tự động nộp bài!");
+                submitQuiz(true);
+            } else {
+                const m = Math.floor(remain / 60), s = remain % 60;
+                timerEl.innerHTML = m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
+            }
+        }
+
+        // Khôi phục khi mở lại trang
+        restoreAnswers(state.answers);
+        if (state.submitted) {
+            isSubmitted = true;
+            lockForm();
+            timerEl.innerHTML = "ĐÃ NỘP BÀI";
+            if (state.sent) showResult(`Nộp bài thành công!<br>Điểm của bạn: ${scoreSpan(state.finalScore)}`);
+            else { showResult('Đang gửi lại kết quả...'); retryPending(); }
+        } else {
+            tick();
+        }
+
+        function submitQuiz(autoSubmit = false) {
+            if (isSubmitted) return;
+            const name = document.getElementById('studentName').value.trim();
+            const className = document.getElementById('studentClass').value.trim();
+            
+            if (!autoSubmit && (!name || !className)) {
+                alert("Vui lòng nhập đầy đủ Họ tên và Lớp trước khi nộp!");
+                return;
+            }
+
+            isSubmitted = true;
+            if (typeof timerEl !== 'undefined' && timerEl) {
+                timerEl.innerHTML = "ĐÃ NỘP BÀI";
+            }
+            
+            const form = document.getElementById('quizForm');
+            let score = 0;
+            
+            let payload = {
+                'name': name || "Vô danh (Hết giờ)",
+                'className': className || "N/A"
+            };
+
+            for (let i = 1; i <= 60; i++) {
+                const qName = `P1_Cau_${i}`;
+                const selected = form.querySelector(`input[name="${qName}"]:checked`);
+                let ans = selected ? selected.value : "K";
+                const correctVal = correctAnswers[qName];
+                
+                let isCorrect = (selected && selected.value === correctVal);
+                if (isCorrect) score += 0.25;
+                
+                let statusStr = isCorrect ? "Đúng" : (selected ? "Sai" : "K");
+                payload[qName] = `${ans} (${statusStr})`;
+            }
+
+            const labels_tf = ['a', 'b', 'c', 'd'];
+            for (let i = 1; i <= 0; i++) {
+                let correctCount = 0;
+                let questionDetail = [];
+                
+                labels_tf.forEach(l => {
+                    const qName = `P2_Cau_${i}_${l}`;
+                    if (correctAnswers[qName]) {
+                        const selected = form.querySelector(`input[name="${qName}"]:checked`);
+                        let ans = selected ? selected.value : "K";
+                        const correctVal = correctAnswers[qName];
+                        let isSubCorrect = (selected && selected.value === correctVal);
+                        if (isSubCorrect) correctCount++;
+                        
+                        let subStatus = isSubCorrect ? "Đ" : (selected ? "S" : "-");
+                        questionDetail.push(`${l}:${ans}(${subStatus})`);
+                    }
+                });
+                
+                let p2ScoreEarned = 0;
+                if (correctCount === 1) p2ScoreEarned = 0.1;
+                else if (correctCount === 2) p2ScoreEarned = 0.25;
+                else if (correctCount === 3) p2ScoreEarned = 0.5;
+                else if (correctCount === 4) p2ScoreEarned = 1.0;
+                
+                score += p2ScoreEarned;
+                payload[`P2_Cau_${i}`] = `[${correctCount} ý đúng] ${questionDetail.join(' ')}`;
+            }
+
+            for (let i = 1; i <= 0; i++) {
+                const qName = `P3_Cau_${i}`;
+                if (correctAnswers[qName]) {
+                    let ans = "";
+                    for (let j = 1; j <= 12; j++) {
+                        const box = document.getElementById(`${qName}_${j}`);
+                        if (box && box.value) ans += box.value;
+                    }
+                    
+                    let studentAns = ans.replace(/,/g, '.').replace(/\s+/g, '');
+                    let trueAns = correctAnswers[qName].replace(/,/g, '.').replace(/\s+/g, '');
+                    let isCorrect = (studentAns === trueAns && studentAns !== "");
+                    
+                    if (isCorrect) score += 0.5;
+                    
+                    let statusStr = isCorrect ? "Đúng" : (studentAns !== "" ? "Sai" : "K");
+                    payload[qName] = `${studentAns || 'Bỏ trống'} (${statusStr})`;
+                }
+            }
+
+            const finalScoreString = `${score.toFixed(2)}/15`;
+            payload['score'] = score.toFixed(2);
+            payload['maxScore'] = '15';
+            payload['attemptId'] = state.attemptId;   // để Apps Script bỏ các lần gửi trùng
+
+            lockForm();
+            saveState({ answers: collectAnswers(), submitted: true, sent: false, payload: payload, finalScore: finalScoreString });
+            showResult('Đã chấm xong, đang gửi kết quả...');
+            sendPayload();
+        }
+
+        function showPasswordPrompt() {
+            document.getElementById('passwordPrompt').style.display = 'block';
+            document.getElementById('viewSolBtn').style.display = 'none';
+            document.getElementById('passwordPrompt').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function checkPassword() {
+            const entered = document.getElementById('solPassword').value;
+            if (entered === "lop7c2@2026") {
+                document.getElementById('passwordPrompt').style.display = 'none';
+                revealSolutions();
+            } else {
+                alert("Mật khẩu không chính xác! Vui lòng liên hệ Giáo viên.");
+            }
+        }
+
+        function revealSolutions() {
+            isSubmitted = true;
+            
+            document.getElementById('submitBtn').style.display = 'none';
+            const allInputs = document.querySelectorAll('#quizForm input, #quizForm textarea');
+            allInputs.forEach(input => input.disabled = true);
+
+            const form = document.getElementById('quizForm');
+            
+            for (let i = 1; i <= 60; i++) {
+                const qName = `P1_Cau_${i}`;
+                const correctVal = correctAnswers[qName];
+                const allRadios = form.querySelectorAll(`input[name="${qName}"]`);
+                allRadios.forEach(radio => {
+                    const lbl = radio.closest('label');
+                    if (radio.value === correctVal) {
+                        lbl.style.backgroundColor = '#d4edda';
+                        lbl.style.borderColor = '#28a745';
+                    } else if (radio.checked) {
+                        lbl.style.backgroundColor = '#f8d7da';
+                        lbl.style.borderColor = '#dc3545';
+                    } else {
+                        lbl.style.opacity = '0.5';
+                    }
+                });
+            }
+
+            const labels_tf = ['a', 'b', 'c', 'd'];
+            for (let i = 1; i <= 0; i++) {
+                labels_tf.forEach(l => {
+                    const qName = `P2_Cau_${i}_${l}`;
+                    if (correctAnswers[qName]) {
+                        const correctVal = correctAnswers[qName];
+                        const allRadios = form.querySelectorAll(`input[name="${qName}"]`);
+                        allRadios.forEach(radio => {
+                            const lbl = radio.closest('label');
+                            if (radio.value === correctVal) {
+                                lbl.style.backgroundColor = '#d4edda';
+                                lbl.style.color = '#155724';
+                            } else if (radio.checked) {
+                                lbl.style.backgroundColor = '#f8d7da';
+                                lbl.style.color = '#721c24';
+                            } else {
+                                lbl.style.opacity = '0.5';
+                            }
+                        });
+                    }
+                });
+            }
+
+            for (let i = 1; i <= 0; i++) {
+                const qName = `P3_Cau_${i}`;
+                if (correctAnswers[qName]) {
+                    let ans = "";
+                    let boxes = [];
+                    for (let j = 1; j <= 12; j++) {
+                        const box = document.getElementById(`${qName}_${j}`);
+                        if (box) {
+                            boxes.push(box);
+                            if (box.value) ans += box.value;
+                        }
+                    }
+                    
+                    let studentAns = ans.replace(/,/g, '.').replace(/\s+/g, '');
+                    let trueAns = correctAnswers[qName].replace(/,/g, '.').replace(/\s+/g, '');
+                    let isCorrect = (studentAns === trueAns && studentAns !== "");
+                    
+                    boxes.forEach(box => {
+                        if (isCorrect) {
+                            box.style.backgroundColor = '#d4edda';
+                            box.style.borderColor = '#28a745';
+                            box.style.color = '#155724';
+                        } else {
+                            box.style.backgroundColor = '#f8d7da';
+                            box.style.borderColor = '#dc3545';
+                            box.style.color = '#721c24';
+                        }
+                    });
+
+                    const group = document.querySelector(`#${qName}_1`).closest('.options');
+                    let correctDiv = document.createElement('div');
+                    correctDiv.style.marginTop = '10px';
+                    correctDiv.innerHTML = `<span style="color:#28a745; font-weight:bold; font-size:16px;">Đáp án đúng: ${correctAnswers[qName]}</span>`;
+                    group.appendChild(correctDiv);
+                }
+            }
+
+            const solutions = document.querySelectorAll('.solution-box');
+            solutions.forEach(box => box.style.display = 'block');
+
+            // Chuẩn hóa lại SVG vừa hiện ra (lúc này mới đo được kích thước)
+            initMedia();
+            if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().then(initMedia);
+        }
+
+        const MEDIA_SCOPE = '.question, .solution-box';
+        // =====================================================================
+        // XỬ LÝ SVG / ẢNH (dùng chung cho quiz và trình chiếu)
+        // Mỗi template khai báo trước: const MEDIA_SCOPE = '.vung-chua-hinh, ...';
+        // =====================================================================
+        const MEDIA_SVG_SEL = MEDIA_SCOPE.split(',').map(s => s.trim() + ' svg').join(', ');
+        const MEDIA_ALL_SEL = MEDIA_SCOPE.split(',').map(s => s.trim()).flatMap(s => [s + ' svg', s + ' img']).join(', ');
+
+        // Chỉ nhận số thuần hoặc "px"; "10cm", "50%", "auto"... trả về NaN để không đọc sai đơn vị
+        function svgNum(v) {
+            if (v == null) return NaN;
+            const m = String(v).trim().match(/^([0-9]*\.?[0-9]+)(px)?$/i);
+            return m ? parseFloat(m[1]) : NaN;
+        }
+
+        // Đổi id trong từng SVG thành duy nhất để các hình không dùng nhầm clipPath/marker/gradient của nhau
+        let __svgSeq = 0;
+        function uniquifySvgIds(svg) {
+            if (svg.dataset.idsDone) return;
+            svg.dataset.idsDone = '1';
+            const withId = svg.querySelectorAll('[id]');
+            if (!withId.length) return;
+            const prefix = 'svg' + (++__svgSeq) + '_';
+            const map = {};
+            withId.forEach(n => { map[n.id] = prefix + n.id; });
+            const ids = Object.keys(map);
+            const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const urlRe = /url\(\s*(['"]?)#([^)'"\s]+)\1\s*\)/g;
+            const fixUrls = str => str.replace(urlRe, (m, q, id) => map[id] ? `url(${q}#${map[id]}${q})` : m);
+
+            svg.querySelectorAll('*').forEach(n => {
+                if (n.tagName.toLowerCase() === 'style') {
+                    let css = fixUrls(n.textContent);
+                    css = css.replace(new RegExp('#(' + ids.map(esc).join('|') + ')(?![\\w-])', 'g'), '#' + prefix + '$1');
+                    n.textContent = css;
+                    return;
+                }
+                Array.from(n.attributes).forEach(a => {
+                    if (a.name === 'id' || a.value.indexOf('#') < 0) return;
+                    if ((a.name === 'href' || a.name === 'xlink:href') && a.value.charAt(0) === '#') {
+                        const id = a.value.slice(1);
+                        if (map[id]) n.setAttribute(a.name, '#' + map[id]);
+                    } else {
+                        const nv = fixUrls(a.value);
+                        if (nv !== a.value) n.setAttribute(a.name, nv);
+                    }
+                });
+            });
+            withId.forEach(n => { n.id = map[n.id]; });
+        }
+
+        // Chuẩn hóa SVG: id duy nhất + thêm viewBox nếu thiếu để SVG co giãn đúng
+        function normalizeSvgs() {
+            document.querySelectorAll(MEDIA_SVG_SEL).forEach(svg => {
+                if (svg.closest('mjx-container')) return;
+                uniquifySvgIds(svg);
+                if (svg.dataset.normalized) return;
+                const w = svgNum(svg.getAttribute('width'));
+                const h = svgNum(svg.getAttribute('height'));
+
+                if (!svg.hasAttribute('viewBox')) {
+                    if (w > 0 && h > 0) {
+                        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+                    } else {
+                        try {   // đang bị ẩn thì getBBox lỗi -> sẽ thử lại khi phần chứa nó hiện ra
+                            const b = svg.getBBox();
+                            if (b.width && b.height)
+                                svg.setAttribute('viewBox', `${b.x - 2} ${b.y - 2} ${b.width + 4} ${b.height + 4}`);
+                        } catch (e) { return; }
+                    }
+                }
+                if (svg.hasAttribute('viewBox')) {
+                    if (w > 0) { svg.style.width = '100%'; svg.style.maxWidth = w + 'px'; }  // kích thước gốc làm trần
+                    svg.removeAttribute('height');
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                    svg.dataset.normalized = '1';
+                }
+            });
+        }
+
+        // Zoom: phóng to bằng cách tăng chiều rộng thật, khung tự cao theo, cuộn bằng thanh cuộn gốc
+        const __zoomRefresh = new Set();
+        let __zoomResizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(__zoomResizeTimer);
+            __zoomResizeTimer = setTimeout(() => __zoomRefresh.forEach(fn => fn()), 150);
+        });
+
+        function setupImageZoom() {
+            document.querySelectorAll(MEDIA_ALL_SEL).forEach(el => {
+                if (el.closest('.zoom-container') || el.closest('mjx-container') || el.classList.contains('no-zoom')) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'zoom-container';
+                const viewport = document.createElement('div');
+                viewport.className = 'zoom-viewport';
+                el.parentNode.insertBefore(wrapper, el);
+                viewport.appendChild(el);
+                wrapper.appendChild(viewport);
+                el.classList.add('zoom-media');
+
+                let scale = 1;
+                const STEP = 0.25, MIN = 1, MAX = 4;
+
+                const toolbar = document.createElement('div');
+                toolbar.className = 'zoom-toolbar';
+                const mk = (txt, title) => {
+                    const b = document.createElement('button');
+                    b.type = 'button'; b.className = 'zoom-btn'; b.innerHTML = txt; b.title = title;
+                    b.setAttribute('aria-label', title);
+                    return b;
+                };
+                const btnIn = mk('➕', 'Phóng to'), btnOut = mk('➖', 'Thu nhỏ'), btnReset = mk('↺', 'Mặc định');
+
+                function apply(newScale) {
+                    const cx = viewport.scrollWidth ? (viewport.scrollLeft + viewport.clientWidth / 2) / viewport.scrollWidth : 0.5;
+                    const cy = viewport.scrollHeight ? (viewport.scrollTop + viewport.clientHeight / 2) / viewport.scrollHeight : 0.5;
+
+                    scale = Math.min(MAX, Math.max(MIN, Math.round(newScale * 100) / 100));
+
+                    el.classList.remove('zoomed');
+                    el.style.removeProperty('--zw');
+                    const base = el.getBoundingClientRect().width;   // chiều rộng vừa khung hiện tại
+                    if (scale > 1 && base > 0) {
+                        el.style.setProperty('--zw', (base * scale) + 'px');
+                        el.classList.add('zoomed');
+                        viewport.scrollLeft = cx * viewport.scrollWidth - viewport.clientWidth / 2;
+                        viewport.scrollTop = cy * viewport.scrollHeight - viewport.clientHeight / 2;
+                    }
+                    viewport.classList.toggle('can-pan', el.classList.contains('zoomed'));
+                    btnIn.disabled = scale >= MAX;
+                    btnOut.disabled = scale <= MIN;
+                }
+
+                btnIn.onclick = () => apply(scale + STEP);
+                btnOut.onclick = () => apply(scale - STEP);
+                btnReset.onclick = () => apply(1);
+                __zoomRefresh.add(() => { if (scale > 1) apply(scale); });
+
+                // Ctrl + lăn chuột để zoom, nhấp đúp để phóng to/reset
+                viewport.addEventListener('wheel', e => {
+                    if (!e.ctrlKey) return;
+                    e.preventDefault();
+                    apply(scale + (e.deltaY < 0 ? STEP : -STEP));
+                }, { passive: false });
+                viewport.addEventListener('dblclick', () => apply(scale > 1 ? 1 : 2));
+
+                // Kéo thả bằng chuột (cảm ứng dùng cuộn gốc của trình duyệt)
+                let dragging = false, sx = 0, sy = 0, sl = 0, st = 0;
+                viewport.addEventListener('pointerdown', e => {
+                    if (e.pointerType !== 'mouse' || !el.classList.contains('zoomed')) return;
+                    dragging = true; sx = e.clientX; sy = e.clientY; sl = viewport.scrollLeft; st = viewport.scrollTop;
+                    viewport.setPointerCapture(e.pointerId);
+                    viewport.classList.add('dragging');
+                });
+                viewport.addEventListener('pointermove', e => {
+                    if (!dragging) return;
+                    viewport.scrollLeft = sl - (e.clientX - sx);
+                    viewport.scrollTop = st - (e.clientY - sy);
+                });
+                const stop = () => { dragging = false; viewport.classList.remove('dragging'); };
+                viewport.addEventListener('pointerup', stop);
+                viewport.addEventListener('pointercancel', stop);
+
+                toolbar.append(btnIn, btnOut, btnReset);
+                wrapper.appendChild(toolbar);
+                apply(1);
+            });
+        }
+
+        function initMedia() { normalizeSvgs(); setupImageZoom(); }
+
+        window.addEventListener('load', () => setTimeout(initMedia, 300));
+
+    </script>
+</body>
+</html>
