@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ÔN THI GIỮA KÌ I - THẦY ĐOÀI</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 15px; line-height: 1.6; padding-top: 70px; overflow-x: hidden; background: #f7fbff; }
+        .header-bar { position: fixed; top: 0; left: 0; width: 100%; background: #1e88e5; color: white; padding: 10px 15px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; box-shadow: 0 2px 6px rgba(30,136,229,0.2); }
+        .header-bar h2 { margin: 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%; }
+        #timer { font-size: 16px; font-weight: bold; background: #e53935; padding: 5px 10px; border-radius: 4px; white-space: nowrap; }
+        
+        .zalo-warning { background: #eef6fc; color: #1565c0; padding: 10px; border: 1px solid #b3d4fc; border-radius: 4px; margin-bottom: 15px; font-weight: bold; text-align: justify; font-size: 14px; }
+        
+        h3 { color: #1565c0; border-bottom: 2px solid #b3d4fc; padding-bottom: 5px; margin-top: 30px; text-transform: uppercase; font-size: 18px; }
+        .info-group { margin-bottom: 15px; }
+        .info-group input { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #b3d4fc; border-radius: 4px; font-size: 16px; background: #fff; }
+        .info-group input:focus { border-color: #1e88e5; outline: none; box-shadow: 0 0 0 3px rgba(30,136,229,0.12); }
+        
+        .question { background: #eef6fc; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #b3d4fc; box-sizing: border-box; width: 100%; overflow-x: auto; }
+        .question-text { margin-bottom: 15px; word-wrap: break-word; } 
+        
+        mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+        
+        .options label { display: block; padding: 10px; margin: 8px 0; background: #ffffff; border: 1px solid #b3d4fc; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        .options label:hover { background: #e3f0fb; border-color: #1e88e5; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 15px 0; }
+        .tf-table { width: 100%; border-collapse: collapse; background: #fff; min-width: 320px; }
+        .tf-table td { padding: 10px; border: 1px solid #b3d4fc; }
+        .tf-radio-group { display: flex; gap: 10px; justify-content: center; }
+        .tf-radio-group label { cursor: pointer; font-weight: bold; padding: 5px; border-radius: 3px; transition: 0.3s; }
+        
+        .short-ans-group { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+        .short-ans-box { width: 50px; height: 55px; font-size: 24px; text-align: center; border: 2px solid #1e88e5; border-radius: 5px; box-sizing: border-box; font-weight: bold; color: #1565c0; background: #fff; transition: 0.3s; }
+        .short-ans-box:focus { border-color: #0d47a1; outline: none; box-shadow: 0 0 6px rgba(30,136,229,0.3); }
+        
+        .essay-input { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #b3d4fc; border-radius: 4px; box-sizing: border-box; height: 150px; resize: vertical; background: #fff; }
+        .essay-input:focus { border-color: #1e88e5; outline: none; }
+        
+        .solution-box { display: none; margin-top: 15px; padding: 15px; background: #e8f4fc; border-left: 5px solid #0288d1; border-radius: 4px; overflow-x: auto; }
+        
+        button.submit-btn { width: 100%; padding: 15px; background: #1e88e5; color: white; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; margin-top: 15px; font-weight: bold; margin-bottom: 5px; }
+        button.submit-btn:hover { background: #1565c0; }
+        #result { display: none; margin-top: 20px; padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 18px; background: #eef6fc; color: #0d47a1; border: 1px solid #b3d4fc; margin-bottom: 20px;}
+        
+        #passwordPrompt { display: none; margin-top: 20px; padding: 20px; background: #eef6fc; border: 1px solid #b3d4fc; border-radius: 5px; text-align: center; margin-bottom: 40px; }
+        #passwordPrompt h4 { color: #1565c0; margin-top: 0; margin-bottom: 10px; }
+        #passwordPrompt input { padding: 10px; width: 60%; max-width: 250px; border: 1px solid #b3d4fc; border-radius: 4px; font-size: 16px; }
+        #passwordPrompt button { width: auto; padding: 10px 20px; background: #1e88e5; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; margin-left: 10px; }
+        
+        /* --- SVG / ẢNH + KHUNG ZOOM DÙNG CHUNG (khung tự co giãn, không đặt chiều cao cố định) --- */
+        :root {
+            --zoom-accent: #1e88e5; --zoom-accent-hover: #1565c0;
+            --zoom-border: #b3d4fc; --zoom-bar-bg: #eef6fc; --zoom-max-h: none;
+        }
+        svg { max-width: 100%; height: auto; display: block; margin: 10px auto; overflow: visible; }
+        svg text { font-family: Arial, sans-serif; }
+        img { max-width: 100%; height: auto; }
+        .zoom-container { display: flex; align-items: flex-start; gap: 10px; margin: 15px 0; }
+        .zoom-viewport {
+            flex: 1 1 auto; min-width: 0;
+            overflow: auto; -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--zoom-border); border-radius: 4px; background: #fff;
+            box-sizing: border-box; padding: 4px;
+        }
+        /* chỉ giới hạn chiều cao và giữ cuộn bên trong khi ảnh đang được phóng to */
+        .zoom-viewport.can-pan { cursor: grab; max-height: var(--zoom-max-h); overscroll-behavior: contain; }
+        .zoom-viewport.dragging { cursor: grabbing; user-select: none; }
+        .zoom-toolbar { display: flex; flex-direction: column; gap: 5px; background: var(--zoom-bar-bg); padding: 5px; border-radius: 4px; border: 1px solid var(--zoom-border); flex-shrink: 0; }
+        .zoom-btn { background: var(--zoom-accent); color: #fff; border: none; padding: 6px 10px; font-size: 14px; border-radius: 4px; cursor: pointer; transition: background .2s, opacity .2s; white-space: nowrap; }
+        .zoom-btn:hover:not(:disabled) { background: var(--zoom-accent-hover); }
+        .zoom-btn:disabled { background: #ccc; cursor: not-allowed; opacity: .6; }
+        .zoom-media { display: block; margin: 0 auto; max-width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+        .zoom-media.zoomed { width: var(--zw) !important; max-width: none !important; height: auto !important; }
+        /* --- BẢNG DÀI: bọc trong khung cuộn ngang, không làm tràn lề --- */
+        .table-scroll { display: block; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 10px 0; }
+        .table-scroll > table { margin: 0; max-width: 100%; border-collapse: collapse; }
+        .table-scroll th, .table-scroll td { overflow-wrap: break-word; }
+
+        
+        /* ===== Bổ sung của bộ chuyển đổi TeX2HTML (PyQt6) ===== */
+        .tp { margin: 6px 0; }
+        .center { text-align: center; }
+        .figure svg, .figure img { max-width: 100%; height: auto; }
+        .fig-error { color: #b00020; border: 1px dashed #b00020; padding: 6px 10px; text-align: center; margin: 8px 0; font-size: 14px; }
+        .fbox { border: 1px solid currentColor; padding: 0 4px; }
+        blockquote { margin: 8px 20px; }
+        img { max-width: 100%; height: auto; }
+        ul, ol { margin: 6px 0; padding-left: 24px; }
+        ul.desc, li.cl { list-style: none; }
+        li.cl .lbl { font-weight: bold; margin-right: .4em; }
+        ol[class^="paren-"] { list-style: none; counter-reset: pc; padding-left: 2.2em; }
+        ol[class^="paren-"] > li { counter-increment: pc; position: relative; margin: 4px 0; }
+        ol[class^="paren-"] > li::before { position: absolute; left: -2.2em; width: 2em; text-align: right; font-weight: bold; }
+        ol.paren-a > li::before { content: counter(pc, lower-alpha) ")"; }
+        ol.paren-A > li::before { content: counter(pc, upper-alpha) ")"; }
+        ol.paren-i > li::before { content: counter(pc, lower-roman) ")"; }
+        ol.paren-I > li::before { content: counter(pc, upper-roman) ")"; }
+        ol.paren-1 > li::before { content: counter(pc, decimal) ")"; }
+        table.tex-table { border-collapse: collapse; margin: 8px auto; }
+        table.tex-table td { padding: 4px 10px; }
+        table.tex-table.bordered td { border: 1px solid #555; }
+
+
+
+        .author-footer { margin: 30px 0 10px; padding-top: 10px; border-top: 1px solid #b3d4fc; text-align: center; color: #5f7b94; font-size: 13px; }
+        .author-footer:empty { display: none; }
+    </style>
+    
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            macros: {"wideparen": ["\\overset{\\frown}{#1}", 1], "overarc": ["\\overset{\\frown}{#1}", 1]}
+          },
+          options: { enableMenu: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+</head>
+<body>
+    <div class="header-bar">
+        <h2>ÔN THI GIỮA KÌ I - THẦY ĐOÀI</h2>
+        <div id="timer">Đang tải...</div>
+    </div>
+    
+    <div class="zalo-warning" id="zaloWarning">
+        ⚠️ CHÚ Ý: Nếu em đang mở bài này trực tiếp trên Zalo/Messenger, hãy bấm vào biểu tượng "Dấu 3 chấm" ở góc phải màn hình và chọn "Mở bằng trình duyệt" (Chrome/Safari) để không bị lỗi kết nối.
+    </div>
+
+    <div class="info-group">
+        <label>Họ và tên học sinh:</label>
+        <input type="text" id="studentName" placeholder="Nhập họ và tên..." required>
+    </div>
+    <div class="info-group">
+        <label>Lớp:</label>
+        <input type="text" id="studentClass" placeholder="Nhập lớp..." required>
+    </div>
+
+    <hr>
+    <form id="quizForm" onsubmit="return false;">
+        <h3>PHẦN 1. Câu trắc nghiệm nhiều phương án lựa chọn</h3>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 1:</b> Biểu thức nào sau đây là đơn thức?</div></div><div class="options"><label><input type="radio" name="P1_Cau_1" value="A"> <b>A.</b> $2027yz$</label><label><input type="radio" name="P1_Cau_1" value="B"> <b>B.</b> $2x+y$</label><label><input type="radio" name="P1_Cau_1" value="C"> <b>C.</b> $\dfrac{x}{y}$</label><label><input type="radio" name="P1_Cau_1" value="D"> <b>D.</b> $(x+1)y$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $2027yz$ là tích của một số với các biến. Các biểu thức còn lại có phép cộng các hạng tử không đồng dạng hoặc có biến ở mẫu.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 2:</b> Biểu thức nào sau đây <b>không</b> phải là đơn thức?</div></div><div class="options"><label><input type="radio" name="P1_Cau_2" value="A"> <b>A.</b> $\dfrac{x^2+1}{xy}$</label><label><input type="radio" name="P1_Cau_2" value="B"> <b>B.</b> $-3x^2y$</label><label><input type="radio" name="P1_Cau_2" value="C"> <b>C.</b> $\dfrac{1}{2}xy^3$</label><label><input type="radio" name="P1_Cau_2" value="D"> <b>D.</b> $7$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\dfrac{x^2+1}{xy}$ có biến ở mẫu và không thu gọn thành một đơn thức. Một số thực, chẳng hạn $7$, cũng là một đơn thức.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 3:</b> Cho $a$, $b$ là hai hằng số khác $0$; $x$, $y$, $z$ là các biến. Phần biến của đơn thức $100abx^2yz$ là</div></div><div class="options"><label><input type="radio" name="P1_Cau_3" value="A"> <b>A.</b> $abx^2yz$</label><label><input type="radio" name="P1_Cau_3" value="B"> <b>B.</b> $100ab$</label><label><input type="radio" name="P1_Cau_3" value="C"> <b>C.</b> $xyz$</label><label><input type="radio" name="P1_Cau_3" value="D"> <b>D.</b> $x^2yz$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Vì $a$, $b$ là hằng số nên hệ số là $100ab$; phần biến là $x^2yz$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 4:</b> Biểu thức nào sau đây <b>không</b> phải là đa thức theo biến $x$?</div></div><div class="options"><label><input type="radio" name="P1_Cau_4" value="A"> <b>A.</b> $x^2-2x+3$</label><label><input type="radio" name="P1_Cau_4" value="B"> <b>B.</b> $\dfrac{x^2}{3}-2$</label><label><input type="radio" name="P1_Cau_4" value="C"> <b>C.</b> $x-2+\dfrac{3}{x}$</label><label><input type="radio" name="P1_Cau_4" value="D"> <b>D.</b> $x(x-2)+3$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hạng tử $\dfrac{3}{x}$ chứa biến ở mẫu nên biểu thức đã cho không phải là đa thức theo $x$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 5:</b> Một đẳng thức được gọi là hằng đẳng thức nếu đẳng thức đó đúng</div></div><div class="options"><label><input type="radio" name="P1_Cau_5" value="A"> <b>A.</b> với mọi giá trị của các biến thuộc tập xác định.</label><label><input type="radio" name="P1_Cau_5" value="B"> <b>B.</b> chỉ với một giá trị của biến.</label><label><input type="radio" name="P1_Cau_5" value="C"> <b>C.</b> chỉ khi các biến đều dương.</label><label><input type="radio" name="P1_Cau_5" value="D"> <b>D.</b> chỉ khi các biến bằng nhau.</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hằng đẳng thức là đẳng thức đúng với mọi giá trị của các biến mà hai vế đều xác định.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 6:</b> Biểu thức $4x^2+4xy+y^2$ bằng</div></div><div class="options"><label><input type="radio" name="P1_Cau_6" value="A"> <b>A.</b> $(4x+y)^2$</label><label><input type="radio" name="P1_Cau_6" value="B"> <b>B.</b> $(2x+y)^2$</label><label><input type="radio" name="P1_Cau_6" value="C"> <b>C.</b> $(2x-y)^2$</label><label><input type="radio" name="P1_Cau_6" value="D"> <b>D.</b> $(x+2y)^2$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Ta có $4x^2+4xy+y^2=(2x)^2+2\cdot2x\cdot y+y^2=(2x+y)^2$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 7:</b> Tứ giác lồi $ABCD$ có $\widehat A=100^\circ$, $\widehat B=80^\circ$, $\widehat C=110^\circ$. Số đo góc $D$ là</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.066pt" height="142.599pt" viewBox="0 0 149.066 142.599" version="1.2"><defs><g><symbol overflow="visible" id="f1_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f1_glyph0-1"><path style="stroke:none;" d="M 2.016 -1.312 C 1.609 -0.625 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.516 -0.031 C 1.859 -0.031 2.234 0 2.562 0 C 2.641 0 2.781 0 2.781 -0.219 C 2.781 -0.328 2.688 -0.344 2.609 -0.344 C 2.344 -0.375 2.109 -0.469 2.109 -0.75 C 2.109 -0.922 2.188 -1.047 2.344 -1.312 L 3.234 -2.797 L 6.266 -2.797 C 6.281 -2.703 6.281 -2.594 6.297 -2.5 C 6.328 -2.188 6.469 -0.953 6.469 -0.719 C 6.469 -0.375 5.859 -0.344 5.672 -0.344 C 5.547 -0.344 5.422 -0.344 5.422 -0.125 C 5.422 0 5.516 0 5.594 0 C 5.797 0 6.031 -0.031 6.234 -0.031 L 6.906 -0.031 C 7.641 -0.031 8.156 0 8.172 0 C 8.25 0 8.391 0 8.391 -0.219 C 8.391 -0.344 8.281 -0.344 8.094 -0.344 C 7.453 -0.344 7.438 -0.453 7.391 -0.812 L 6.672 -8.219 C 6.656 -8.453 6.609 -8.484 6.469 -8.484 C 6.359 -8.484 6.281 -8.453 6.172 -8.281 Z M 3.438 -3.141 L 5.828 -7.141 L 6.234 -3.141 Z M 3.438 -3.141 " /></symbol><symbol overflow="visible" id="f1_glyph0-2"><path style="stroke:none;" d="M 4.344 -7.297 C 4.453 -7.75 4.5 -7.766 4.969 -7.766 L 6.5 -7.766 C 7.844 -7.766 7.844 -6.625 7.844 -6.516 C 7.844 -5.562 6.891 -4.328 5.312 -4.328 L 3.609 -4.328 Z M 6.359 -4.234 C 7.641 -4.484 8.828 -5.375 8.828 -6.469 C 8.828 -7.391 8 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.625 -8.109 2.516 -8.109 2.516 -7.891 C 2.516 -7.766 2.625 -7.766 2.797 -7.766 C 3.531 -7.766 3.531 -7.672 3.531 -7.547 C 3.531 -7.516 3.531 -7.453 3.484 -7.266 L 1.875 -0.875 C 1.766 -0.469 1.75 -0.344 0.922 -0.344 C 0.688 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.641 0 0.875 0 L 4.953 0 C 6.766 0 8.172 -1.375 8.172 -2.578 C 8.172 -3.547 7.312 -4.141 6.359 -4.234 Z M 4.672 -0.344 L 3.062 -0.344 C 2.891 -0.344 2.875 -0.344 2.797 -0.359 C 2.672 -0.375 2.656 -0.391 2.656 -0.484 C 2.656 -0.562 2.688 -0.641 2.703 -0.75 L 3.531 -4.094 L 5.766 -4.094 C 7.172 -4.094 7.172 -2.797 7.172 -2.703 C 7.172 -1.562 6.141 -0.344 4.672 -0.344 Z M 4.672 -0.344 " /></symbol><symbol overflow="visible" id="f1_glyph0-3"><path style="stroke:none;" d="M 8.875 -8.25 C 8.875 -8.359 8.781 -8.359 8.766 -8.359 C 8.734 -8.359 8.688 -8.359 8.594 -8.234 L 7.781 -7.25 C 7.359 -7.953 6.703 -8.359 5.812 -8.359 C 3.25 -8.359 0.594 -5.766 0.594 -2.969 C 0.594 -0.984 1.984 0.25 3.719 0.25 C 4.672 0.25 5.5 -0.156 6.188 -0.734 C 7.219 -1.609 7.531 -2.75 7.531 -2.844 C 7.531 -2.953 7.438 -2.953 7.391 -2.953 C 7.297 -2.953 7.281 -2.891 7.25 -2.844 C 6.703 -0.984 5.109 -0.094 3.922 -0.094 C 2.656 -0.094 1.562 -0.906 1.562 -2.594 C 1.562 -2.969 1.688 -5.031 3.031 -6.594 C 3.688 -7.344 4.797 -8.016 5.922 -8.016 C 7.234 -8.016 7.812 -6.938 7.812 -5.719 C 7.812 -5.422 7.781 -5.156 7.781 -5.109 C 7.781 -5 7.891 -5 7.938 -5 C 8.062 -5 8.078 -5.016 8.125 -5.219 Z M 8.875 -8.25 " /></symbol><symbol overflow="visible" id="f1_glyph0-4"><path style="stroke:none;" d="M 1.859 -0.875 C 1.75 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.859 0 L 4.625 0 C 7.031 0 9.375 -2.484 9.375 -5.125 C 9.375 -6.844 8.344 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.609 -8.109 2.5 -8.109 2.5 -7.891 C 2.5 -7.766 2.609 -7.766 2.797 -7.766 C 3.516 -7.766 3.516 -7.672 3.516 -7.547 C 3.516 -7.516 3.516 -7.453 3.469 -7.266 Z M 4.375 -7.297 C 4.484 -7.75 4.531 -7.766 4.984 -7.766 L 6.297 -7.766 C 7.406 -7.766 8.438 -7.156 8.438 -5.516 C 8.438 -4.922 8.188 -2.859 7.047 -1.562 C 6.703 -1.156 5.812 -0.344 4.438 -0.344 L 3.094 -0.344 C 2.922 -0.344 2.891 -0.344 2.828 -0.359 C 2.703 -0.375 2.688 -0.391 2.688 -0.484 C 2.688 -0.562 2.703 -0.641 2.734 -0.75 Z M 4.375 -7.297 " /></symbol></g></defs><g id="f1_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 39.551 -123.488 L 128.381 -123.488 L 112.914 -35.766 L 21.234 -19.603 Z M 39.551 -123.488" transform="matrix(0.993773,0,0,-0.993773,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(79.998779%,39.99939%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 48.053 -123.488 C 48.053 -120.449 46.434 -117.643 43.8 -116.122 C 42.071 -115.123 40.042 -114.765 38.073 -115.111 M 126.907 -115.111 C 122.843 -115.831 119.879 -119.36 119.879 -123.488 M 104.542 -34.292 C 104.011 -37.283 105.123 -40.329 107.45 -42.283 C 109.372 -43.898 111.916 -44.578 114.392 -44.142" transform="matrix(0.993773,0,0,-0.993773,0,0)" /><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 40.371 122.719 C 40.371 122.129 39.895 121.648 39.305 121.648 C 38.715 121.648 38.234 122.129 38.234 122.719 C 38.234 123.309 38.715 123.789 39.305 123.789 C 39.895 123.789 40.371 123.309 40.371 122.719 Z M 40.371 122.719 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-1" x="26.311" y="135.11" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 128.652 122.719 C 128.652 122.129 128.172 121.648 127.582 121.648 C 126.992 121.648 126.512 122.129 126.512 122.719 C 126.512 123.309 126.992 123.789 127.582 123.789 C 128.172 123.789 128.652 123.309 128.652 122.719 Z M 128.652 122.719 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-2" x="131.855" y="135.11" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 113.281 35.543 C 113.281 34.953 112.801 34.477 112.211 34.477 C 111.621 34.477 111.141 34.953 111.141 35.543 C 111.141 36.137 111.621 36.613 112.211 36.613 C 112.801 36.613 113.281 36.137 113.281 35.543 Z M 113.281 35.543 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-3" x="116.483" y="31.273" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 22.168 19.48 C 22.168 18.891 21.691 18.41 21.102 18.41 C 20.508 18.41 20.031 18.891 20.031 19.48 C 20.031 20.07 20.508 20.551 21.102 20.551 C 21.691 20.551 22.168 20.07 22.168 19.48 Z M 22.168 19.48 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-4" x="6.846" y="15.21" /></g></g></svg></div></div></div></div></div><div class="options"><label><input type="radio" name="P1_Cau_7" value="A"> <b>A.</b> $90^\circ$</label><label><input type="radio" name="P1_Cau_7" value="B"> <b>B.</b> $80^\circ$</label><label><input type="radio" name="P1_Cau_7" value="C"> <b>C.</b> $110^\circ$</label><label><input type="radio" name="P1_Cau_7" value="D"> <b>D.</b> $70^\circ$</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat D=360^\circ-(100^\circ+80^\circ+110^\circ)=70^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 8:</b> Điều kiện nào sau đây đủ để một tứ giác là hình bình hành?</div></div><div class="options"><label><input type="radio" name="P1_Cau_8" value="A"> <b>A.</b> Một cặp cạnh đối bằng nhau.</label><label><input type="radio" name="P1_Cau_8" value="B"> <b>B.</b> Hai đường chéo bằng nhau.</label><label><input type="radio" name="P1_Cau_8" value="C"> <b>C.</b> Hai cặp cạnh đối bằng nhau.</label><label><input type="radio" name="P1_Cau_8" value="D"> <b>D.</b> Hai góc kề bằng nhau.</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tứ giác có hai cặp cạnh đối bằng nhau là hình bình hành. Từng điều kiện còn lại chưa đủ để kết luận.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 9:</b> Trong một hình thang, điều kiện nào sau đây đủ để kết luận hình thang đó là hình thang cân?</div></div><div class="options"><label><input type="radio" name="P1_Cau_9" value="A"> <b>A.</b> Hai đường chéo vuông góc.</label><label><input type="radio" name="P1_Cau_9" value="B"> <b>B.</b> Hai đường chéo bằng nhau.</label><label><input type="radio" name="P1_Cau_9" value="C"> <b>C.</b> Hai đáy bằng nhau.</label><label><input type="radio" name="P1_Cau_9" value="D"> <b>D.</b> Hai góc đối bằng nhau.</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hình thang có hai đường chéo bằng nhau là hình thang cân. Hình bình hành không phải hình chữ nhật cho thấy hai đáy bằng nhau hoặc hai góc đối bằng nhau chưa đủ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 10:</b> Tứ giác nào sau đây chắc chắn là hình chữ nhật?</div></div><div class="options"><label><input type="radio" name="P1_Cau_10" value="A"> <b>A.</b> Tứ giác có hai góc vuông.</label><label><input type="radio" name="P1_Cau_10" value="B"> <b>B.</b> Tứ giác có ba góc vuông.</label><label><input type="radio" name="P1_Cau_10" value="C"> <b>C.</b> Tứ giác có hai đường chéo bằng nhau.</label><label><input type="radio" name="P1_Cau_10" value="D"> <b>D.</b> Tứ giác có hai cạnh đối bằng nhau.</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tứ giác có ba góc vuông thì góc còn lại cũng bằng $360^\circ-3\cdot90^\circ=90^\circ$. Do đó tứ giác có bốn góc vuông, là hình chữ nhật.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 11:</b> Dấu hiệu nào sau đây dùng để nhận biết hình thoi?</div></div><div class="options"><label><input type="radio" name="P1_Cau_11" value="A"> <b>A.</b> Tứ giác có bốn góc bằng nhau.</label><label><input type="radio" name="P1_Cau_11" value="B"> <b>B.</b> Tứ giác có hai đường chéo bằng nhau.</label><label><input type="radio" name="P1_Cau_11" value="C"> <b>C.</b> Tứ giác có hai cặp cạnh đối song song.</label><label><input type="radio" name="P1_Cau_11" value="D"> <b>D.</b> Tứ giác có bốn cạnh bằng nhau.</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tứ giác có bốn cạnh bằng nhau là hình thoi. Bốn góc bằng nhau đặc trưng cho hình chữ nhật; hai điều kiện còn lại chưa đủ.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 12:</b> Khẳng định nào sau đây <b>sai</b>?</div></div><div class="options"><label><input type="radio" name="P1_Cau_12" value="A"> <b>A.</b> Hình thoi có một góc vuông thì là hình vuông.</label><label><input type="radio" name="P1_Cau_12" value="B"> <b>B.</b> Hình chữ nhật có hai cạnh kề bằng nhau thì là hình vuông.</label><label><input type="radio" name="P1_Cau_12" value="C"> <b>C.</b> Hình thoi có hai đường chéo vuông góc thì là hình vuông.</label><label><input type="radio" name="P1_Cau_12" value="D"> <b>D.</b> Hình chữ nhật có hai đường chéo vuông góc thì là hình vuông.</label></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Mọi hình thoi đều có hai đường chéo vuông góc, nhưng hình thoi không nhất thiết có góc vuông. Ba dấu hiệu còn lại đều đúng.</div></div></div>
+<h3>PHẦN 2. Câu trắc nghiệm đúng sai</h3>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 1:</b> Cho $P=2x^2+4xy+5y^2$ và $Q=-x^2-y^2$. Xét các khẳng định sau.</div></div><div class="options"><div class="table-responsive"><table class="tf-table"><tr><td><b>a.</b> $Q$ là đa thức bậc $2$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_1_a" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_1_a" value="Sai"> S</label></div></td></tr><tr><td><b>b.</b> $P+Q=(x-2y)^2$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_1_b" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_1_b" value="Sai"> S</label></div></td></tr><tr><td><b>c.</b> Tại $x=-1$, $y=1$, giá trị của $P$ bằng $3$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_1_c" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_1_c" value="Sai"> S</label></div></td></tr><tr><td><b>d.</b> Với $x+y=1$, giá trị nhỏ nhất của $P+Q$ bằng $0$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_1_d" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_1_d" value="Sai"> S</label></div></td></tr></table></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ol class="paren-a"><li>Hai hạng tử của $Q$ đều có bậc $2$ và không đồng dạng, nên $Q$ có bậc $2$. <b>Đúng.</b></li><li>$P+Q=x^2+4xy+4y^2=(x+2y)^2$, không phải $(x-2y)^2$. <b>Sai.</b></li><li>$P(-1,1)=2-4+5=3$. <b>Đúng.</b></li><li>Từ $x+y=1$, suy ra $x=1-y$. Khi đó $P+Q=(1+y)^2\ge0$. Dấu bằng xảy ra tại $y=-1$, $x=2$, thỏa mãn điều kiện. Vậy giá trị nhỏ nhất là $0$. <b>Đúng.</b></li></ol></div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 2:</b> Cho hình bình hành $ABCD$ có $AB=2a$, $AD=a$, $a&gt;0$ và $\widehat A=120^\circ$. Gọi $M$, $N$ lần lượt là trung điểm của $AB$, $CD$; $O$ là giao điểm của $AN$ và $DM$. Kí hiệu $S$ là diện tích hình bình hành $ABCD$.</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="162.389pt" height="80.447pt" viewBox="0 0 162.389 80.447" version="1.2"><defs><g><symbol overflow="visible" id="f2_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f2_glyph0-1"><path style="stroke:none;" d="M 10.781 -7.25 C 10.891 -7.641 10.906 -7.766 11.75 -7.766 C 11.984 -7.766 12.094 -7.766 12.094 -7.984 C 12.094 -8.109 12 -8.109 11.781 -8.109 L 10.359 -8.109 C 10.062 -8.109 10.047 -8.094 9.922 -7.906 L 5.578 -1.062 L 4.688 -7.844 C 4.656 -8.109 4.641 -8.109 4.328 -8.109 L 2.859 -8.109 C 2.641 -8.109 2.531 -8.109 2.531 -7.891 C 2.531 -7.766 2.641 -7.766 2.812 -7.766 C 3.531 -7.766 3.531 -7.672 3.531 -7.547 C 3.531 -7.516 3.531 -7.453 3.484 -7.266 L 1.969 -1.219 C 1.828 -0.641 1.562 -0.375 0.766 -0.344 C 0.719 -0.344 0.578 -0.328 0.578 -0.125 C 0.578 0 0.688 0 0.734 0 C 0.969 0 1.578 -0.031 1.812 -0.031 L 2.391 -0.031 C 2.547 -0.031 2.75 0 2.922 0 C 3 0 3.141 0 3.141 -0.219 C 3.141 -0.328 3.016 -0.344 2.969 -0.344 C 2.578 -0.359 2.203 -0.422 2.203 -0.859 C 2.203 -0.969 2.203 -0.984 2.25 -1.156 L 3.891 -7.688 L 4.875 -0.328 C 4.922 -0.031 4.922 0 5.031 0 C 5.172 0 5.219 -0.094 5.281 -0.203 L 10.062 -7.75 L 8.344 -0.875 C 8.234 -0.469 8.219 -0.344 7.391 -0.344 C 7.156 -0.344 7.047 -0.344 7.047 -0.125 C 7.047 0 7.156 0 7.219 0 C 7.422 0 7.656 -0.031 7.859 -0.031 L 9.266 -0.031 C 9.469 -0.031 9.719 0 9.922 0 C 10.016 0 10.141 0 10.141 -0.219 C 10.141 -0.344 10.031 -0.344 9.859 -0.344 C 9.125 -0.344 9.125 -0.438 9.125 -0.562 C 9.125 -0.562 9.125 -0.656 9.156 -0.75 Z M 10.781 -7.25 " /></symbol><symbol overflow="visible" id="f2_glyph0-2"><path style="stroke:none;" d="M 8.781 -6.859 C 8.922 -7.375 9.109 -7.734 10.016 -7.766 C 10.047 -7.766 10.188 -7.781 10.188 -7.984 C 10.188 -8.109 10.078 -8.109 10.031 -8.109 C 9.797 -8.109 9.188 -8.094 8.953 -8.094 L 8.391 -8.094 C 8.219 -8.094 8 -8.109 7.844 -8.109 C 7.766 -8.109 7.625 -8.109 7.625 -7.891 C 7.625 -7.766 7.719 -7.766 7.797 -7.766 C 8.516 -7.75 8.562 -7.469 8.562 -7.25 C 8.562 -7.156 8.547 -7.109 8.516 -6.953 L 7.172 -1.594 L 4.625 -7.906 C 4.547 -8.094 4.531 -8.109 4.281 -8.109 L 2.828 -8.109 C 2.594 -8.109 2.484 -8.109 2.484 -7.891 C 2.484 -7.766 2.562 -7.766 2.797 -7.766 C 2.844 -7.766 3.547 -7.766 3.547 -7.656 C 3.547 -7.641 3.531 -7.547 3.516 -7.5 L 1.938 -1.219 C 1.797 -0.625 1.516 -0.375 0.719 -0.344 C 0.672 -0.344 0.547 -0.328 0.547 -0.125 C 0.547 0 0.672 0 0.703 0 C 0.938 0 1.547 -0.031 1.781 -0.031 L 2.344 -0.031 C 2.516 -0.031 2.719 0 2.891 0 C 2.969 0 3.094 0 3.094 -0.219 C 3.094 -0.328 2.984 -0.344 2.938 -0.344 C 2.547 -0.359 2.156 -0.422 2.156 -0.859 C 2.156 -0.953 2.188 -1.062 2.203 -1.156 L 3.812 -7.5 C 3.891 -7.391 3.891 -7.359 3.938 -7.25 L 6.75 -0.219 C 6.812 -0.078 6.844 0 6.953 0 C 7.062 0 7.078 -0.031 7.125 -0.234 Z M 8.781 -6.859 " /></symbol><symbol overflow="visible" id="f2_glyph0-3"><path style="stroke:none;" d="M 8.625 -5.203 C 8.625 -7.156 7.344 -8.359 5.672 -8.359 C 3.141 -8.359 0.562 -5.625 0.562 -2.891 C 0.562 -1.016 1.812 0.25 3.531 0.25 C 6.016 0.25 8.625 -2.344 8.625 -5.203 Z M 3.594 -0.031 C 2.625 -0.031 1.594 -0.734 1.594 -2.594 C 1.594 -3.672 1.984 -5.438 2.953 -6.625 C 3.828 -7.672 4.828 -8.094 5.609 -8.094 C 6.656 -8.094 7.672 -7.344 7.672 -5.625 C 7.672 -4.578 7.219 -2.922 6.422 -1.797 C 5.562 -0.578 4.484 -0.031 3.594 -0.031 Z M 3.594 -0.031 " /></symbol><symbol overflow="visible" id="f2_glyph0-4"><path style="stroke:none;" d="M 2.016 -1.312 C 1.609 -0.625 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.516 -0.031 C 1.859 -0.031 2.234 0 2.562 0 C 2.641 0 2.781 0 2.781 -0.219 C 2.781 -0.328 2.688 -0.344 2.609 -0.344 C 2.344 -0.375 2.109 -0.469 2.109 -0.75 C 2.109 -0.922 2.188 -1.047 2.344 -1.312 L 3.234 -2.797 L 6.266 -2.797 C 6.281 -2.703 6.281 -2.594 6.297 -2.5 C 6.328 -2.188 6.469 -0.953 6.469 -0.719 C 6.469 -0.375 5.859 -0.344 5.672 -0.344 C 5.547 -0.344 5.422 -0.344 5.422 -0.125 C 5.422 0 5.516 0 5.594 0 C 5.797 0 6.031 -0.031 6.234 -0.031 L 6.906 -0.031 C 7.641 -0.031 8.156 0 8.172 0 C 8.25 0 8.391 0 8.391 -0.219 C 8.391 -0.344 8.281 -0.344 8.094 -0.344 C 7.453 -0.344 7.438 -0.453 7.391 -0.812 L 6.672 -8.219 C 6.656 -8.453 6.609 -8.484 6.469 -8.484 C 6.359 -8.484 6.281 -8.453 6.172 -8.281 Z M 3.438 -3.141 L 5.828 -7.141 L 6.234 -3.141 Z M 3.438 -3.141 " /></symbol><symbol overflow="visible" id="f2_glyph0-5"><path style="stroke:none;" d="M 4.344 -7.297 C 4.453 -7.75 4.5 -7.766 4.969 -7.766 L 6.5 -7.766 C 7.844 -7.766 7.844 -6.625 7.844 -6.516 C 7.844 -5.562 6.891 -4.328 5.312 -4.328 L 3.609 -4.328 Z M 6.359 -4.234 C 7.641 -4.484 8.828 -5.375 8.828 -6.469 C 8.828 -7.391 8 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.625 -8.109 2.516 -8.109 2.516 -7.891 C 2.516 -7.766 2.625 -7.766 2.797 -7.766 C 3.531 -7.766 3.531 -7.672 3.531 -7.547 C 3.531 -7.516 3.531 -7.453 3.484 -7.266 L 1.875 -0.875 C 1.766 -0.469 1.75 -0.344 0.922 -0.344 C 0.688 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.641 0 0.875 0 L 4.953 0 C 6.766 0 8.172 -1.375 8.172 -2.578 C 8.172 -3.547 7.312 -4.141 6.359 -4.234 Z M 4.672 -0.344 L 3.062 -0.344 C 2.891 -0.344 2.875 -0.344 2.797 -0.359 C 2.672 -0.375 2.656 -0.391 2.656 -0.484 C 2.656 -0.562 2.688 -0.641 2.703 -0.75 L 3.531 -4.094 L 5.766 -4.094 C 7.172 -4.094 7.172 -2.797 7.172 -2.703 C 7.172 -1.562 6.141 -0.344 4.672 -0.344 Z M 4.672 -0.344 " /></symbol><symbol overflow="visible" id="f2_glyph0-6"><path style="stroke:none;" d="M 8.875 -8.25 C 8.875 -8.359 8.781 -8.359 8.766 -8.359 C 8.734 -8.359 8.688 -8.359 8.594 -8.234 L 7.781 -7.25 C 7.359 -7.953 6.703 -8.359 5.812 -8.359 C 3.25 -8.359 0.594 -5.766 0.594 -2.969 C 0.594 -0.984 1.984 0.25 3.719 0.25 C 4.672 0.25 5.5 -0.156 6.188 -0.734 C 7.219 -1.609 7.531 -2.75 7.531 -2.844 C 7.531 -2.953 7.438 -2.953 7.391 -2.953 C 7.297 -2.953 7.281 -2.891 7.25 -2.844 C 6.703 -0.984 5.109 -0.094 3.922 -0.094 C 2.656 -0.094 1.562 -0.906 1.562 -2.594 C 1.562 -2.969 1.688 -5.031 3.031 -6.594 C 3.688 -7.344 4.797 -8.016 5.922 -8.016 C 7.234 -8.016 7.812 -6.938 7.812 -5.719 C 7.812 -5.422 7.781 -5.156 7.781 -5.109 C 7.781 -5 7.891 -5 7.938 -5 C 8.062 -5 8.078 -5.016 8.125 -5.219 Z M 8.875 -8.25 " /></symbol><symbol overflow="visible" id="f2_glyph0-7"><path style="stroke:none;" d="M 1.859 -0.875 C 1.75 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.859 0 L 4.625 0 C 7.031 0 9.375 -2.484 9.375 -5.125 C 9.375 -6.844 8.344 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.609 -8.109 2.5 -8.109 2.5 -7.891 C 2.5 -7.766 2.609 -7.766 2.797 -7.766 C 3.516 -7.766 3.516 -7.672 3.516 -7.547 C 3.516 -7.516 3.516 -7.453 3.469 -7.266 Z M 4.375 -7.297 C 4.484 -7.75 4.531 -7.766 4.984 -7.766 L 6.297 -7.766 C 7.406 -7.766 8.438 -7.156 8.438 -5.516 C 8.438 -4.922 8.188 -2.859 7.047 -1.562 C 6.703 -1.156 5.812 -0.344 4.438 -0.344 L 3.094 -0.344 C 2.922 -0.344 2.891 -0.344 2.828 -0.359 C 2.703 -0.375 2.688 -0.391 2.688 -0.484 C 2.688 -0.562 2.703 -0.641 2.734 -0.75 Z M 4.375 -7.297 " /></symbol></g></defs><g id="f2_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 45.581 -61.089 L 141.957 -61.089 L 117.863 -19.359 L 21.487 -19.359 Z M 45.581 -61.089" transform="matrix(0.993173,0,0,-0.993173,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,39.99939%,39.99939%);stroke-opacity:1;stroke-miterlimit:10;" d="M 93.769 -61.089 L 69.675 -19.359 M 45.581 -61.089 L 69.675 -19.359 M 93.769 -61.089 L 21.487 -19.359 M 141.957 -61.089 L 57.628 -40.224" transform="matrix(0.993173,0,0,-0.993173,0,0)" /><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 94.137 60.672 C 94.137 60.113 93.688 59.664 93.129 59.664 C 92.57 59.664 92.117 60.113 92.117 60.672 C 92.117 61.23 92.57 61.68 93.129 61.68 C 93.688 61.68 94.137 61.23 94.137 60.672 Z M 94.137 60.672 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-1" x="86.884" y="73.056" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 70.207 19.227 C 70.207 18.668 69.754 18.215 69.199 18.215 C 68.641 18.215 68.188 18.668 68.188 19.227 C 68.188 19.781 68.641 20.234 69.199 20.234 C 69.754 20.234 70.207 19.781 70.207 19.227 Z M 70.207 19.227 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-2" x="63.923" y="14.956" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 58.242 39.949 C 58.242 39.391 57.789 38.938 57.234 38.938 C 56.676 38.938 56.223 39.391 56.223 39.949 C 56.223 40.508 56.676 40.957 57.234 40.957 C 57.789 40.957 58.242 40.508 58.242 39.949 Z M 58.242 39.949 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-3" x="43.756" y="35.679" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 46.277 60.672 C 46.277 60.113 45.824 59.664 45.27 59.664 C 44.711 59.664 44.258 60.113 44.258 60.672 C 44.258 61.23 44.711 61.68 45.27 61.68 C 45.824 61.68 46.277 61.23 46.277 60.672 Z M 46.277 60.672 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-4" x="32.284" y="73.056" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 141.996 60.672 C 141.996 60.113 141.547 59.664 140.988 59.664 C 140.43 59.664 139.98 60.113 139.98 60.672 C 139.98 61.23 140.43 61.68 140.988 61.68 C 141.547 61.68 141.996 61.23 141.996 60.672 Z M 141.996 60.672 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-5" x="145.257" y="73.056" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 118.066 19.227 C 118.066 18.668 117.617 18.215 117.059 18.215 C 116.5 18.215 116.051 18.668 116.051 19.227 C 116.051 19.781 116.5 20.234 117.059 20.234 C 117.617 20.234 118.066 19.781 118.066 19.227 Z M 118.066 19.227 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-6" x="121.328" y="14.956" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 22.348 19.227 C 22.348 18.668 21.895 18.215 21.34 18.215 C 20.781 18.215 20.328 18.668 20.328 19.227 C 20.328 19.781 20.781 20.234 21.34 20.234 C 21.895 20.234 22.348 19.781 22.348 19.227 Z M 22.348 19.227 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-7" x="7.093" y="14.956" /></g></g></svg></div></div></div></div></div><div class="options"><div class="table-responsive"><table class="tf-table"><tr><td><b>a.</b> $\widehat C=120^\circ$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_2_a" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_2_a" value="Sai"> S</label></div></td></tr><tr><td><b>b.</b> Chu vi tứ giác $AMND$ bằng $5a$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_2_b" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_2_b" value="Sai"> S</label></div></td></tr><tr><td><b>c.</b> $\widehat{MAN}=60^\circ$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_2_c" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_2_c" value="Sai"> S</label></div></td></tr><tr><td><b>d.</b> Diện tích tam giác $BMO$ bằng $\dfrac{3}{16}S$.</td><td style="width: 120px;"><div class="tf-radio-group"><label><input type="radio" name="P2_Cau_2_d" value="Đúng"> Đ</label><label><input type="radio" name="P2_Cau_2_d" value="Sai"> S</label></div></td></tr></table></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ol class="paren-a"><li>Hai góc đối của hình bình hành bằng nhau nên $\widehat C=\widehat A=120^\circ$. <b>Đúng.</b></li><li>$AM=DN=a$ và $AM\parallel DN$, nên $AMND$ là hình bình hành. Lại có $AM=AD=a$, suy ra đó là hình thoi; chu vi bằng $4a$. <b>Sai.</b></li><li>Đường chéo $AN$ của hình thoi $AMND$ là phân giác góc $MAD$. Do đó $\widehat{MAN}=\dfrac12\cdot120^\circ=60^\circ$. <b>Đúng.</b></li><li>Vì $N\in CD$ nên $S_{ABN}=\dfrac12S$. Hai đường chéo của hình thoi $AMND$ chia đôi nhau, nên $AO=ON$. Hai tam giác $ABO$, $BNO$ chung đường cao từ $B$ xuống $AN$ và có hai đáy bằng nhau; suy ra $S_{ABO}=\dfrac12S_{ABN}=\dfrac14S$. Lại có $AM=MB$, nên $S_{BMO}=\dfrac12S_{ABO}=\dfrac18S$ (hai tam giác $AMO$, $BMO$ chung đường cao từ $O$ xuống $AB$). <b>Sai.</b></li></ol></div></div></div>
+<h3>PHẦN 3. Câu trắc nghiệm trả lời ngắn</h3>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 1:</b> Hệ số tự do của đa thức $(2x-1)(x^2-2x-5)$ bằng bao nhiêu?</div></div><div class="options"><div class="short-ans-group"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_1_1" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_1_2')" onkeydown="movePrev(event, this, null)"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_1_2" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_1_3')" onkeydown="movePrev(event, this, 'P3_Cau_1_1')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_1_3" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_1_4')" onkeydown="movePrev(event, this, 'P3_Cau_1_2')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_1_4" oninput="this.value=this.value.replace('.', ','); moveNext(this, null)" onkeydown="movePrev(event, this, 'P3_Cau_1_3')"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hệ số tự do của một đa thức theo $x$ bằng giá trị của đa thức tại $x=0$. Thay $x=0$, ta được $(-1)\cdot(-5)=5$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 2:</b> Tính giá trị của $(x+y)^2-(x-y)^2$ tại $x=-1$, $y=1{,}5$.</div></div><div class="options"><div class="short-ans-group"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_2_1" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_2_2')" onkeydown="movePrev(event, this, null)"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_2_2" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_2_3')" onkeydown="movePrev(event, this, 'P3_Cau_2_1')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_2_3" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_2_4')" onkeydown="movePrev(event, this, 'P3_Cau_2_2')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_2_4" oninput="this.value=this.value.replace('.', ','); moveNext(this, null)" onkeydown="movePrev(event, this, 'P3_Cau_2_3')"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Khai triển hai bình phương và thu gọn, ta được $(x+y)^2-(x-y)^2=4xy$. Thay số: $4\cdot(-1)\cdot1{,}5=-6$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 3:</b> Hình thang $ABCD$ có hai đáy $AB$, $CD$ và $\widehat A=100^\circ$. Tính số đo góc $D$ theo đơn vị độ.</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.067pt" height="94.132pt" viewBox="0 0 148.067 94.132" version="1.2"><defs><g><symbol overflow="visible" id="f3_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f3_glyph0-1"><path style="stroke:none;" d="M 3.406 -7.594 C 3.406 -7.859 3.406 -7.875 3.172 -7.875 C 2.891 -7.562 2.297 -7.125 1.078 -7.125 L 1.078 -6.781 C 1.344 -6.781 1.938 -6.781 2.594 -7.078 L 2.594 -0.906 C 2.594 -0.484 2.562 -0.344 1.516 -0.344 L 1.156 -0.344 L 1.156 0 C 1.469 -0.031 2.625 -0.031 3.016 -0.031 C 3.406 -0.031 4.531 -0.031 4.859 0 L 4.859 -0.344 L 4.484 -0.344 C 3.453 -0.344 3.406 -0.484 3.406 -0.906 Z M 3.406 -7.594 " /></symbol><symbol overflow="visible" id="f3_glyph0-2"><path style="stroke:none;" d="M 5.312 -3.797 C 5.312 -4.766 5.25 -5.734 4.828 -6.625 C 4.328 -7.609 3.484 -7.875 2.906 -7.875 C 2.219 -7.875 1.375 -7.531 0.938 -6.547 C 0.609 -5.797 0.484 -5.062 0.484 -3.797 C 0.484 -2.641 0.562 -1.781 1 -0.938 C 1.453 -0.031 2.281 0.25 2.891 0.25 C 3.922 0.25 4.516 -0.359 4.859 -1.047 C 5.281 -1.938 5.312 -3.109 5.312 -3.797 Z M 2.891 0.016 C 2.516 0.016 1.734 -0.203 1.516 -1.5 C 1.391 -2.203 1.391 -3.109 1.391 -3.938 C 1.391 -4.906 1.391 -5.781 1.578 -6.484 C 1.781 -7.266 2.375 -7.641 2.891 -7.641 C 3.344 -7.641 4.031 -7.359 4.25 -6.344 C 4.406 -5.672 4.406 -4.734 4.406 -3.938 C 4.406 -3.141 4.406 -2.234 4.281 -1.516 C 4.047 -0.219 3.297 0.016 2.891 0.016 Z M 2.891 0.016 " /></symbol><symbol overflow="visible" id="f3_glyph1-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f3_glyph1-1"><path style="stroke:none;" d="M 3.719 -1.969 C 3.719 -2.875 2.984 -3.609 2.094 -3.609 C 1.188 -3.609 0.469 -2.875 0.469 -1.969 C 0.469 -1.062 1.188 -0.344 2.094 -0.344 C 2.984 -0.344 3.719 -1.062 3.719 -1.969 Z M 2.094 -0.703 C 1.391 -0.703 0.828 -1.266 0.828 -1.969 C 0.828 -2.688 1.391 -3.25 2.094 -3.25 C 2.797 -3.25 3.359 -2.688 3.359 -1.969 C 3.359 -1.266 2.797 -0.703 2.094 -0.703 Z M 2.094 -0.703 " /></symbol><symbol overflow="visible" id="f3_glyph2-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f3_glyph2-1"><path style="stroke:none;" d="M 2.016 -1.312 C 1.594 -0.609 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.5 -0.031 C 1.844 -0.031 2.234 0 2.562 0 C 2.625 0 2.766 0 2.766 -0.219 C 2.766 -0.328 2.672 -0.344 2.609 -0.344 C 2.328 -0.359 2.109 -0.469 2.109 -0.75 C 2.109 -0.906 2.172 -1.047 2.328 -1.297 L 3.234 -2.797 L 6.25 -2.797 C 6.266 -2.688 6.266 -2.594 6.281 -2.484 C 6.312 -2.172 6.453 -0.953 6.453 -0.719 C 6.453 -0.359 5.844 -0.344 5.656 -0.344 C 5.531 -0.344 5.406 -0.344 5.406 -0.125 C 5.406 0 5.5 0 5.578 0 C 5.781 0 6.016 -0.031 6.219 -0.031 L 6.891 -0.031 C 7.609 -0.031 8.141 0 8.156 0 C 8.234 0 8.359 0 8.359 -0.219 C 8.359 -0.344 8.25 -0.344 8.078 -0.344 C 7.422 -0.344 7.422 -0.453 7.375 -0.812 L 6.656 -8.203 C 6.625 -8.438 6.578 -8.453 6.453 -8.453 C 6.344 -8.453 6.266 -8.438 6.156 -8.25 Z M 3.438 -3.141 L 5.812 -7.125 L 6.219 -3.141 Z M 3.438 -3.141 " /></symbol><symbol overflow="visible" id="f3_glyph2-2"><path style="stroke:none;" d="M 4.328 -7.281 C 4.438 -7.719 4.484 -7.75 4.953 -7.75 L 6.484 -7.75 C 7.828 -7.75 7.828 -6.609 7.828 -6.5 C 7.828 -5.547 6.875 -4.328 5.312 -4.328 L 3.594 -4.328 Z M 6.344 -4.234 C 7.625 -4.469 8.797 -5.359 8.797 -6.453 C 8.797 -7.375 7.984 -8.094 6.641 -8.094 L 2.844 -8.094 C 2.625 -8.094 2.516 -8.094 2.516 -7.859 C 2.516 -7.75 2.625 -7.75 2.797 -7.75 C 3.516 -7.75 3.516 -7.656 3.516 -7.516 C 3.516 -7.5 3.516 -7.422 3.469 -7.25 L 1.875 -0.875 C 1.766 -0.469 1.734 -0.344 0.906 -0.344 C 0.688 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.641 0 0.875 0 L 4.938 0 C 6.75 0 8.156 -1.375 8.156 -2.562 C 8.156 -3.547 7.297 -4.141 6.344 -4.234 Z M 4.656 -0.344 L 3.062 -0.344 C 2.891 -0.344 2.859 -0.344 2.797 -0.359 C 2.672 -0.359 2.656 -0.391 2.656 -0.484 C 2.656 -0.562 2.672 -0.641 2.703 -0.75 L 3.531 -4.094 L 5.75 -4.094 C 7.156 -4.094 7.156 -2.781 7.156 -2.688 C 7.156 -1.547 6.125 -0.344 4.656 -0.344 Z M 4.656 -0.344 " /></symbol><symbol overflow="visible" id="f3_glyph2-3"><path style="stroke:none;" d="M 8.844 -8.234 C 8.844 -8.344 8.766 -8.344 8.734 -8.344 C 8.719 -8.344 8.672 -8.344 8.578 -8.219 L 7.75 -7.219 C 7.344 -7.938 6.688 -8.344 5.797 -8.344 C 3.25 -8.344 0.594 -5.75 0.594 -2.953 C 0.594 -0.984 1.984 0.25 3.703 0.25 C 4.656 0.25 5.484 -0.156 6.172 -0.734 C 7.203 -1.594 7.516 -2.75 7.516 -2.844 C 7.516 -2.953 7.422 -2.953 7.375 -2.953 C 7.266 -2.953 7.266 -2.875 7.234 -2.828 C 6.688 -0.984 5.094 -0.094 3.906 -0.094 C 2.656 -0.094 1.562 -0.906 1.562 -2.578 C 1.562 -2.953 1.688 -5.016 3.016 -6.578 C 3.672 -7.328 4.781 -8 5.906 -8 C 7.219 -8 7.797 -6.922 7.797 -5.703 C 7.797 -5.406 7.75 -5.141 7.75 -5.094 C 7.75 -4.984 7.875 -4.984 7.906 -4.984 C 8.047 -4.984 8.047 -5 8.094 -5.219 Z M 8.844 -8.234 " /></symbol><symbol overflow="visible" id="f3_glyph2-4"><path style="stroke:none;" d="M 1.859 -0.875 C 1.75 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.859 0 L 4.625 0 C 7.016 0 9.344 -2.469 9.344 -5.109 C 9.344 -6.828 8.328 -8.094 6.625 -8.094 L 2.828 -8.094 C 2.609 -8.094 2.5 -8.094 2.5 -7.859 C 2.5 -7.75 2.609 -7.75 2.781 -7.75 C 3.5 -7.75 3.5 -7.656 3.5 -7.516 C 3.5 -7.5 3.5 -7.422 3.453 -7.25 Z M 4.359 -7.281 C 4.469 -7.719 4.516 -7.75 4.969 -7.75 L 6.281 -7.75 C 7.391 -7.75 8.406 -7.141 8.406 -5.5 C 8.406 -4.922 8.172 -2.859 7.016 -1.547 C 6.688 -1.156 5.797 -0.344 4.422 -0.344 L 3.078 -0.344 C 2.906 -0.344 2.891 -0.344 2.812 -0.359 C 2.688 -0.359 2.672 -0.391 2.672 -0.484 C 2.672 -0.562 2.703 -0.641 2.719 -0.75 Z M 4.359 -7.281 " /></symbol></g></defs><g id="f3_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 31.223 -74.773 L 127.599 -74.773 L 117.961 -19.357 L 21.45 -19.357 Z M 31.223 -74.773" transform="matrix(0.990863,0,0,-0.990863,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(79.998779%,39.99939%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 45.395 -74.773 C 45.395 -69.711 42.691 -65.032 38.307 -62.501 C 35.421 -60.833 32.043 -60.238 28.759 -60.817" transform="matrix(0.990863,0,0,-0.990863,0,0)" /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph0-1" x="34.336" y="60.831" /><use xlink:href="#f3_glyph0-2" x="40.135" y="60.831" /><use xlink:href="#f3_glyph0-2" x="45.935" y="60.831" /></g><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph1-1" x="51.734" y="56.532" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 31.941 74.09 C 31.941 73.535 31.492 73.082 30.938 73.082 C 30.379 73.082 29.93 73.535 29.93 74.09 C 29.93 74.648 30.379 75.098 30.938 75.098 C 31.492 75.098 31.941 74.648 31.941 74.09 Z M 31.941 74.09 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-1" x="17.981" y="86.446" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 127.441 74.09 C 127.441 73.535 126.988 73.082 126.434 73.082 C 125.879 73.082 125.426 73.535 125.426 74.09 C 125.426 74.648 125.879 75.098 126.434 75.098 C 126.988 75.098 127.441 74.648 127.441 74.09 Z M 127.441 74.09 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-2" x="130.692" y="86.446" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 117.891 19.18 C 117.891 18.625 117.441 18.172 116.883 18.172 C 116.328 18.172 115.875 18.625 115.875 19.18 C 115.875 19.734 116.328 20.188 116.883 20.188 C 117.441 20.188 117.891 19.734 117.891 19.18 Z M 117.891 19.18 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-3" x="121.143" y="14.92" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 22.258 19.18 C 22.258 18.625 21.809 18.172 21.254 18.172 C 20.695 18.172 20.246 18.625 20.246 19.18 C 20.246 19.734 20.695 20.188 21.254 20.188 C 21.809 20.188 22.258 19.734 22.258 19.18 Z M 22.258 19.18 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-4" x="7.04" y="14.92" /></g></g></svg></div></div></div></div></div><div class="options"><div class="short-ans-group"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_3_1" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_3_2')" onkeydown="movePrev(event, this, null)"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_3_2" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_3_3')" onkeydown="movePrev(event, this, 'P3_Cau_3_1')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_3_3" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_3_4')" onkeydown="movePrev(event, this, 'P3_Cau_3_2')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_3_4" oninput="this.value=this.value.replace('.', ','); moveNext(this, null)" onkeydown="movePrev(event, this, 'P3_Cau_3_3')"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Vì $AB\parallel CD$, hai góc trong cùng phía $A$, $D$ bù nhau. Suy ra $\widehat D=180^\circ-100^\circ=80^\circ$.</div></div></div>
+<div class="question"><div class="question-text"><div class="tp"><b>Câu 4:</b> Hai đường chéo của hình thoi $ABCD$ cắt nhau tại $O$. Biết $\widehat{ABC}=120^\circ$. Tính số đo góc $DAO$ theo đơn vị độ.</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="142.439pt" height="97.636pt" viewBox="0 0 142.439 97.636" version="1.2"><defs><g><symbol overflow="visible" id="f4_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f4_glyph0-1"><path style="stroke:none;" d="M 8.641 -5.219 C 8.641 -7.172 7.359 -8.375 5.688 -8.375 C 3.141 -8.375 0.578 -5.641 0.578 -2.891 C 0.578 -1.031 1.812 0.25 3.531 0.25 C 6.031 0.25 8.641 -2.359 8.641 -5.219 Z M 3.609 -0.031 C 2.625 -0.031 1.594 -0.734 1.594 -2.594 C 1.594 -3.672 1.984 -5.453 2.969 -6.641 C 3.828 -7.688 4.828 -8.125 5.625 -8.125 C 6.672 -8.125 7.688 -7.359 7.688 -5.641 C 7.688 -4.578 7.234 -2.922 6.438 -1.797 C 5.578 -0.578 4.484 -0.031 3.609 -0.031 Z M 3.609 -0.031 " /></symbol><symbol overflow="visible" id="f4_glyph0-2"><path style="stroke:none;" d="M 2.031 -1.328 C 1.609 -0.625 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.516 -0.031 C 1.859 -0.031 2.234 0 2.578 0 C 2.641 0 2.781 0 2.781 -0.219 C 2.781 -0.328 2.688 -0.344 2.625 -0.344 C 2.344 -0.375 2.125 -0.469 2.125 -0.75 C 2.125 -0.922 2.188 -1.047 2.344 -1.312 L 3.25 -2.812 L 6.281 -2.812 C 6.297 -2.703 6.297 -2.609 6.312 -2.5 C 6.344 -2.188 6.484 -0.953 6.484 -0.719 C 6.484 -0.375 5.875 -0.344 5.688 -0.344 C 5.562 -0.344 5.422 -0.344 5.422 -0.125 C 5.422 0 5.531 0 5.609 0 C 5.812 0 6.047 -0.031 6.25 -0.031 L 6.922 -0.031 C 7.656 -0.031 8.172 0 8.188 0 C 8.281 0 8.406 0 8.406 -0.219 C 8.406 -0.344 8.297 -0.344 8.125 -0.344 C 7.469 -0.344 7.453 -0.453 7.422 -0.812 L 6.688 -8.234 C 6.672 -8.484 6.625 -8.5 6.484 -8.5 C 6.375 -8.5 6.297 -8.484 6.188 -8.297 Z M 3.453 -3.156 L 5.844 -7.156 L 6.25 -3.156 Z M 3.453 -3.156 " /></symbol><symbol overflow="visible" id="f4_glyph0-3"><path style="stroke:none;" d="M 4.359 -7.328 C 4.469 -7.766 4.516 -7.781 4.984 -7.781 L 6.531 -7.781 C 7.875 -7.781 7.875 -6.641 7.875 -6.531 C 7.875 -5.578 6.906 -4.344 5.328 -4.344 L 3.625 -4.344 Z M 6.375 -4.25 C 7.672 -4.484 8.844 -5.391 8.844 -6.484 C 8.844 -7.422 8.031 -8.125 6.672 -8.125 L 2.859 -8.125 C 2.625 -8.125 2.531 -8.125 2.531 -7.906 C 2.531 -7.781 2.625 -7.781 2.812 -7.781 C 3.531 -7.781 3.531 -7.688 3.531 -7.562 C 3.531 -7.531 3.531 -7.469 3.484 -7.281 L 1.875 -0.875 C 1.781 -0.469 1.75 -0.344 0.922 -0.344 C 0.688 -0.344 0.578 -0.344 0.578 -0.125 C 0.578 0 0.641 0 0.875 0 L 4.969 0 C 6.781 0 8.188 -1.375 8.188 -2.578 C 8.188 -3.562 7.328 -4.156 6.375 -4.25 Z M 4.672 -0.344 L 3.078 -0.344 C 2.906 -0.344 2.875 -0.344 2.812 -0.359 C 2.672 -0.375 2.672 -0.391 2.672 -0.484 C 2.672 -0.578 2.688 -0.641 2.719 -0.75 L 3.547 -4.109 L 5.781 -4.109 C 7.188 -4.109 7.188 -2.797 7.188 -2.703 C 7.188 -1.562 6.156 -0.344 4.672 -0.344 Z M 4.672 -0.344 " /></symbol><symbol overflow="visible" id="f4_glyph0-4"><path style="stroke:none;" d="M 8.891 -8.281 C 8.891 -8.375 8.812 -8.375 8.781 -8.375 C 8.766 -8.375 8.719 -8.375 8.625 -8.266 L 7.797 -7.266 C 7.375 -7.984 6.734 -8.375 5.828 -8.375 C 3.266 -8.375 0.594 -5.781 0.594 -2.969 C 0.594 -0.984 1.984 0.25 3.734 0.25 C 4.672 0.25 5.516 -0.156 6.203 -0.734 C 7.234 -1.609 7.547 -2.766 7.547 -2.859 C 7.547 -2.969 7.453 -2.969 7.422 -2.969 C 7.312 -2.969 7.297 -2.891 7.281 -2.844 C 6.734 -0.984 5.125 -0.094 3.922 -0.094 C 2.672 -0.094 1.578 -0.906 1.578 -2.594 C 1.578 -2.969 1.688 -5.047 3.031 -6.609 C 3.688 -7.375 4.812 -8.031 5.938 -8.031 C 7.25 -8.031 7.828 -6.953 7.828 -5.734 C 7.828 -5.422 7.797 -5.172 7.797 -5.125 C 7.797 -5.016 7.922 -5.016 7.953 -5.016 C 8.078 -5.016 8.094 -5.031 8.141 -5.234 Z M 8.891 -8.281 " /></symbol><symbol overflow="visible" id="f4_glyph0-5"><path style="stroke:none;" d="M 1.875 -0.875 C 1.766 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.875 0 L 4.641 0 C 7.047 0 9.391 -2.484 9.391 -5.141 C 9.391 -6.859 8.375 -8.125 6.672 -8.125 L 2.844 -8.125 C 2.625 -8.125 2.516 -8.125 2.516 -7.906 C 2.516 -7.781 2.625 -7.781 2.797 -7.781 C 3.531 -7.781 3.531 -7.688 3.531 -7.562 C 3.531 -7.531 3.531 -7.469 3.484 -7.281 Z M 4.375 -7.328 C 4.484 -7.766 4.531 -7.781 5 -7.781 L 6.312 -7.781 C 7.422 -7.781 8.453 -7.172 8.453 -5.531 C 8.453 -4.938 8.219 -2.875 7.062 -1.562 C 6.734 -1.172 5.828 -0.344 4.453 -0.344 L 3.094 -0.344 C 2.922 -0.344 2.906 -0.344 2.828 -0.359 C 2.703 -0.375 2.688 -0.391 2.688 -0.484 C 2.688 -0.578 2.719 -0.641 2.734 -0.75 Z M 4.375 -7.328 " /></symbol></g></defs><g id="f4_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 19.965 -78.288 L 88.001 -78.288 L 122.018 -19.369 L 53.981 -19.369 Z M 19.965 -78.288" transform="matrix(0.996077,0,0,-0.996077,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,39.99939%,39.99939%);stroke-opacity:1;stroke-miterlimit:10;" d="M 19.965 -78.288 L 122.018 -19.369 M 88.001 -78.288 L 53.981 -19.369" transform="matrix(0.996077,0,0,-0.996077,0,0)" /><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 71.668 48.633 C 71.668 48.109 71.242 47.684 70.715 47.684 C 70.188 47.684 69.762 48.109 69.762 48.633 C 69.762 49.16 70.188 49.586 70.715 49.586 C 71.242 49.586 71.668 49.16 71.668 48.633 Z M 71.668 48.633 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-1" x="66.097" y="44.353" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 20.84 77.98 C 20.84 77.453 20.41 77.027 19.887 77.027 C 19.359 77.027 18.934 77.453 18.934 77.98 C 18.934 78.508 19.359 78.934 19.887 78.934 C 20.41 78.934 20.84 78.508 20.84 77.98 Z M 20.84 77.98 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-2" x="6.862" y="90.401" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 88.609 77.98 C 88.609 77.453 88.18 77.027 87.656 77.027 C 87.129 77.027 86.703 77.453 86.703 77.98 C 86.703 78.508 87.129 78.934 87.656 78.934 C 88.18 78.934 88.609 78.508 88.609 77.98 Z M 88.609 77.98 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-3" x="91.936" y="90.401" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 122.492 19.293 C 122.492 18.766 122.066 18.34 121.539 18.34 C 121.012 18.34 120.586 18.766 120.586 19.293 C 120.586 19.816 121.012 20.242 121.539 20.242 C 122.066 20.242 122.492 19.816 122.492 19.293 Z M 122.492 19.293 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-4" x="125.82" y="15.009" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 54.723 19.293 C 54.723 18.766 54.297 18.34 53.77 18.34 C 53.242 18.34 52.816 18.766 52.816 19.293 C 52.816 19.816 53.242 20.242 53.77 20.242 C 54.297 20.242 54.723 19.816 54.723 19.293 Z M 54.723 19.293 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-5" x="39.482" y="15.009" /></g></g></svg></div></div></div></div></div><div class="options"><div class="short-ans-group"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_4_1" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_4_2')" onkeydown="movePrev(event, this, null)"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_4_2" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_4_3')" onkeydown="movePrev(event, this, 'P3_Cau_4_1')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_4_3" oninput="this.value=this.value.replace('.', ','); moveNext(this, 'P3_Cau_4_4')" onkeydown="movePrev(event, this, 'P3_Cau_4_2')"><input type="text" class="short-ans-box" maxlength="1" id="P3_Cau_4_4" oninput="this.value=this.value.replace('.', ','); moveNext(this, null)" onkeydown="movePrev(event, this, 'P3_Cau_4_3')"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hình thoi là hình bình hành nên $\widehat{DAB}=180^\circ-120^\circ=60^\circ$. Đường chéo $AC$ là phân giác góc $DAB$, do đó $\widehat{DAO}=30^\circ$.</div></div></div>
+        <button type="button" class="submit-btn" id="submitBtn" onclick="submitQuiz()">Nộp Bài</button>
+        <button type="button" class="submit-btn" id="viewSolBtn" onclick="showPasswordPrompt()" style="background: #17a2b8;">Xem Đáp Án & Lời Giải</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <div id="passwordPrompt">
+        <h4>Mở Khóa Lời Giải</h4>
+        <p style="color: #856404; font-size: 14px; margin-top: 0;">Nhập mật khẩu từ Giáo viên để xem đáp án chi tiết.</p>
+        <input type="password" id="solPassword" placeholder="Nhập mật khẩu...">
+        <button type="button" onclick="checkPassword()">Xem</button>
+    </div>
+
+    <footer class="author-footer">Liên hệ NguyenVanDoai - 0936644768</footer>
+
+    <script>
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        if ((ua.indexOf("FBAN") === -1) && (ua.indexOf("FBAV") === -1) && (ua.indexOf("Zalo") === -1)) {
+            document.getElementById("zaloWarning").style.display = "none";
+        }
+
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzm0UEZDb41ICnXt3zv6jT7h4rhTdaUztutEs7wlZYigfPxZSFixCpqNUh-V846Gl0kXA/exec"; 
+        const correctAnswers = {"P1_Cau_1": "A", "P1_Cau_2": "A", "P1_Cau_3": "D", "P1_Cau_4": "C", "P1_Cau_5": "A", "P1_Cau_6": "B", "P1_Cau_7": "D", "P1_Cau_8": "C", "P1_Cau_9": "B", "P1_Cau_10": "B", "P1_Cau_11": "D", "P1_Cau_12": "C", "P2_Cau_1_a": "Đúng", "P2_Cau_1_b": "Sai", "P2_Cau_1_c": "Đúng", "P2_Cau_1_d": "Đúng", "P2_Cau_2_a": "Đúng", "P2_Cau_2_b": "Sai", "P2_Cau_2_c": "Đúng", "P2_Cau_2_d": "Sai", "P3_Cau_1": "5", "P3_Cau_2": "-6", "P3_Cau_3": "80", "P3_Cau_4": "30"};
+        let isSubmitted = false;
+        
+        function moveNext(current, nextId) {
+            if (current.value.length > 1) current.value = current.value.slice(0, 1);
+            if (current.value.length === 1 && nextId) document.getElementById(nextId).focus();
+        }
+        function movePrev(e, current, prevId) {
+            if (e.key === "Backspace" && current.value === "" && prevId) document.getElementById(prevId).focus();
+        }
+
+        // =====================================================================
+        // LƯU TRẠNG THÁI (tải lại trang không mất bài, không reset đồng hồ)
+        // Thêm ?reset=1 vào đường dẫn để xóa trạng thái khi giáo viên muốn thử lại.
+        // =====================================================================
+        function hashStr(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+        const STORE_KEY = 'quizstate:v2:' + location.pathname + '|' + document.title + '|' + hashStr(JSON.stringify(correctAnswers) + '|' + 90);
+        if (/[?&]reset=1(&|$)/.test(location.search)) { try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
+
+        function loadState() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { return null; } }
+        let state = loadState() || {};
+        function saveState(patch) {
+            Object.assign(state, patch);
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}   // bị chặn lưu (chế độ riêng tư...) thì chạy bằng bộ nhớ tạm
+        }
+        function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)); }
+
+        const DURATION_MS = 90 * 60 * 1000;
+        if (!state.endTime) saveState({ endTime: Date.now() + DURATION_MS });
+        if (!state.attemptId) saveState({ attemptId: newId() });
+
+        function formFields() { return Array.from(document.querySelectorAll('#studentName, #studentClass, #quizForm input, #quizForm textarea')); }
+        function collectAnswers() { return formFields().map(el => (el.type === 'radio' || el.type === 'checkbox') ? (el.checked ? 1 : 0) : el.value); }
+        function restoreAnswers(arr) {
+            const f = formFields();
+            if (!Array.isArray(arr) || arr.length !== f.length) return;
+            f.forEach((el, i) => { if (el.type === 'radio' || el.type === 'checkbox') el.checked = !!arr[i]; else el.value = arr[i]; });
+        }
+
+        let saveTimer;
+        function scheduleSave() {
+            if (isSubmitted) return;
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => saveState({ answers: collectAnswers() }), 250);
+        }
+        document.addEventListener('input', scheduleSave);
+        document.addEventListener('change', scheduleSave);
+        window.addEventListener('pagehide', () => { if (!isSubmitted) saveState({ answers: collectAnswers() }); });
+
+        const resDiv = document.getElementById('result');
+        function showResult(html) { resDiv.style.display = 'block'; resDiv.innerHTML = html; }
+        function lockForm() {
+            document.getElementById('submitBtn').style.display = 'none';
+            document.querySelectorAll('#quizForm input, #quizForm textarea, #studentName, #studentClass').forEach(el => el.disabled = true);
+        }
+        const scoreSpan = s => `<span style="font-size: 24px; color: red;">${s}</span>`;
+
+        // Gửi kết quả; mất mạng thì giữ lại và tự gửi lại (khi có mạng, hoặc mỗi 15 giây)
+        let sending = false;
+        function sendPayload() {
+            const finalScoreString = state.finalScore;
+            if (!GAS_URL) {
+                saveState({ sent: true });
+                showResult(`Đã chấm xong (chưa cấu hình nơi nhận kết quả).<br>Điểm của bạn: ${scoreSpan(finalScoreString)}`);
+                return;
+            }
+            if (sending) return;
+            sending = true;
+            fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                keepalive: true,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(state.payload)
+            }).then(() => {
+                sending = false;
+                saveState({ sent: true });
+                showResult(`Nộp bài thành công!<br>Điểm của bạn: ${scoreSpan(finalScoreString)}`);
+            }).catch(() => {
+                sending = false;
+                showResult(`Đã chấm xong nhưng <b>chưa gửi được</b> kết quả (mạng yếu).<br>Em hãy giữ nguyên trang này, bài sẽ tự gửi lại khi có mạng.<br>Điểm của bạn: ${scoreSpan(finalScoreString)}`);
+            });
+        }
+        function retryPending() { if (state.submitted && !state.sent) sendPayload(); }
+        window.addEventListener('online', retryPending);
+        setInterval(retryPending, 15000);
+
+        // Đồng hồ tính theo giờ kết thúc nên không lệch khi tab ở nền hoặc điện thoại khóa màn hình
+        const timerEl = document.getElementById("timer");
+        let timeoutFired = false;
+        const countdown = setInterval(tick, 500);
+        document.addEventListener('visibilitychange', tick);
+        function tick() {
+            if (isSubmitted) { clearInterval(countdown); return; }
+            const remain = Math.ceil((state.endTime - Date.now()) / 1000);
+            if (remain <= 0) {
+                if (timeoutFired) return;
+                timeoutFired = true;
+                clearInterval(countdown);
+                timerEl.innerHTML = "HẾT GIỜ!";
+                alert("Đã hết thời gian làm bài. Hệ thống tự động nộp bài!");
+                submitQuiz(true);
+            } else {
+                const m = Math.floor(remain / 60), s = remain % 60;
+                timerEl.innerHTML = m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
+            }
+        }
+
+        // Khôi phục khi mở lại trang
+        restoreAnswers(state.answers);
+        if (state.submitted) {
+            isSubmitted = true;
+            lockForm();
+            timerEl.innerHTML = "ĐÃ NỘP BÀI";
+            if (state.sent) showResult(`Nộp bài thành công!<br>Điểm của bạn: ${scoreSpan(state.finalScore)}`);
+            else { showResult('Đang gửi lại kết quả...'); retryPending(); }
+        } else {
+            tick();
+        }
+
+        function submitQuiz(autoSubmit = false) {
+            if (isSubmitted) return;
+            const name = document.getElementById('studentName').value.trim();
+            const className = document.getElementById('studentClass').value.trim();
+            
+            if (!autoSubmit && (!name || !className)) {
+                alert("Vui lòng nhập đầy đủ Họ tên và Lớp trước khi nộp!");
+                return;
+            }
+
+            isSubmitted = true;
+            if (typeof timerEl !== 'undefined' && timerEl) {
+                timerEl.innerHTML = "ĐÃ NỘP BÀI";
+            }
+            
+            const form = document.getElementById('quizForm');
+            let score = 0;
+            
+            let payload = {
+                'name': name || "Vô danh (Hết giờ)",
+                'className': className || "N/A"
+            };
+
+            for (let i = 1; i <= 12; i++) {
+                const qName = `P1_Cau_${i}`;
+                const selected = form.querySelector(`input[name="${qName}"]:checked`);
+                let ans = selected ? selected.value : "K";
+                const correctVal = correctAnswers[qName];
+                
+                let isCorrect = (selected && selected.value === correctVal);
+                if (isCorrect) score += 0.25;
+                
+                let statusStr = isCorrect ? "Đúng" : (selected ? "Sai" : "K");
+                payload[qName] = `${ans} (${statusStr})`;
+            }
+
+            const labels_tf = ['a', 'b', 'c', 'd'];
+            for (let i = 1; i <= 2; i++) {
+                let correctCount = 0;
+                let questionDetail = [];
+                
+                labels_tf.forEach(l => {
+                    const qName = `P2_Cau_${i}_${l}`;
+                    if (correctAnswers[qName]) {
+                        const selected = form.querySelector(`input[name="${qName}"]:checked`);
+                        let ans = selected ? selected.value : "K";
+                        const correctVal = correctAnswers[qName];
+                        let isSubCorrect = (selected && selected.value === correctVal);
+                        if (isSubCorrect) correctCount++;
+                        
+                        let subStatus = isSubCorrect ? "Đ" : (selected ? "S" : "-");
+                        questionDetail.push(`${l}:${ans}(${subStatus})`);
+                    }
+                });
+                
+                let p2ScoreEarned = 0;
+                if (correctCount === 1) p2ScoreEarned = 0.1;
+                else if (correctCount === 2) p2ScoreEarned = 0.25;
+                else if (correctCount === 3) p2ScoreEarned = 0.5;
+                else if (correctCount === 4) p2ScoreEarned = 1.0;
+                
+                score += p2ScoreEarned;
+                payload[`P2_Cau_${i}`] = `[${correctCount} ý đúng] ${questionDetail.join(' ')}`;
+            }
+
+            for (let i = 1; i <= 4; i++) {
+                const qName = `P3_Cau_${i}`;
+                if (correctAnswers[qName]) {
+                    let ans = "";
+                    for (let j = 1; j <= 12; j++) {
+                        const box = document.getElementById(`${qName}_${j}`);
+                        if (box && box.value) ans += box.value;
+                    }
+                    
+                    let studentAns = ans.replace(/,/g, '.').replace(/\s+/g, '');
+                    let trueAns = correctAnswers[qName].replace(/,/g, '.').replace(/\s+/g, '');
+                    let isCorrect = (studentAns === trueAns && studentAns !== "");
+                    
+                    if (isCorrect) score += 0.5;
+                    
+                    let statusStr = isCorrect ? "Đúng" : (studentAns !== "" ? "Sai" : "K");
+                    payload[qName] = `${studentAns || 'Bỏ trống'} (${statusStr})`;
+                }
+            }
+
+            const finalScoreString = `${score.toFixed(2)}/7`;
+            payload['score'] = score.toFixed(2);
+            payload['maxScore'] = '7';
+            payload['attemptId'] = state.attemptId;   // để Apps Script bỏ các lần gửi trùng
+
+            lockForm();
+            saveState({ answers: collectAnswers(), submitted: true, sent: false, payload: payload, finalScore: finalScoreString });
+            showResult('Đã chấm xong, đang gửi kết quả...');
+            sendPayload();
+        }
+
+        function showPasswordPrompt() {
+            document.getElementById('passwordPrompt').style.display = 'block';
+            document.getElementById('viewSolBtn').style.display = 'none';
+            document.getElementById('passwordPrompt').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function checkPassword() {
+            const entered = document.getElementById('solPassword').value;
+            if (entered === "lop8B3@B6deso2") {
+                document.getElementById('passwordPrompt').style.display = 'none';
+                revealSolutions();
+            } else {
+                alert("Mật khẩu không chính xác! Vui lòng liên hệ Giáo viên.");
+            }
+        }
+
+        function revealSolutions() {
+            isSubmitted = true;
+            
+            document.getElementById('submitBtn').style.display = 'none';
+            const allInputs = document.querySelectorAll('#quizForm input, #quizForm textarea');
+            allInputs.forEach(input => input.disabled = true);
+
+            const form = document.getElementById('quizForm');
+            
+            for (let i = 1; i <= 12; i++) {
+                const qName = `P1_Cau_${i}`;
+                const correctVal = correctAnswers[qName];
+                const allRadios = form.querySelectorAll(`input[name="${qName}"]`);
+                allRadios.forEach(radio => {
+                    const lbl = radio.closest('label');
+                    if (radio.value === correctVal) {
+                        lbl.style.backgroundColor = '#d4edda';
+                        lbl.style.borderColor = '#28a745';
+                    } else if (radio.checked) {
+                        lbl.style.backgroundColor = '#f8d7da';
+                        lbl.style.borderColor = '#dc3545';
+                    } else {
+                        lbl.style.opacity = '0.5';
+                    }
+                });
+            }
+
+            const labels_tf = ['a', 'b', 'c', 'd'];
+            for (let i = 1; i <= 2; i++) {
+                labels_tf.forEach(l => {
+                    const qName = `P2_Cau_${i}_${l}`;
+                    if (correctAnswers[qName]) {
+                        const correctVal = correctAnswers[qName];
+                        const allRadios = form.querySelectorAll(`input[name="${qName}"]`);
+                        allRadios.forEach(radio => {
+                            const lbl = radio.closest('label');
+                            if (radio.value === correctVal) {
+                                lbl.style.backgroundColor = '#d4edda';
+                                lbl.style.color = '#155724';
+                            } else if (radio.checked) {
+                                lbl.style.backgroundColor = '#f8d7da';
+                                lbl.style.color = '#721c24';
+                            } else {
+                                lbl.style.opacity = '0.5';
+                            }
+                        });
+                    }
+                });
+            }
+
+            for (let i = 1; i <= 4; i++) {
+                const qName = `P3_Cau_${i}`;
+                if (correctAnswers[qName]) {
+                    let ans = "";
+                    let boxes = [];
+                    for (let j = 1; j <= 12; j++) {
+                        const box = document.getElementById(`${qName}_${j}`);
+                        if (box) {
+                            boxes.push(box);
+                            if (box.value) ans += box.value;
+                        }
+                    }
+                    
+                    let studentAns = ans.replace(/,/g, '.').replace(/\s+/g, '');
+                    let trueAns = correctAnswers[qName].replace(/,/g, '.').replace(/\s+/g, '');
+                    let isCorrect = (studentAns === trueAns && studentAns !== "");
+                    
+                    boxes.forEach(box => {
+                        if (isCorrect) {
+                            box.style.backgroundColor = '#d4edda';
+                            box.style.borderColor = '#28a745';
+                            box.style.color = '#155724';
+                        } else {
+                            box.style.backgroundColor = '#f8d7da';
+                            box.style.borderColor = '#dc3545';
+                            box.style.color = '#721c24';
+                        }
+                    });
+
+                    const group = document.querySelector(`#${qName}_1`).closest('.options');
+                    let correctDiv = document.createElement('div');
+                    correctDiv.style.marginTop = '10px';
+                    correctDiv.innerHTML = `<span style="color:#28a745; font-weight:bold; font-size:16px;">Đáp án đúng: ${correctAnswers[qName]}</span>`;
+                    group.appendChild(correctDiv);
+                }
+            }
+
+            const solutions = document.querySelectorAll('.solution-box');
+            solutions.forEach(box => box.style.display = 'block');
+
+            // Chuẩn hóa lại SVG vừa hiện ra (lúc này mới đo được kích thước)
+            initMedia();
+            if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().then(initMedia);
+        }
+
+        const MEDIA_SCOPE = '.question, .solution-box';
+        // =====================================================================
+        // XỬ LÝ SVG / ẢNH (dùng chung cho quiz và trình chiếu)
+        // Mỗi template khai báo trước: const MEDIA_SCOPE = '.vung-chua-hinh, ...';
+        // =====================================================================
+        const MEDIA_SVG_SEL = MEDIA_SCOPE.split(',').map(s => s.trim() + ' svg').join(', ');
+        const MEDIA_ALL_SEL = MEDIA_SCOPE.split(',').map(s => s.trim()).flatMap(s => [s + ' svg', s + ' img']).join(', ');
+
+        // Chỉ nhận số thuần hoặc "px"; "10cm", "50%", "auto"... trả về NaN để không đọc sai đơn vị
+        function svgNum(v) {
+            if (v == null) return NaN;
+            const m = String(v).trim().match(/^([0-9]*\.?[0-9]+)(px)?$/i);
+            return m ? parseFloat(m[1]) : NaN;
+        }
+
+        // Đổi id trong từng SVG thành duy nhất để các hình không dùng nhầm clipPath/marker/gradient của nhau
+        let __svgSeq = 0;
+        function uniquifySvgIds(svg) {
+            if (svg.dataset.idsDone) return;
+            svg.dataset.idsDone = '1';
+            const withId = svg.querySelectorAll('[id]');
+            if (!withId.length) return;
+            const prefix = 'svg' + (++__svgSeq) + '_';
+            const map = {};
+            withId.forEach(n => { map[n.id] = prefix + n.id; });
+            const ids = Object.keys(map);
+            const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const urlRe = /url\(\s*(['"]?)#([^)'"\s]+)\1\s*\)/g;
+            const fixUrls = str => str.replace(urlRe, (m, q, id) => map[id] ? `url(${q}#${map[id]}${q})` : m);
+
+            svg.querySelectorAll('*').forEach(n => {
+                if (n.tagName.toLowerCase() === 'style') {
+                    let css = fixUrls(n.textContent);
+                    css = css.replace(new RegExp('#(' + ids.map(esc).join('|') + ')(?![\\w-])', 'g'), '#' + prefix + '$1');
+                    n.textContent = css;
+                    return;
+                }
+                Array.from(n.attributes).forEach(a => {
+                    if (a.name === 'id' || a.value.indexOf('#') < 0) return;
+                    if ((a.name === 'href' || a.name === 'xlink:href') && a.value.charAt(0) === '#') {
+                        const id = a.value.slice(1);
+                        if (map[id]) n.setAttribute(a.name, '#' + map[id]);
+                    } else {
+                        const nv = fixUrls(a.value);
+                        if (nv !== a.value) n.setAttribute(a.name, nv);
+                    }
+                });
+            });
+            withId.forEach(n => { n.id = map[n.id]; });
+        }
+
+        // Chuẩn hóa SVG: id duy nhất + thêm viewBox nếu thiếu để SVG co giãn đúng
+        function normalizeSvgs() {
+            document.querySelectorAll(MEDIA_SVG_SEL).forEach(svg => {
+                if (svg.closest('mjx-container')) return;
+                uniquifySvgIds(svg);
+                if (svg.dataset.normalized) return;
+                const w = svgNum(svg.getAttribute('width'));
+                const h = svgNum(svg.getAttribute('height'));
+
+                if (!svg.hasAttribute('viewBox')) {
+                    if (w > 0 && h > 0) {
+                        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+                    } else {
+                        try {   // đang bị ẩn thì getBBox lỗi -> sẽ thử lại khi phần chứa nó hiện ra
+                            const b = svg.getBBox();
+                            if (b.width && b.height)
+                                svg.setAttribute('viewBox', `${b.x - 2} ${b.y - 2} ${b.width + 4} ${b.height + 4}`);
+                        } catch (e) { return; }
+                    }
+                }
+                if (svg.hasAttribute('viewBox')) {
+                    if (w > 0) { svg.style.width = '100%'; svg.style.maxWidth = w + 'px'; }  // kích thước gốc làm trần
+                    svg.removeAttribute('height');
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                    svg.dataset.normalized = '1';
+                }
+            });
+        }
+
+        // Zoom: phóng to bằng cách tăng chiều rộng thật, khung tự cao theo, cuộn bằng thanh cuộn gốc
+        const __zoomRefresh = new Set();
+        let __zoomResizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(__zoomResizeTimer);
+            __zoomResizeTimer = setTimeout(() => __zoomRefresh.forEach(fn => fn()), 150);
+        });
+
+        function setupImageZoom() {
+            document.querySelectorAll(MEDIA_ALL_SEL).forEach(el => {
+                if (el.closest('.zoom-container') || el.closest('mjx-container') || el.classList.contains('no-zoom')) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'zoom-container';
+                const viewport = document.createElement('div');
+                viewport.className = 'zoom-viewport';
+                el.parentNode.insertBefore(wrapper, el);
+                viewport.appendChild(el);
+                wrapper.appendChild(viewport);
+                el.classList.add('zoom-media');
+
+                let scale = 1;
+                const STEP = 0.25, MIN = 1, MAX = 4;
+
+                const toolbar = document.createElement('div');
+                toolbar.className = 'zoom-toolbar';
+                const mk = (txt, title) => {
+                    const b = document.createElement('button');
+                    b.type = 'button'; b.className = 'zoom-btn'; b.innerHTML = txt; b.title = title;
+                    b.setAttribute('aria-label', title);
+                    return b;
+                };
+                const btnIn = mk('➕', 'Phóng to'), btnOut = mk('➖', 'Thu nhỏ'), btnReset = mk('↺', 'Mặc định');
+
+                function apply(newScale) {
+                    const cx = viewport.scrollWidth ? (viewport.scrollLeft + viewport.clientWidth / 2) / viewport.scrollWidth : 0.5;
+                    const cy = viewport.scrollHeight ? (viewport.scrollTop + viewport.clientHeight / 2) / viewport.scrollHeight : 0.5;
+
+                    scale = Math.min(MAX, Math.max(MIN, Math.round(newScale * 100) / 100));
+
+                    el.classList.remove('zoomed');
+                    el.style.removeProperty('--zw');
+                    const base = el.getBoundingClientRect().width;   // chiều rộng vừa khung hiện tại
+                    if (scale > 1 && base > 0) {
+                        el.style.setProperty('--zw', (base * scale) + 'px');
+                        el.classList.add('zoomed');
+                        viewport.scrollLeft = cx * viewport.scrollWidth - viewport.clientWidth / 2;
+                        viewport.scrollTop = cy * viewport.scrollHeight - viewport.clientHeight / 2;
+                    }
+                    viewport.classList.toggle('can-pan', el.classList.contains('zoomed'));
+                    btnIn.disabled = scale >= MAX;
+                    btnOut.disabled = scale <= MIN;
+                }
+
+                btnIn.onclick = () => apply(scale + STEP);
+                btnOut.onclick = () => apply(scale - STEP);
+                btnReset.onclick = () => apply(1);
+                __zoomRefresh.add(() => { if (scale > 1) apply(scale); });
+
+                // Ctrl + lăn chuột để zoom, nhấp đúp để phóng to/reset
+                viewport.addEventListener('wheel', e => {
+                    if (!e.ctrlKey) return;
+                    e.preventDefault();
+                    apply(scale + (e.deltaY < 0 ? STEP : -STEP));
+                }, { passive: false });
+                viewport.addEventListener('dblclick', () => apply(scale > 1 ? 1 : 2));
+
+                // Kéo thả bằng chuột (cảm ứng dùng cuộn gốc của trình duyệt)
+                let dragging = false, sx = 0, sy = 0, sl = 0, st = 0;
+                viewport.addEventListener('pointerdown', e => {
+                    if (e.pointerType !== 'mouse' || !el.classList.contains('zoomed')) return;
+                    dragging = true; sx = e.clientX; sy = e.clientY; sl = viewport.scrollLeft; st = viewport.scrollTop;
+                    viewport.setPointerCapture(e.pointerId);
+                    viewport.classList.add('dragging');
+                });
+                viewport.addEventListener('pointermove', e => {
+                    if (!dragging) return;
+                    viewport.scrollLeft = sl - (e.clientX - sx);
+                    viewport.scrollTop = st - (e.clientY - sy);
+                });
+                const stop = () => { dragging = false; viewport.classList.remove('dragging'); };
+                viewport.addEventListener('pointerup', stop);
+                viewport.addEventListener('pointercancel', stop);
+
+                toolbar.append(btnIn, btnOut, btnReset);
+                wrapper.appendChild(toolbar);
+                apply(1);
+            });
+        }
+
+        // Bọc từng <table> trong khung cuộn ngang (bỏ qua bảng của MathJax hoặc bảng đã được bọc)
+        const MEDIA_TABLE_SEL = MEDIA_SCOPE.split(',').map(s => s.trim() + ' table').join(', ');
+        function wrapTables() {
+            document.querySelectorAll(MEDIA_TABLE_SEL).forEach(t => {
+                if (t.closest('mjx-container, .table-scroll, .table-responsive')) return;
+                if (!t.parentNode) return;
+                const w = document.createElement('div');
+                w.className = 'table-scroll';
+                t.parentNode.insertBefore(w, t);
+                w.appendChild(t);
+            });
+        }
+
+        function initMedia() { wrapTables(); normalizeSvgs(); setupImageZoom(); }
+
+        window.addEventListener('load', () => setTimeout(initMedia, 300));
+
+    </script>
+</body>
+</html>
