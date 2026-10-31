@@ -184,7 +184,7 @@
             document.getElementById("zaloWarning").style.display = "none";
         }
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzm0UEZDb41ICnXt3zv6jT7h4rhTdaUztutEs7wlZYigfPxZSFixCpqNUh-V846Gl0kXA/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw0R_PMJFBYgVt048qRKViQrSPrU6j7DQ3IYcyrz6_CO4iRxu-CwEK8rwf9M6WVzUL5gw/exec"; 
         const correctAnswers = {"P1_Cau_1": "C", "P1_Cau_2": "D", "P1_Cau_3": "A", "P1_Cau_4": "A", "P1_Cau_5": "C", "P1_Cau_6": "C", "P1_Cau_7": "D", "P1_Cau_8": "D", "P1_Cau_9": "B", "P1_Cau_10": "A", "P1_Cau_11": "B", "P1_Cau_12": "B", "P2_Cau_1_a": "Đúng", "P2_Cau_1_b": "Sai", "P2_Cau_1_c": "Đúng", "P2_Cau_1_d": "Đúng", "P2_Cau_2_a": "Đúng", "P2_Cau_2_b": "Sai", "P2_Cau_2_c": "Đúng", "P2_Cau_2_d": "Sai", "P3_Cau_1": "6", "P3_Cau_2": "4", "P3_Cau_3": "80", "P3_Cau_4": "3"};
         let isSubmitted = false;
         
@@ -201,7 +201,7 @@
         // Thêm ?reset=1 vào đường dẫn để xóa trạng thái khi giáo viên muốn thử lại.
         // =====================================================================
         function hashStr(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
-        const STORE_KEY = 'quizstate:v2:' + location.pathname + '|' + document.title + '|' + hashStr(JSON.stringify(correctAnswers) + '|' + 90);
+        const STORE_KEY = 'quizstate:v2:' + location.pathname + '|' + document.title + '|' + hashStr(JSON.stringify(correctAnswers) + '|' + 60);
         if (/[?&]reset=1(&|$)/.test(location.search)) { try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
 
         function loadState() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { return null; } }
@@ -212,7 +212,7 @@
         }
         function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)); }
 
-        const DURATION_MS = 90 * 60 * 1000;
+        const DURATION_MS = 60 * 60 * 1000;
         if (!state.endTime) saveState({ endTime: Date.now() + DURATION_MS });
         if (!state.attemptId) saveState({ attemptId: newId() });
 
