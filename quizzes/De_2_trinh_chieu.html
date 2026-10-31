@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÔN THI GIỮA KÌ I - THẦY ĐOÀI - Trình Chiếu</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #eccfa0; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .slide-container { width: 95vw; height: 95vh; height: 95dvh; background: #fff; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; position: relative; padding: 10px; box-sizing: border-box; }
+        .slide-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0056b3; padding-bottom: 10px; margin-bottom: 20px; flex-shrink: 0; }
+        .slide-header h2 { margin: 0; color: #0056b3; font-size: var(--fs-title); }
+        
+        /* --- CỠ CHỮ CO GIÃN THEO MÀN HÌNH ---
+           --u kết hợp chiều rộng và chiều cao nên màn hình dọc (điện thoại) và ngang đều vừa mắt;
+           clamp() chặn nhỏ nhất để dễ đọc trên điện thoại, chặn lớn nhất để không phình trên màn hình lớn. */
+        :root {
+            --u: calc(0.65vw + 0.65vh);
+            --fs-title: clamp(16px, calc(var(--u) * 1.8), 34px);
+            --fs-q: clamp(16px, calc(var(--u) * 2), 40px);
+            --fs-q-sm: clamp(15px, calc(var(--u) * 1.6), 34px);
+            --fs-sol: clamp(15px, calc(var(--u) * 1.8), 36px);
+            --fs-opt: clamp(14px, calc(var(--u) * 1.6), 32px);
+            --fs-btn: clamp(13px, calc(var(--u) * 1.25), 22px);
+            --fs-toc-h: clamp(16px, calc(var(--u) * 1.5), 28px);
+            --fs-toc: clamp(13px, calc(var(--u) * 1.2), 22px);
+            --fs-toc-num: clamp(19px, calc(var(--u) * 2), 30px);   /* số câu trong mục lục */
+            --box-w: clamp(34px, calc(var(--u) * 3.2), 64px);
+            --box-h: clamp(42px, calc(var(--u) * 4), 80px);
+        }
+        html { -webkit-text-size-adjust: 100%; }
+        @supports (height: 100dvh) { body, html { height: 100dvh; } }
+
+        /* BẬT TÍNH NĂNG CUỘN CHO NỘI DUNG SLIDE */
+        .slide-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; overflow-y: auto; overflow-x: hidden; padding-right: 7px; padding-bottom: 30px; }
+        /* Trang trí thanh cuộn */
+        .slide-content::-webkit-scrollbar { width: 8px; }
+        .slide-content::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        .slide-content::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        .question-box { font-size: var(--fs-q); line-height: 1.5; transition: all 0.3s ease; }
+        .solution-box { display: none; font-size: var(--fs-sol); line-height: 1.4; margin-top: 15px; padding: 15px; background: #e2f3f5; border-left: 5px solid #17a2b8; border-radius: 5px; flex-shrink: 0; }
+        
+        /* Trắc nghiệm 1 lựa chọn */
+        .options { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+        .options div { flex: 1 1 45%; background: #f9f9f9; padding: 10px; border: 2px solid #ddd; border-radius: 5px; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+        .options div:hover:not(.disabled) { background: #e9e9e9; }
+        .options div.selected { border-color: #007bff; background: #e2eefb; }
+        .options div.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .options div.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .options div.disabled { cursor: not-allowed; opacity: 0.8; }
+        
+        /* Trắc nghiệm Đúng/Sai */
+        .tf-row { display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; padding: 8px; margin-top: 10px; border: 2px solid #ddd; border-radius: 3px; }
+        .tf-row .content { flex-grow: 1; padding-right: 15px; font-size: var(--fs-sol); }
+        .tf-actions { display: flex; gap: 10px; }
+        .tf-btn { padding: 10px 20px; font-size: var(--fs-opt); font-weight: bold; border: 2px solid #ccc; border-radius: 5px; cursor: pointer; background: #fff; transition: 0.2s; user-select: none; }
+        .tf-btn.selected { border-color: #007bff; background: #e2eefb; color: #0056b3; }
+        .tf-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+        .tf-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        
+        /* Trắc nghiệm Trả lời ngắn */
+        .short-ans-group-slide { display: flex; gap: 5px; margin-top: 15px; }
+        .short-ans-box-slide { width: var(--box-w); height: var(--box-h); font-size: var(--fs-sol); text-align: center; border: 1px solid #007bff; border-radius: 8px; font-weight: bold; color: #0056b3; box-sizing: border-box; }
+        .short-ans-box-slide.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+        .short-ans-box-slide.incorrect { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .true-ans-text { display: none; color: #28a745; font-weight: bold; font-size: var(--fs-sol); margin-top: 15px; }
+        
+        /* CSS Nút điều khiển */
+        .controls { position: absolute; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; background: #fff; padding-left: 10px; box-shadow: -10px 0px 10px white; }
+        button { padding: 10px 20px; font-size: var(--fs-btn); cursor: pointer; border: none; border-radius: 2px; font-weight: bold; transition: 0.3s; }
+        .btn-nav { background: #007bff; color: white; }
+        .btn-nav:hover { background: #0056b3; }
+        .btn-nav:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-sol { background: #28a745; color: white; }
+        .btn-sol:hover { background: #218838; }
+        .btn-check { background: #ffc107; color: black; }
+        .btn-check:hover:not(:disabled) { background: #e0a800; }
+        .btn-check:disabled { background: #ccc; color: #666; cursor: not-allowed; }
+        
+        .scale-down .question-box { font-size: var(--fs-q-sm); }
+        .scale-down .options div, .scale-down .tf-row .content, .scale-down .tf-btn { font-size: var(--fs-opt); }
+        
+        mjx-container { max-width: 100%; }
+        /* --- SVG / ẢNH + KHUNG ZOOM DÙNG CHUNG (khung tự co giãn, không đặt chiều cao cố định) --- */
+        :root {
+            --zoom-accent: #1e88e5; --zoom-accent-hover: #1565c0;
+            --zoom-border: #b3d4fc; --zoom-bar-bg: #eef6fc; --zoom-max-h: none;
+        }
+        svg { max-width: 100%; height: auto; display: block; margin: 10px auto; overflow: visible; }
+        svg text { font-family: Arial, sans-serif; }
+        img { max-width: 100%; height: auto; }
+        .zoom-container { display: flex; align-items: flex-start; gap: 10px; margin: 15px 0; }
+        .zoom-viewport {
+            flex: 1 1 auto; min-width: 0;
+            overflow: auto; -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--zoom-border); border-radius: 4px; background: #fff;
+            box-sizing: border-box; padding: 4px;
+        }
+        /* chỉ giới hạn chiều cao và giữ cuộn bên trong khi ảnh đang được phóng to */
+        .zoom-viewport.can-pan { cursor: grab; max-height: var(--zoom-max-h); overscroll-behavior: contain; }
+        .zoom-viewport.dragging { cursor: grabbing; user-select: none; }
+        .zoom-toolbar { display: flex; flex-direction: column; gap: 5px; background: var(--zoom-bar-bg); padding: 5px; border-radius: 4px; border: 1px solid var(--zoom-border); flex-shrink: 0; }
+        .zoom-btn { background: var(--zoom-accent); color: #fff; border: none; padding: 6px 10px; font-size: 14px; border-radius: 4px; cursor: pointer; transition: background .2s, opacity .2s; white-space: nowrap; }
+        .zoom-btn:hover:not(:disabled) { background: var(--zoom-accent-hover); }
+        .zoom-btn:disabled { background: #ccc; cursor: not-allowed; opacity: .6; }
+        .zoom-media { display: block; margin: 0 auto; max-width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+        .zoom-media.zoomed { width: var(--zw) !important; max-width: none !important; height: auto !important; }
+        /* --- BẢNG DÀI: bọc trong khung cuộn ngang, không làm tràn lề --- */
+        .table-scroll { display: block; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 10px 0; }
+        .table-scroll > table { margin: 0; max-width: 100%; border-collapse: collapse; }
+        .table-scroll th, .table-scroll td { overflow-wrap: break-word; }
+
+        :root { --zoom-accent: #17a2b8; --zoom-accent-hover: #138496; --zoom-border: #ced4da; --zoom-bar-bg: #f8f9fa; --zoom-max-h: 70vh; }
+        .slide { display: none; height: 100%; flex-direction: column; }
+        .slide.active { display: flex; }
+
+
+        .slide-counter { align-self: center; font-weight: bold; color: #555; font-size: var(--fs-btn); white-space: nowrap; min-width: 3.6em; text-align: center; }
+        .tf-row { flex-wrap: wrap; gap: 8px; }
+
+        @media (max-width: 700px) {
+            .slide-container { width: 100vw; height: 100vh; height: 100dvh; border-radius: 0; padding: 8px; }
+            .slide-header { margin-bottom: 10px; padding-bottom: 6px; }
+            .options div { flex-basis: 100%; }
+            .slide { height: auto; flex: 1 1 auto; min-height: 0; }
+            .slide-content { padding-bottom: 10px; }
+            .controls { position: static; width: 100%; box-shadow: none; padding: 8px 0 0; background: transparent; flex-shrink: 0; justify-content: space-between; }
+            .controls button { flex: 1; padding: 10px 6px; }
+            .controls .btn-fs { flex: 0 0 auto; }
+        }
+        @media (max-height: 500px) {
+            .slide-header { margin-bottom: 8px; padding-bottom: 6px; }
+            .slide-content { padding-bottom: 50px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+
+        .author-footer { position: absolute; left: 14px; bottom: 24px; max-width: 38%; z-index: 90; background: #fff; padding: 2px 10px 2px 0; color: #6b7280; font-size: clamp(11px, calc(var(--u) * 0.9), 16px); line-height: 1.3; }
+        .author-footer:empty { display: none; }
+        @media (max-width: 700px) {
+            .author-footer { position: static; max-width: 100%; text-align: center; padding: 6px 0 0; flex-shrink: 0; }
+        }
+
+        /* --- MỤC LỤC: tấm trượt từ dưới lên, có trạng thái từng câu --- */
+        .btn-toc { background: #17a2b8; color: white; cursor: pointer; }
+        .slide-container:focus { outline: none; }
+
+        .toc-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            display: flex; justify-content: center; align-items: flex-end;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+        .toc-content {
+            background: #fff; width: 80vw; max-width: 900px; max-height: 85vh; max-height: 85dvh;
+            border-radius: 15px 15px 0 0; padding: 12px 25px 0;
+            display: flex; flex-direction: column; box-sizing: border-box;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.3);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .toc-modal.active { opacity: 1; visibility: visible; }
+        .toc-modal.active .toc-content { transform: translateY(0); }
+
+        .toc-handle { flex-shrink: 0; padding: 4px 0 10px; touch-action: none; cursor: grab; }
+        .toc-handle span { display: block; width: 46px; height: 5px; border-radius: 3px; background: #cbd5e1; margin: 0 auto; }
+        .toc-content h3 { flex-shrink: 0; margin: 0 0 4px; color: #0056b3; font-size: var(--fs-toc-h); text-align: center; }
+        .toc-summary { flex-shrink: 0; text-align: center; color: #333; font-size: var(--fs-btn); margin: 2px 0 8px; }
+        .toc-legend { flex-shrink: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: center; margin-bottom: 8px; font-size: clamp(11px, calc(var(--u) * 0.9), 15px); }
+        .toc-legend span { padding: 1px 9px; border: 2px solid; border-radius: 12px; white-space: nowrap; }
+
+        .toc-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 4px 2px 8px; }
+        .toc-group-title { margin: 12px 0 4px; color: #495057; font-size: var(--fs-btn); }
+        .toc-group-title:first-child { margin-top: 2px; }
+        .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 8px; padding: 8px; }
+
+        .toc-item {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            min-height: 44px; padding: 2px; border: 2px solid #007bff; border-radius: 6px;
+            background: #e2eefb; color: #0056b3; font-family: inherit; font-weight: bold; font-size: var(--fs-toc-num);
+            line-height: 1; cursor: pointer; user-select: none; transition: filter .15s, transform .15s;
+        }
+        /* ký hiệu trạng thái: dấu nhỏ ở góc trên bên phải để ô thấp, số to */
+        .toc-item .m { position: absolute; top: 1px; right: 4px; font-size: 11px; line-height: 1; }
+        .toc-item:hover { filter: brightness(0.94); transform: translateY(-1px); }
+        .toc-item:focus-visible { outline: 3px solid #ff9800; outline-offset: 2px; }
+        .toc-item.current { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #0056b3; }
+        .toc-s-correct { background: #d4edda; border-color: #28a745; color: #155724; }
+        .toc-s-wrong   { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .toc-s-partial { background: #fff3cd; border-color: #ff9800; color: #7a4b00; }
+        .toc-s-picked  { background: #fffbe6; border-style: dashed; border-color: #d39e00; color: #7a5c00; }
+        .toc-s-none    { background: #f1f3f5; border-color: #adb5bd; color: #495057; }
+        .toc-s-empty   { background: #e2eefb; border-color: #007bff; color: #0056b3; }
+
+        .toc-footer { flex-shrink: 0; display: flex; justify-content: center; padding: 10px 0 calc(12px + env(safe-area-inset-bottom)); }
+        .toc-close { background: #dc3545; font-size: var(--fs-btn); min-width: 120px; }
+        .toc-close:hover { background: #b02a37; }
+
+        @media (max-width: 700px) {
+            .toc-content { width: 100vw; max-width: none; max-height: 88vh; max-height: 88dvh; padding: 8px 14px 0; }
+            .toc-grid { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 6px; padding: 6px; }
+            .toc-item { min-height: 42px; }
+        }
+        @media (max-height: 500px) {
+            .toc-content { max-height: 96vh; max-height: 96dvh; }
+            .toc-legend { display: none; }
+        }
+
+        
+        /* ===== Bổ sung của bộ chuyển đổi TeX2HTML (PyQt6) ===== */
+        .tp { margin: 6px 0; }
+        .center { text-align: center; }
+        .figure svg, .figure img { max-width: 100%; height: auto; }
+        .fig-error { color: #b00020; border: 1px dashed #b00020; padding: 6px 10px; text-align: center; margin: 8px 0; font-size: 14px; }
+        .fbox { border: 1px solid currentColor; padding: 0 4px; }
+        blockquote { margin: 8px 20px; }
+        img { max-width: 100%; height: auto; }
+        ul, ol { margin: 6px 0; padding-left: 24px; }
+        ul.desc, li.cl { list-style: none; }
+        li.cl .lbl { font-weight: bold; margin-right: .4em; }
+        ol[class^="paren-"] { list-style: none; counter-reset: pc; padding-left: 2.2em; }
+        ol[class^="paren-"] > li { counter-increment: pc; position: relative; margin: 4px 0; }
+        ol[class^="paren-"] > li::before { position: absolute; left: -2.2em; width: 2em; text-align: right; font-weight: bold; }
+        ol.paren-a > li::before { content: counter(pc, lower-alpha) ")"; }
+        ol.paren-A > li::before { content: counter(pc, upper-alpha) ")"; }
+        ol.paren-i > li::before { content: counter(pc, lower-roman) ")"; }
+        ol.paren-I > li::before { content: counter(pc, upper-roman) ")"; }
+        ol.paren-1 > li::before { content: counter(pc, decimal) ")"; }
+        table.tex-table { border-collapse: collapse; margin: 8px auto; }
+        table.tex-table td { padding: 4px 10px; }
+        table.tex-table.bordered td { border: 1px solid #555; }
+
+
+    </style>
+
+    <script>
+        window.MathJax = {
+          tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']], processEscapes: true, macros: {"wideparen": ["\\overset{\\frown}{#1}", 1], "overarc": ["\\overset{\\frown}{#1}", 1]} },
+          options: { enableMenu: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+</head>
+<body>
+    <div class="slide-container" id="mainContainer" tabindex="-1">
+        <div class="slide" id="slide-0" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 1</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-0')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-0')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Biểu thức nào sau đây là đơn thức?</div><div class='options'><div onclick="selectOption(this, 'slide-0')" data-correct='true'><b>A.</b> $2027yz$</div><div onclick="selectOption(this, 'slide-0')"><b>B.</b> $2x+y$</div><div onclick="selectOption(this, 'slide-0')"><b>C.</b> $\dfrac{x}{y}$</div><div onclick="selectOption(this, 'slide-0')"><b>D.</b> $(x+1)y$</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $2027yz$ là tích của một số với các biến. Các biểu thức còn lại có phép cộng các hạng tử không đồng dạng hoặc có biến ở mẫu.</div></div></div></div>
+<div class="slide" id="slide-1" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 2</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-1')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-1')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Biểu thức nào sau đây <b>không</b> phải là đơn thức?</div><div class='options'><div onclick="selectOption(this, 'slide-1')" data-correct='true'><b>A.</b> $\dfrac{x^2+1}{xy}$</div><div onclick="selectOption(this, 'slide-1')"><b>B.</b> $-3x^2y$</div><div onclick="selectOption(this, 'slide-1')"><b>C.</b> $\dfrac{1}{2}xy^3$</div><div onclick="selectOption(this, 'slide-1')"><b>D.</b> $7$</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\dfrac{x^2+1}{xy}$ có biến ở mẫu và không thu gọn thành một đơn thức. Một số thực, chẳng hạn $7$, cũng là một đơn thức.</div></div></div></div>
+<div class="slide" id="slide-2" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 3</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-2')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-2')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Cho $a$, $b$ là hai hằng số khác $0$; $x$, $y$, $z$ là các biến. Phần biến của đơn thức $100abx^2yz$ là</div><div class='options'><div onclick="selectOption(this, 'slide-2')"><b>A.</b> $abx^2yz$</div><div onclick="selectOption(this, 'slide-2')"><b>B.</b> $100ab$</div><div onclick="selectOption(this, 'slide-2')"><b>C.</b> $xyz$</div><div onclick="selectOption(this, 'slide-2')" data-correct='true'><b>D.</b> $x^2yz$</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Vì $a$, $b$ là hằng số nên hệ số là $100ab$; phần biến là $x^2yz$.</div></div></div></div>
+<div class="slide" id="slide-3" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 4</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-3')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-3')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Biểu thức nào sau đây <b>không</b> phải là đa thức theo biến $x$?</div><div class='options'><div onclick="selectOption(this, 'slide-3')"><b>A.</b> $x^2-2x+3$</div><div onclick="selectOption(this, 'slide-3')"><b>B.</b> $\dfrac{x^2}{3}-2$</div><div onclick="selectOption(this, 'slide-3')" data-correct='true'><b>C.</b> $x-2+\dfrac{3}{x}$</div><div onclick="selectOption(this, 'slide-3')"><b>D.</b> $x(x-2)+3$</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hạng tử $\dfrac{3}{x}$ chứa biến ở mẫu nên biểu thức đã cho không phải là đa thức theo $x$.</div></div></div></div>
+<div class="slide" id="slide-4" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 5</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-4')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-4')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Một đẳng thức được gọi là hằng đẳng thức nếu đẳng thức đó đúng</div><div class='options'><div onclick="selectOption(this, 'slide-4')" data-correct='true'><b>A.</b> với mọi giá trị của các biến thuộc tập xác định.</div><div onclick="selectOption(this, 'slide-4')"><b>B.</b> chỉ với một giá trị của biến.</div><div onclick="selectOption(this, 'slide-4')"><b>C.</b> chỉ khi các biến đều dương.</div><div onclick="selectOption(this, 'slide-4')"><b>D.</b> chỉ khi các biến bằng nhau.</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hằng đẳng thức là đẳng thức đúng với mọi giá trị của các biến mà hai vế đều xác định.</div></div></div></div>
+<div class="slide" id="slide-5" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 6</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-5')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-5')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Biểu thức $4x^2+4xy+y^2$ bằng</div><div class='options'><div onclick="selectOption(this, 'slide-5')"><b>A.</b> $(4x+y)^2$</div><div onclick="selectOption(this, 'slide-5')" data-correct='true'><b>B.</b> $(2x+y)^2$</div><div onclick="selectOption(this, 'slide-5')"><b>C.</b> $(2x-y)^2$</div><div onclick="selectOption(this, 'slide-5')"><b>D.</b> $(x+2y)^2$</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Ta có $4x^2+4xy+y^2=(2x)^2+2\cdot2x\cdot y+y^2=(2x+y)^2$.</div></div></div></div>
+<div class="slide" id="slide-6" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 7</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-6')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-6')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Tứ giác lồi $ABCD$ có $\widehat A=100^\circ$, $\widehat B=80^\circ$, $\widehat C=110^\circ$. Số đo góc $D$ là</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.066pt" height="142.599pt" viewBox="0 0 149.066 142.599" version="1.2"><defs><g><symbol overflow="visible" id="f1_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f1_glyph0-1"><path style="stroke:none;" d="M 2.016 -1.312 C 1.609 -0.625 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.516 -0.031 C 1.859 -0.031 2.234 0 2.562 0 C 2.641 0 2.781 0 2.781 -0.219 C 2.781 -0.328 2.688 -0.344 2.609 -0.344 C 2.344 -0.375 2.109 -0.469 2.109 -0.75 C 2.109 -0.922 2.188 -1.047 2.344 -1.312 L 3.234 -2.797 L 6.266 -2.797 C 6.281 -2.703 6.281 -2.594 6.297 -2.5 C 6.328 -2.188 6.469 -0.953 6.469 -0.719 C 6.469 -0.375 5.859 -0.344 5.672 -0.344 C 5.547 -0.344 5.422 -0.344 5.422 -0.125 C 5.422 0 5.516 0 5.594 0 C 5.797 0 6.031 -0.031 6.234 -0.031 L 6.906 -0.031 C 7.641 -0.031 8.156 0 8.172 0 C 8.25 0 8.391 0 8.391 -0.219 C 8.391 -0.344 8.281 -0.344 8.094 -0.344 C 7.453 -0.344 7.438 -0.453 7.391 -0.812 L 6.672 -8.219 C 6.656 -8.453 6.609 -8.484 6.469 -8.484 C 6.359 -8.484 6.281 -8.453 6.172 -8.281 Z M 3.438 -3.141 L 5.828 -7.141 L 6.234 -3.141 Z M 3.438 -3.141 " /></symbol><symbol overflow="visible" id="f1_glyph0-2"><path style="stroke:none;" d="M 4.344 -7.297 C 4.453 -7.75 4.5 -7.766 4.969 -7.766 L 6.5 -7.766 C 7.844 -7.766 7.844 -6.625 7.844 -6.516 C 7.844 -5.562 6.891 -4.328 5.312 -4.328 L 3.609 -4.328 Z M 6.359 -4.234 C 7.641 -4.484 8.828 -5.375 8.828 -6.469 C 8.828 -7.391 8 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.625 -8.109 2.516 -8.109 2.516 -7.891 C 2.516 -7.766 2.625 -7.766 2.797 -7.766 C 3.531 -7.766 3.531 -7.672 3.531 -7.547 C 3.531 -7.516 3.531 -7.453 3.484 -7.266 L 1.875 -0.875 C 1.766 -0.469 1.75 -0.344 0.922 -0.344 C 0.688 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.641 0 0.875 0 L 4.953 0 C 6.766 0 8.172 -1.375 8.172 -2.578 C 8.172 -3.547 7.312 -4.141 6.359 -4.234 Z M 4.672 -0.344 L 3.062 -0.344 C 2.891 -0.344 2.875 -0.344 2.797 -0.359 C 2.672 -0.375 2.656 -0.391 2.656 -0.484 C 2.656 -0.562 2.688 -0.641 2.703 -0.75 L 3.531 -4.094 L 5.766 -4.094 C 7.172 -4.094 7.172 -2.797 7.172 -2.703 C 7.172 -1.562 6.141 -0.344 4.672 -0.344 Z M 4.672 -0.344 " /></symbol><symbol overflow="visible" id="f1_glyph0-3"><path style="stroke:none;" d="M 8.875 -8.25 C 8.875 -8.359 8.781 -8.359 8.766 -8.359 C 8.734 -8.359 8.688 -8.359 8.594 -8.234 L 7.781 -7.25 C 7.359 -7.953 6.703 -8.359 5.812 -8.359 C 3.25 -8.359 0.594 -5.766 0.594 -2.969 C 0.594 -0.984 1.984 0.25 3.719 0.25 C 4.672 0.25 5.5 -0.156 6.188 -0.734 C 7.219 -1.609 7.531 -2.75 7.531 -2.844 C 7.531 -2.953 7.438 -2.953 7.391 -2.953 C 7.297 -2.953 7.281 -2.891 7.25 -2.844 C 6.703 -0.984 5.109 -0.094 3.922 -0.094 C 2.656 -0.094 1.562 -0.906 1.562 -2.594 C 1.562 -2.969 1.688 -5.031 3.031 -6.594 C 3.688 -7.344 4.797 -8.016 5.922 -8.016 C 7.234 -8.016 7.812 -6.938 7.812 -5.719 C 7.812 -5.422 7.781 -5.156 7.781 -5.109 C 7.781 -5 7.891 -5 7.938 -5 C 8.062 -5 8.078 -5.016 8.125 -5.219 Z M 8.875 -8.25 " /></symbol><symbol overflow="visible" id="f1_glyph0-4"><path style="stroke:none;" d="M 1.859 -0.875 C 1.75 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.859 0 L 4.625 0 C 7.031 0 9.375 -2.484 9.375 -5.125 C 9.375 -6.844 8.344 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.609 -8.109 2.5 -8.109 2.5 -7.891 C 2.5 -7.766 2.609 -7.766 2.797 -7.766 C 3.516 -7.766 3.516 -7.672 3.516 -7.547 C 3.516 -7.516 3.516 -7.453 3.469 -7.266 Z M 4.375 -7.297 C 4.484 -7.75 4.531 -7.766 4.984 -7.766 L 6.297 -7.766 C 7.406 -7.766 8.438 -7.156 8.438 -5.516 C 8.438 -4.922 8.188 -2.859 7.047 -1.562 C 6.703 -1.156 5.812 -0.344 4.438 -0.344 L 3.094 -0.344 C 2.922 -0.344 2.891 -0.344 2.828 -0.359 C 2.703 -0.375 2.688 -0.391 2.688 -0.484 C 2.688 -0.562 2.703 -0.641 2.734 -0.75 Z M 4.375 -7.297 " /></symbol></g></defs><g id="f1_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 39.551 -123.488 L 128.381 -123.488 L 112.914 -35.766 L 21.234 -19.603 Z M 39.551 -123.488" transform="matrix(0.993773,0,0,-0.993773,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(79.998779%,39.99939%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 48.053 -123.488 C 48.053 -120.449 46.434 -117.643 43.8 -116.122 C 42.071 -115.123 40.042 -114.765 38.073 -115.111 M 126.907 -115.111 C 122.843 -115.831 119.879 -119.36 119.879 -123.488 M 104.542 -34.292 C 104.011 -37.283 105.123 -40.329 107.45 -42.283 C 109.372 -43.898 111.916 -44.578 114.392 -44.142" transform="matrix(0.993773,0,0,-0.993773,0,0)" /><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 40.371 122.719 C 40.371 122.129 39.895 121.648 39.305 121.648 C 38.715 121.648 38.234 122.129 38.234 122.719 C 38.234 123.309 38.715 123.789 39.305 123.789 C 39.895 123.789 40.371 123.309 40.371 122.719 Z M 40.371 122.719 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-1" x="26.311" y="135.11" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 128.652 122.719 C 128.652 122.129 128.172 121.648 127.582 121.648 C 126.992 121.648 126.512 122.129 126.512 122.719 C 126.512 123.309 126.992 123.789 127.582 123.789 C 128.172 123.789 128.652 123.309 128.652 122.719 Z M 128.652 122.719 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-2" x="131.855" y="135.11" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 113.281 35.543 C 113.281 34.953 112.801 34.477 112.211 34.477 C 111.621 34.477 111.141 34.953 111.141 35.543 C 111.141 36.137 111.621 36.613 112.211 36.613 C 112.801 36.613 113.281 36.137 113.281 35.543 Z M 113.281 35.543 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-3" x="116.483" y="31.273" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 22.168 19.48 C 22.168 18.891 21.691 18.41 21.102 18.41 C 20.508 18.41 20.031 18.891 20.031 19.48 C 20.031 20.07 20.508 20.551 21.102 20.551 C 21.691 20.551 22.168 20.07 22.168 19.48 Z M 22.168 19.48 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f1_glyph0-4" x="6.846" y="15.21" /></g></g></svg></div></div></div></div><div class='options'><div onclick="selectOption(this, 'slide-6')"><b>A.</b> $90^\circ$</div><div onclick="selectOption(this, 'slide-6')"><b>B.</b> $80^\circ$</div><div onclick="selectOption(this, 'slide-6')"><b>C.</b> $110^\circ$</div><div onclick="selectOption(this, 'slide-6')" data-correct='true'><b>D.</b> $70^\circ$</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> $\widehat D=360^\circ-(100^\circ+80^\circ+110^\circ)=70^\circ$.</div></div></div></div>
+<div class="slide" id="slide-7" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 8</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-7')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-7')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Điều kiện nào sau đây đủ để một tứ giác là hình bình hành?</div><div class='options'><div onclick="selectOption(this, 'slide-7')"><b>A.</b> Một cặp cạnh đối bằng nhau.</div><div onclick="selectOption(this, 'slide-7')"><b>B.</b> Hai đường chéo bằng nhau.</div><div onclick="selectOption(this, 'slide-7')" data-correct='true'><b>C.</b> Hai cặp cạnh đối bằng nhau.</div><div onclick="selectOption(this, 'slide-7')"><b>D.</b> Hai góc kề bằng nhau.</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tứ giác có hai cặp cạnh đối bằng nhau là hình bình hành. Từng điều kiện còn lại chưa đủ để kết luận.</div></div></div></div>
+<div class="slide" id="slide-8" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 9</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-8')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-8')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Trong một hình thang, điều kiện nào sau đây đủ để kết luận hình thang đó là hình thang cân?</div><div class='options'><div onclick="selectOption(this, 'slide-8')"><b>A.</b> Hai đường chéo vuông góc.</div><div onclick="selectOption(this, 'slide-8')" data-correct='true'><b>B.</b> Hai đường chéo bằng nhau.</div><div onclick="selectOption(this, 'slide-8')"><b>C.</b> Hai đáy bằng nhau.</div><div onclick="selectOption(this, 'slide-8')"><b>D.</b> Hai góc đối bằng nhau.</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hình thang có hai đường chéo bằng nhau là hình thang cân. Hình bình hành không phải hình chữ nhật cho thấy hai đáy bằng nhau hoặc hai góc đối bằng nhau chưa đủ.</div></div></div></div>
+<div class="slide" id="slide-9" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 10</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-9')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-9')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Tứ giác nào sau đây chắc chắn là hình chữ nhật?</div><div class='options'><div onclick="selectOption(this, 'slide-9')"><b>A.</b> Tứ giác có hai góc vuông.</div><div onclick="selectOption(this, 'slide-9')" data-correct='true'><b>B.</b> Tứ giác có ba góc vuông.</div><div onclick="selectOption(this, 'slide-9')"><b>C.</b> Tứ giác có hai đường chéo bằng nhau.</div><div onclick="selectOption(this, 'slide-9')"><b>D.</b> Tứ giác có hai cạnh đối bằng nhau.</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tứ giác có ba góc vuông thì góc còn lại cũng bằng $360^\circ-3\cdot90^\circ=90^\circ$. Do đó tứ giác có bốn góc vuông, là hình chữ nhật.</div></div></div></div>
+<div class="slide" id="slide-10" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 11</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-10')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-10')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Dấu hiệu nào sau đây dùng để nhận biết hình thoi?</div><div class='options'><div onclick="selectOption(this, 'slide-10')"><b>A.</b> Tứ giác có bốn góc bằng nhau.</div><div onclick="selectOption(this, 'slide-10')"><b>B.</b> Tứ giác có hai đường chéo bằng nhau.</div><div onclick="selectOption(this, 'slide-10')"><b>C.</b> Tứ giác có hai cặp cạnh đối song song.</div><div onclick="selectOption(this, 'slide-10')" data-correct='true'><b>D.</b> Tứ giác có bốn cạnh bằng nhau.</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Tứ giác có bốn cạnh bằng nhau là hình thoi. Bốn góc bằng nhau đặc trưng cho hình chữ nhật; hai điều kiện còn lại chưa đủ.</div></div></div></div>
+<div class="slide" id="slide-11" data-checked="false" data-type="1"><div class="slide-header"><h2>Câu 12</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-11')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-11')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Khẳng định nào sau đây <b>sai</b>?</div><div class='options'><div onclick="selectOption(this, 'slide-11')"><b>A.</b> Hình thoi có một góc vuông thì là hình vuông.</div><div onclick="selectOption(this, 'slide-11')"><b>B.</b> Hình chữ nhật có hai cạnh kề bằng nhau thì là hình vuông.</div><div onclick="selectOption(this, 'slide-11')" data-correct='true'><b>C.</b> Hình thoi có hai đường chéo vuông góc thì là hình vuông.</div><div onclick="selectOption(this, 'slide-11')"><b>D.</b> Hình chữ nhật có hai đường chéo vuông góc thì là hình vuông.</div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Mọi hình thoi đều có hai đường chéo vuông góc, nhưng hình thoi không nhất thiết có góc vuông. Ba dấu hiệu còn lại đều đúng.</div></div></div></div>
+<div class="slide" id="slide-12" data-checked="false" data-type="2"><div class="slide-header"><h2>Câu 13</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-12')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-12')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Cho $P=2x^2+4xy+5y^2$ và $Q=-x^2-y^2$. Xét các khẳng định sau.</div><div class='tf-options'><div class="tf-row" data-correct="Đúng"><div class="content"><b>a.</b> $Q$ là đa thức bậc $2$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-12', 0, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-12', 0, 'Sai')">Sai</div></div></div><div class="tf-row" data-correct="Sai"><div class="content"><b>b.</b> $P+Q=(x-2y)^2$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-12', 1, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-12', 1, 'Sai')">Sai</div></div></div><div class="tf-row" data-correct="Đúng"><div class="content"><b>c.</b> Tại $x=-1$, $y=1$, giá trị của $P$ bằng $3$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-12', 2, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-12', 2, 'Sai')">Sai</div></div></div><div class="tf-row" data-correct="Đúng"><div class="content"><b>d.</b> Với $x+y=1$, giá trị nhỏ nhất của $P+Q$ bằng $0$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-12', 3, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-12', 3, 'Sai')">Sai</div></div></div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ol class="paren-a"><li>Hai hạng tử của $Q$ đều có bậc $2$ và không đồng dạng, nên $Q$ có bậc $2$. <b>Đúng.</b></li><li>$P+Q=x^2+4xy+4y^2=(x+2y)^2$, không phải $(x-2y)^2$. <b>Sai.</b></li><li>$P(-1,1)=2-4+5=3$. <b>Đúng.</b></li><li>Từ $x+y=1$, suy ra $x=1-y$. Khi đó $P+Q=(1+y)^2\ge0$. Dấu bằng xảy ra tại $y=-1$, $x=2$, thỏa mãn điều kiện. Vậy giá trị nhỏ nhất là $0$. <b>Đúng.</b></li></ol></div></div></div></div>
+<div class="slide" id="slide-13" data-checked="false" data-type="2"><div class="slide-header"><h2>Câu 14</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-13')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-13')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Cho hình bình hành $ABCD$ có $AB=2a$, $AD=a$, $a&gt;0$ và $\widehat A=120^\circ$. Gọi $M$, $N$ lần lượt là trung điểm của $AB$, $CD$; $O$ là giao điểm của $AN$ và $DM$. Kí hiệu $S$ là diện tích hình bình hành $ABCD$.</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="162.389pt" height="80.447pt" viewBox="0 0 162.389 80.447" version="1.2"><defs><g><symbol overflow="visible" id="f2_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f2_glyph0-1"><path style="stroke:none;" d="M 10.781 -7.25 C 10.891 -7.641 10.906 -7.766 11.75 -7.766 C 11.984 -7.766 12.094 -7.766 12.094 -7.984 C 12.094 -8.109 12 -8.109 11.781 -8.109 L 10.359 -8.109 C 10.062 -8.109 10.047 -8.094 9.922 -7.906 L 5.578 -1.062 L 4.688 -7.844 C 4.656 -8.109 4.641 -8.109 4.328 -8.109 L 2.859 -8.109 C 2.641 -8.109 2.531 -8.109 2.531 -7.891 C 2.531 -7.766 2.641 -7.766 2.812 -7.766 C 3.531 -7.766 3.531 -7.672 3.531 -7.547 C 3.531 -7.516 3.531 -7.453 3.484 -7.266 L 1.969 -1.219 C 1.828 -0.641 1.562 -0.375 0.766 -0.344 C 0.719 -0.344 0.578 -0.328 0.578 -0.125 C 0.578 0 0.688 0 0.734 0 C 0.969 0 1.578 -0.031 1.812 -0.031 L 2.391 -0.031 C 2.547 -0.031 2.75 0 2.922 0 C 3 0 3.141 0 3.141 -0.219 C 3.141 -0.328 3.016 -0.344 2.969 -0.344 C 2.578 -0.359 2.203 -0.422 2.203 -0.859 C 2.203 -0.969 2.203 -0.984 2.25 -1.156 L 3.891 -7.688 L 4.875 -0.328 C 4.922 -0.031 4.922 0 5.031 0 C 5.172 0 5.219 -0.094 5.281 -0.203 L 10.062 -7.75 L 8.344 -0.875 C 8.234 -0.469 8.219 -0.344 7.391 -0.344 C 7.156 -0.344 7.047 -0.344 7.047 -0.125 C 7.047 0 7.156 0 7.219 0 C 7.422 0 7.656 -0.031 7.859 -0.031 L 9.266 -0.031 C 9.469 -0.031 9.719 0 9.922 0 C 10.016 0 10.141 0 10.141 -0.219 C 10.141 -0.344 10.031 -0.344 9.859 -0.344 C 9.125 -0.344 9.125 -0.438 9.125 -0.562 C 9.125 -0.562 9.125 -0.656 9.156 -0.75 Z M 10.781 -7.25 " /></symbol><symbol overflow="visible" id="f2_glyph0-2"><path style="stroke:none;" d="M 8.781 -6.859 C 8.922 -7.375 9.109 -7.734 10.016 -7.766 C 10.047 -7.766 10.188 -7.781 10.188 -7.984 C 10.188 -8.109 10.078 -8.109 10.031 -8.109 C 9.797 -8.109 9.188 -8.094 8.953 -8.094 L 8.391 -8.094 C 8.219 -8.094 8 -8.109 7.844 -8.109 C 7.766 -8.109 7.625 -8.109 7.625 -7.891 C 7.625 -7.766 7.719 -7.766 7.797 -7.766 C 8.516 -7.75 8.562 -7.469 8.562 -7.25 C 8.562 -7.156 8.547 -7.109 8.516 -6.953 L 7.172 -1.594 L 4.625 -7.906 C 4.547 -8.094 4.531 -8.109 4.281 -8.109 L 2.828 -8.109 C 2.594 -8.109 2.484 -8.109 2.484 -7.891 C 2.484 -7.766 2.562 -7.766 2.797 -7.766 C 2.844 -7.766 3.547 -7.766 3.547 -7.656 C 3.547 -7.641 3.531 -7.547 3.516 -7.5 L 1.938 -1.219 C 1.797 -0.625 1.516 -0.375 0.719 -0.344 C 0.672 -0.344 0.547 -0.328 0.547 -0.125 C 0.547 0 0.672 0 0.703 0 C 0.938 0 1.547 -0.031 1.781 -0.031 L 2.344 -0.031 C 2.516 -0.031 2.719 0 2.891 0 C 2.969 0 3.094 0 3.094 -0.219 C 3.094 -0.328 2.984 -0.344 2.938 -0.344 C 2.547 -0.359 2.156 -0.422 2.156 -0.859 C 2.156 -0.953 2.188 -1.062 2.203 -1.156 L 3.812 -7.5 C 3.891 -7.391 3.891 -7.359 3.938 -7.25 L 6.75 -0.219 C 6.812 -0.078 6.844 0 6.953 0 C 7.062 0 7.078 -0.031 7.125 -0.234 Z M 8.781 -6.859 " /></symbol><symbol overflow="visible" id="f2_glyph0-3"><path style="stroke:none;" d="M 8.625 -5.203 C 8.625 -7.156 7.344 -8.359 5.672 -8.359 C 3.141 -8.359 0.562 -5.625 0.562 -2.891 C 0.562 -1.016 1.812 0.25 3.531 0.25 C 6.016 0.25 8.625 -2.344 8.625 -5.203 Z M 3.594 -0.031 C 2.625 -0.031 1.594 -0.734 1.594 -2.594 C 1.594 -3.672 1.984 -5.438 2.953 -6.625 C 3.828 -7.672 4.828 -8.094 5.609 -8.094 C 6.656 -8.094 7.672 -7.344 7.672 -5.625 C 7.672 -4.578 7.219 -2.922 6.422 -1.797 C 5.562 -0.578 4.484 -0.031 3.594 -0.031 Z M 3.594 -0.031 " /></symbol><symbol overflow="visible" id="f2_glyph0-4"><path style="stroke:none;" d="M 2.016 -1.312 C 1.609 -0.625 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.516 -0.031 C 1.859 -0.031 2.234 0 2.562 0 C 2.641 0 2.781 0 2.781 -0.219 C 2.781 -0.328 2.688 -0.344 2.609 -0.344 C 2.344 -0.375 2.109 -0.469 2.109 -0.75 C 2.109 -0.922 2.188 -1.047 2.344 -1.312 L 3.234 -2.797 L 6.266 -2.797 C 6.281 -2.703 6.281 -2.594 6.297 -2.5 C 6.328 -2.188 6.469 -0.953 6.469 -0.719 C 6.469 -0.375 5.859 -0.344 5.672 -0.344 C 5.547 -0.344 5.422 -0.344 5.422 -0.125 C 5.422 0 5.516 0 5.594 0 C 5.797 0 6.031 -0.031 6.234 -0.031 L 6.906 -0.031 C 7.641 -0.031 8.156 0 8.172 0 C 8.25 0 8.391 0 8.391 -0.219 C 8.391 -0.344 8.281 -0.344 8.094 -0.344 C 7.453 -0.344 7.438 -0.453 7.391 -0.812 L 6.672 -8.219 C 6.656 -8.453 6.609 -8.484 6.469 -8.484 C 6.359 -8.484 6.281 -8.453 6.172 -8.281 Z M 3.438 -3.141 L 5.828 -7.141 L 6.234 -3.141 Z M 3.438 -3.141 " /></symbol><symbol overflow="visible" id="f2_glyph0-5"><path style="stroke:none;" d="M 4.344 -7.297 C 4.453 -7.75 4.5 -7.766 4.969 -7.766 L 6.5 -7.766 C 7.844 -7.766 7.844 -6.625 7.844 -6.516 C 7.844 -5.562 6.891 -4.328 5.312 -4.328 L 3.609 -4.328 Z M 6.359 -4.234 C 7.641 -4.484 8.828 -5.375 8.828 -6.469 C 8.828 -7.391 8 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.625 -8.109 2.516 -8.109 2.516 -7.891 C 2.516 -7.766 2.625 -7.766 2.797 -7.766 C 3.531 -7.766 3.531 -7.672 3.531 -7.547 C 3.531 -7.516 3.531 -7.453 3.484 -7.266 L 1.875 -0.875 C 1.766 -0.469 1.75 -0.344 0.922 -0.344 C 0.688 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.641 0 0.875 0 L 4.953 0 C 6.766 0 8.172 -1.375 8.172 -2.578 C 8.172 -3.547 7.312 -4.141 6.359 -4.234 Z M 4.672 -0.344 L 3.062 -0.344 C 2.891 -0.344 2.875 -0.344 2.797 -0.359 C 2.672 -0.375 2.656 -0.391 2.656 -0.484 C 2.656 -0.562 2.688 -0.641 2.703 -0.75 L 3.531 -4.094 L 5.766 -4.094 C 7.172 -4.094 7.172 -2.797 7.172 -2.703 C 7.172 -1.562 6.141 -0.344 4.672 -0.344 Z M 4.672 -0.344 " /></symbol><symbol overflow="visible" id="f2_glyph0-6"><path style="stroke:none;" d="M 8.875 -8.25 C 8.875 -8.359 8.781 -8.359 8.766 -8.359 C 8.734 -8.359 8.688 -8.359 8.594 -8.234 L 7.781 -7.25 C 7.359 -7.953 6.703 -8.359 5.812 -8.359 C 3.25 -8.359 0.594 -5.766 0.594 -2.969 C 0.594 -0.984 1.984 0.25 3.719 0.25 C 4.672 0.25 5.5 -0.156 6.188 -0.734 C 7.219 -1.609 7.531 -2.75 7.531 -2.844 C 7.531 -2.953 7.438 -2.953 7.391 -2.953 C 7.297 -2.953 7.281 -2.891 7.25 -2.844 C 6.703 -0.984 5.109 -0.094 3.922 -0.094 C 2.656 -0.094 1.562 -0.906 1.562 -2.594 C 1.562 -2.969 1.688 -5.031 3.031 -6.594 C 3.688 -7.344 4.797 -8.016 5.922 -8.016 C 7.234 -8.016 7.812 -6.938 7.812 -5.719 C 7.812 -5.422 7.781 -5.156 7.781 -5.109 C 7.781 -5 7.891 -5 7.938 -5 C 8.062 -5 8.078 -5.016 8.125 -5.219 Z M 8.875 -8.25 " /></symbol><symbol overflow="visible" id="f2_glyph0-7"><path style="stroke:none;" d="M 1.859 -0.875 C 1.75 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.859 0 L 4.625 0 C 7.031 0 9.375 -2.484 9.375 -5.125 C 9.375 -6.844 8.344 -8.109 6.656 -8.109 L 2.844 -8.109 C 2.609 -8.109 2.5 -8.109 2.5 -7.891 C 2.5 -7.766 2.609 -7.766 2.797 -7.766 C 3.516 -7.766 3.516 -7.672 3.516 -7.547 C 3.516 -7.516 3.516 -7.453 3.469 -7.266 Z M 4.375 -7.297 C 4.484 -7.75 4.531 -7.766 4.984 -7.766 L 6.297 -7.766 C 7.406 -7.766 8.438 -7.156 8.438 -5.516 C 8.438 -4.922 8.188 -2.859 7.047 -1.562 C 6.703 -1.156 5.812 -0.344 4.438 -0.344 L 3.094 -0.344 C 2.922 -0.344 2.891 -0.344 2.828 -0.359 C 2.703 -0.375 2.688 -0.391 2.688 -0.484 C 2.688 -0.562 2.703 -0.641 2.734 -0.75 Z M 4.375 -7.297 " /></symbol></g></defs><g id="f2_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 45.581 -61.089 L 141.957 -61.089 L 117.863 -19.359 L 21.487 -19.359 Z M 45.581 -61.089" transform="matrix(0.993173,0,0,-0.993173,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,39.99939%,39.99939%);stroke-opacity:1;stroke-miterlimit:10;" d="M 93.769 -61.089 L 69.675 -19.359 M 45.581 -61.089 L 69.675 -19.359 M 93.769 -61.089 L 21.487 -19.359 M 141.957 -61.089 L 57.628 -40.224" transform="matrix(0.993173,0,0,-0.993173,0,0)" /><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 94.137 60.672 C 94.137 60.113 93.688 59.664 93.129 59.664 C 92.57 59.664 92.117 60.113 92.117 60.672 C 92.117 61.23 92.57 61.68 93.129 61.68 C 93.688 61.68 94.137 61.23 94.137 60.672 Z M 94.137 60.672 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-1" x="86.884" y="73.056" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 70.207 19.227 C 70.207 18.668 69.754 18.215 69.199 18.215 C 68.641 18.215 68.188 18.668 68.188 19.227 C 68.188 19.781 68.641 20.234 69.199 20.234 C 69.754 20.234 70.207 19.781 70.207 19.227 Z M 70.207 19.227 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-2" x="63.923" y="14.956" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 58.242 39.949 C 58.242 39.391 57.789 38.938 57.234 38.938 C 56.676 38.938 56.223 39.391 56.223 39.949 C 56.223 40.508 56.676 40.957 57.234 40.957 C 57.789 40.957 58.242 40.508 58.242 39.949 Z M 58.242 39.949 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-3" x="43.756" y="35.679" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 46.277 60.672 C 46.277 60.113 45.824 59.664 45.27 59.664 C 44.711 59.664 44.258 60.113 44.258 60.672 C 44.258 61.23 44.711 61.68 45.27 61.68 C 45.824 61.68 46.277 61.23 46.277 60.672 Z M 46.277 60.672 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-4" x="32.284" y="73.056" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 141.996 60.672 C 141.996 60.113 141.547 59.664 140.988 59.664 C 140.43 59.664 139.98 60.113 139.98 60.672 C 139.98 61.23 140.43 61.68 140.988 61.68 C 141.547 61.68 141.996 61.23 141.996 60.672 Z M 141.996 60.672 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-5" x="145.257" y="73.056" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 118.066 19.227 C 118.066 18.668 117.617 18.215 117.059 18.215 C 116.5 18.215 116.051 18.668 116.051 19.227 C 116.051 19.781 116.5 20.234 117.059 20.234 C 117.617 20.234 118.066 19.781 118.066 19.227 Z M 118.066 19.227 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-6" x="121.328" y="14.956" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 22.348 19.227 C 22.348 18.668 21.895 18.215 21.34 18.215 C 20.781 18.215 20.328 18.668 20.328 19.227 C 20.328 19.781 20.781 20.234 21.34 20.234 C 21.895 20.234 22.348 19.781 22.348 19.227 Z M 22.348 19.227 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f2_glyph0-7" x="7.093" y="14.956" /></g></g></svg></div></div></div></div><div class='tf-options'><div class="tf-row" data-correct="Đúng"><div class="content"><b>a.</b> $\widehat C=120^\circ$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-13', 0, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-13', 0, 'Sai')">Sai</div></div></div><div class="tf-row" data-correct="Sai"><div class="content"><b>b.</b> Chu vi tứ giác $AMND$ bằng $5a$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-13', 1, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-13', 1, 'Sai')">Sai</div></div></div><div class="tf-row" data-correct="Đúng"><div class="content"><b>c.</b> $\widehat{MAN}=60^\circ$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-13', 2, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-13', 2, 'Sai')">Sai</div></div></div><div class="tf-row" data-correct="Sai"><div class="content"><b>d.</b> Diện tích tam giác $BMO$ bằng $\dfrac{3}{16}S$.</div><div class="tf-actions"><div class="tf-btn" onclick="selectTF(this, 'slide-13', 3, 'Đúng')">Đúng</div><div class="tf-btn" onclick="selectTF(this, 'slide-13', 3, 'Sai')">Sai</div></div></div></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> <ol class="paren-a"><li>Hai góc đối của hình bình hành bằng nhau nên $\widehat C=\widehat A=120^\circ$. <b>Đúng.</b></li><li>$AM=DN=a$ và $AM\parallel DN$, nên $AMND$ là hình bình hành. Lại có $AM=AD=a$, suy ra đó là hình thoi; chu vi bằng $4a$. <b>Sai.</b></li><li>Đường chéo $AN$ của hình thoi $AMND$ là phân giác góc $MAD$. Do đó $\widehat{MAN}=\dfrac12\cdot120^\circ=60^\circ$. <b>Đúng.</b></li><li>Vì $N\in CD$ nên $S_{ABN}=\dfrac12S$. Hai đường chéo của hình thoi $AMND$ chia đôi nhau, nên $AO=ON$. Hai tam giác $ABO$, $BNO$ chung đường cao từ $B$ xuống $AN$ và có hai đáy bằng nhau; suy ra $S_{ABO}=\dfrac12S_{ABN}=\dfrac14S$. Lại có $AM=MB$, nên $S_{BMO}=\dfrac12S_{ABO}=\dfrac18S$ (hai tam giác $AMO$, $BMO$ chung đường cao từ $O$ xuống $AB$). <b>Sai.</b></li></ol></div></div></div></div>
+<div class="slide" id="slide-14" data-checked="false" data-type="3" data-correctans="5"><div class="slide-header"><h2>Câu 15</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-14')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-14')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Hệ số tự do của đa thức $(2x-1)(x^2-2x-5)$ bằng bao nhiêu?</div><div class="short-ans-group-slide"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-14_1" oninput="moveNextSlideAns(this, 2, 'slide-14')" onkeydown="movePrevSlideAns(event, this, null, 'slide-14')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-14_2" oninput="moveNextSlideAns(this, 3, 'slide-14')" onkeydown="movePrevSlideAns(event, this, 1, 'slide-14')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-14_3" oninput="moveNextSlideAns(this, 4, 'slide-14')" onkeydown="movePrevSlideAns(event, this, 2, 'slide-14')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-14_4" oninput="moveNextSlideAns(this, 5, 'slide-14')" onkeydown="movePrevSlideAns(event, this, 3, 'slide-14')"></div><div class="true-ans-text"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hệ số tự do của một đa thức theo $x$ bằng giá trị của đa thức tại $x=0$. Thay $x=0$, ta được $(-1)\cdot(-5)=5$.</div></div></div></div>
+<div class="slide" id="slide-15" data-checked="false" data-type="3" data-correctans="-6"><div class="slide-header"><h2>Câu 16</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-15')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-15')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Tính giá trị của $(x+y)^2-(x-y)^2$ tại $x=-1$, $y=1{,}5$.</div><div class="short-ans-group-slide"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-15_1" oninput="moveNextSlideAns(this, 2, 'slide-15')" onkeydown="movePrevSlideAns(event, this, null, 'slide-15')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-15_2" oninput="moveNextSlideAns(this, 3, 'slide-15')" onkeydown="movePrevSlideAns(event, this, 1, 'slide-15')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-15_3" oninput="moveNextSlideAns(this, 4, 'slide-15')" onkeydown="movePrevSlideAns(event, this, 2, 'slide-15')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-15_4" oninput="moveNextSlideAns(this, 5, 'slide-15')" onkeydown="movePrevSlideAns(event, this, 3, 'slide-15')"></div><div class="true-ans-text"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Khai triển hai bình phương và thu gọn, ta được $(x+y)^2-(x-y)^2=4xy$. Thay số: $4\cdot(-1)\cdot1{,}5=-6$.</div></div></div></div>
+<div class="slide" id="slide-16" data-checked="false" data-type="3" data-correctans="80"><div class="slide-header"><h2>Câu 17</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-16')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-16')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Hình thang $ABCD$ có hai đáy $AB$, $CD$ và $\widehat A=100^\circ$. Tính số đo góc $D$ theo đơn vị độ.</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.067pt" height="94.132pt" viewBox="0 0 148.067 94.132" version="1.2"><defs><g><symbol overflow="visible" id="f3_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f3_glyph0-1"><path style="stroke:none;" d="M 3.406 -7.594 C 3.406 -7.859 3.406 -7.875 3.172 -7.875 C 2.891 -7.562 2.297 -7.125 1.078 -7.125 L 1.078 -6.781 C 1.344 -6.781 1.938 -6.781 2.594 -7.078 L 2.594 -0.906 C 2.594 -0.484 2.562 -0.344 1.516 -0.344 L 1.156 -0.344 L 1.156 0 C 1.469 -0.031 2.625 -0.031 3.016 -0.031 C 3.406 -0.031 4.531 -0.031 4.859 0 L 4.859 -0.344 L 4.484 -0.344 C 3.453 -0.344 3.406 -0.484 3.406 -0.906 Z M 3.406 -7.594 " /></symbol><symbol overflow="visible" id="f3_glyph0-2"><path style="stroke:none;" d="M 5.312 -3.797 C 5.312 -4.766 5.25 -5.734 4.828 -6.625 C 4.328 -7.609 3.484 -7.875 2.906 -7.875 C 2.219 -7.875 1.375 -7.531 0.938 -6.547 C 0.609 -5.797 0.484 -5.062 0.484 -3.797 C 0.484 -2.641 0.562 -1.781 1 -0.938 C 1.453 -0.031 2.281 0.25 2.891 0.25 C 3.922 0.25 4.516 -0.359 4.859 -1.047 C 5.281 -1.938 5.312 -3.109 5.312 -3.797 Z M 2.891 0.016 C 2.516 0.016 1.734 -0.203 1.516 -1.5 C 1.391 -2.203 1.391 -3.109 1.391 -3.938 C 1.391 -4.906 1.391 -5.781 1.578 -6.484 C 1.781 -7.266 2.375 -7.641 2.891 -7.641 C 3.344 -7.641 4.031 -7.359 4.25 -6.344 C 4.406 -5.672 4.406 -4.734 4.406 -3.938 C 4.406 -3.141 4.406 -2.234 4.281 -1.516 C 4.047 -0.219 3.297 0.016 2.891 0.016 Z M 2.891 0.016 " /></symbol><symbol overflow="visible" id="f3_glyph1-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f3_glyph1-1"><path style="stroke:none;" d="M 3.719 -1.969 C 3.719 -2.875 2.984 -3.609 2.094 -3.609 C 1.188 -3.609 0.469 -2.875 0.469 -1.969 C 0.469 -1.062 1.188 -0.344 2.094 -0.344 C 2.984 -0.344 3.719 -1.062 3.719 -1.969 Z M 2.094 -0.703 C 1.391 -0.703 0.828 -1.266 0.828 -1.969 C 0.828 -2.688 1.391 -3.25 2.094 -3.25 C 2.797 -3.25 3.359 -2.688 3.359 -1.969 C 3.359 -1.266 2.797 -0.703 2.094 -0.703 Z M 2.094 -0.703 " /></symbol><symbol overflow="visible" id="f3_glyph2-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f3_glyph2-1"><path style="stroke:none;" d="M 2.016 -1.312 C 1.594 -0.609 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.5 -0.031 C 1.844 -0.031 2.234 0 2.562 0 C 2.625 0 2.766 0 2.766 -0.219 C 2.766 -0.328 2.672 -0.344 2.609 -0.344 C 2.328 -0.359 2.109 -0.469 2.109 -0.75 C 2.109 -0.906 2.172 -1.047 2.328 -1.297 L 3.234 -2.797 L 6.25 -2.797 C 6.266 -2.688 6.266 -2.594 6.281 -2.484 C 6.312 -2.172 6.453 -0.953 6.453 -0.719 C 6.453 -0.359 5.844 -0.344 5.656 -0.344 C 5.531 -0.344 5.406 -0.344 5.406 -0.125 C 5.406 0 5.5 0 5.578 0 C 5.781 0 6.016 -0.031 6.219 -0.031 L 6.891 -0.031 C 7.609 -0.031 8.141 0 8.156 0 C 8.234 0 8.359 0 8.359 -0.219 C 8.359 -0.344 8.25 -0.344 8.078 -0.344 C 7.422 -0.344 7.422 -0.453 7.375 -0.812 L 6.656 -8.203 C 6.625 -8.438 6.578 -8.453 6.453 -8.453 C 6.344 -8.453 6.266 -8.438 6.156 -8.25 Z M 3.438 -3.141 L 5.812 -7.125 L 6.219 -3.141 Z M 3.438 -3.141 " /></symbol><symbol overflow="visible" id="f3_glyph2-2"><path style="stroke:none;" d="M 4.328 -7.281 C 4.438 -7.719 4.484 -7.75 4.953 -7.75 L 6.484 -7.75 C 7.828 -7.75 7.828 -6.609 7.828 -6.5 C 7.828 -5.547 6.875 -4.328 5.312 -4.328 L 3.594 -4.328 Z M 6.344 -4.234 C 7.625 -4.469 8.797 -5.359 8.797 -6.453 C 8.797 -7.375 7.984 -8.094 6.641 -8.094 L 2.844 -8.094 C 2.625 -8.094 2.516 -8.094 2.516 -7.859 C 2.516 -7.75 2.625 -7.75 2.797 -7.75 C 3.516 -7.75 3.516 -7.656 3.516 -7.516 C 3.516 -7.5 3.516 -7.422 3.469 -7.25 L 1.875 -0.875 C 1.766 -0.469 1.734 -0.344 0.906 -0.344 C 0.688 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.641 0 0.875 0 L 4.938 0 C 6.75 0 8.156 -1.375 8.156 -2.562 C 8.156 -3.547 7.297 -4.141 6.344 -4.234 Z M 4.656 -0.344 L 3.062 -0.344 C 2.891 -0.344 2.859 -0.344 2.797 -0.359 C 2.672 -0.359 2.656 -0.391 2.656 -0.484 C 2.656 -0.562 2.672 -0.641 2.703 -0.75 L 3.531 -4.094 L 5.75 -4.094 C 7.156 -4.094 7.156 -2.781 7.156 -2.688 C 7.156 -1.547 6.125 -0.344 4.656 -0.344 Z M 4.656 -0.344 " /></symbol><symbol overflow="visible" id="f3_glyph2-3"><path style="stroke:none;" d="M 8.844 -8.234 C 8.844 -8.344 8.766 -8.344 8.734 -8.344 C 8.719 -8.344 8.672 -8.344 8.578 -8.219 L 7.75 -7.219 C 7.344 -7.938 6.688 -8.344 5.797 -8.344 C 3.25 -8.344 0.594 -5.75 0.594 -2.953 C 0.594 -0.984 1.984 0.25 3.703 0.25 C 4.656 0.25 5.484 -0.156 6.172 -0.734 C 7.203 -1.594 7.516 -2.75 7.516 -2.844 C 7.516 -2.953 7.422 -2.953 7.375 -2.953 C 7.266 -2.953 7.266 -2.875 7.234 -2.828 C 6.688 -0.984 5.094 -0.094 3.906 -0.094 C 2.656 -0.094 1.562 -0.906 1.562 -2.578 C 1.562 -2.953 1.688 -5.016 3.016 -6.578 C 3.672 -7.328 4.781 -8 5.906 -8 C 7.219 -8 7.797 -6.922 7.797 -5.703 C 7.797 -5.406 7.75 -5.141 7.75 -5.094 C 7.75 -4.984 7.875 -4.984 7.906 -4.984 C 8.047 -4.984 8.047 -5 8.094 -5.219 Z M 8.844 -8.234 " /></symbol><symbol overflow="visible" id="f3_glyph2-4"><path style="stroke:none;" d="M 1.859 -0.875 C 1.75 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.859 0 L 4.625 0 C 7.016 0 9.344 -2.469 9.344 -5.109 C 9.344 -6.828 8.328 -8.094 6.625 -8.094 L 2.828 -8.094 C 2.609 -8.094 2.5 -8.094 2.5 -7.859 C 2.5 -7.75 2.609 -7.75 2.781 -7.75 C 3.5 -7.75 3.5 -7.656 3.5 -7.516 C 3.5 -7.5 3.5 -7.422 3.453 -7.25 Z M 4.359 -7.281 C 4.469 -7.719 4.516 -7.75 4.969 -7.75 L 6.281 -7.75 C 7.391 -7.75 8.406 -7.141 8.406 -5.5 C 8.406 -4.922 8.172 -2.859 7.016 -1.547 C 6.688 -1.156 5.797 -0.344 4.422 -0.344 L 3.078 -0.344 C 2.906 -0.344 2.891 -0.344 2.812 -0.359 C 2.688 -0.359 2.672 -0.391 2.672 -0.484 C 2.672 -0.562 2.703 -0.641 2.719 -0.75 Z M 4.359 -7.281 " /></symbol></g></defs><g id="f3_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 31.223 -74.773 L 127.599 -74.773 L 117.961 -19.357 L 21.45 -19.357 Z M 31.223 -74.773" transform="matrix(0.990863,0,0,-0.990863,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(79.998779%,39.99939%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 45.395 -74.773 C 45.395 -69.711 42.691 -65.032 38.307 -62.501 C 35.421 -60.833 32.043 -60.238 28.759 -60.817" transform="matrix(0.990863,0,0,-0.990863,0,0)" /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph0-1" x="34.336" y="60.831" /><use xlink:href="#f3_glyph0-2" x="40.135" y="60.831" /><use xlink:href="#f3_glyph0-2" x="45.935" y="60.831" /></g><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph1-1" x="51.734" y="56.532" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 31.941 74.09 C 31.941 73.535 31.492 73.082 30.938 73.082 C 30.379 73.082 29.93 73.535 29.93 74.09 C 29.93 74.648 30.379 75.098 30.938 75.098 C 31.492 75.098 31.941 74.648 31.941 74.09 Z M 31.941 74.09 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-1" x="17.981" y="86.446" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 127.441 74.09 C 127.441 73.535 126.988 73.082 126.434 73.082 C 125.879 73.082 125.426 73.535 125.426 74.09 C 125.426 74.648 125.879 75.098 126.434 75.098 C 126.988 75.098 127.441 74.648 127.441 74.09 Z M 127.441 74.09 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-2" x="130.692" y="86.446" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 117.891 19.18 C 117.891 18.625 117.441 18.172 116.883 18.172 C 116.328 18.172 115.875 18.625 115.875 19.18 C 115.875 19.734 116.328 20.188 116.883 20.188 C 117.441 20.188 117.891 19.734 117.891 19.18 Z M 117.891 19.18 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-3" x="121.143" y="14.92" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 22.258 19.18 C 22.258 18.625 21.809 18.172 21.254 18.172 C 20.695 18.172 20.246 18.625 20.246 19.18 C 20.246 19.734 20.695 20.188 21.254 20.188 C 21.809 20.188 22.258 19.734 22.258 19.18 Z M 22.258 19.18 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f3_glyph2-4" x="7.04" y="14.92" /></g></g></svg></div></div></div></div><div class="short-ans-group-slide"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-16_1" oninput="moveNextSlideAns(this, 2, 'slide-16')" onkeydown="movePrevSlideAns(event, this, null, 'slide-16')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-16_2" oninput="moveNextSlideAns(this, 3, 'slide-16')" onkeydown="movePrevSlideAns(event, this, 1, 'slide-16')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-16_3" oninput="moveNextSlideAns(this, 4, 'slide-16')" onkeydown="movePrevSlideAns(event, this, 2, 'slide-16')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-16_4" oninput="moveNextSlideAns(this, 5, 'slide-16')" onkeydown="movePrevSlideAns(event, this, 3, 'slide-16')"></div><div class="true-ans-text"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Vì $AB\parallel CD$, hai góc trong cùng phía $A$, $D$ bù nhau. Suy ra $\widehat D=180^\circ-100^\circ=80^\circ$.</div></div></div></div>
+<div class="slide" id="slide-17" data-checked="false" data-type="3" data-correctans="30"><div class="slide-header"><h2>Câu 18</h2><div style="display: flex; gap: 10px;"><button class="btn-check" onclick="checkAnswer(this, 'slide-17')">Kiểm tra</button><button class="btn-sol" onclick="toggleSolution(this, 'slide-17')">Xem lời giải</button></div></div><div class="slide-content"><div class="question-box"><div class="tp">Hai đường chéo của hình thoi $ABCD$ cắt nhau tại $O$. Biết $\widehat{ABC}=120^\circ$. Tính số đo góc $DAO$ theo đơn vị độ.</div><div class="tp"><div class="center"><div class="tp"><div class="table-responsive figure" style="text-align:center;margin:10px 0"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="142.439pt" height="97.636pt" viewBox="0 0 142.439 97.636" version="1.2"><defs><g><symbol overflow="visible" id="f4_glyph0-0"><path style="stroke:none;" d="" /></symbol><symbol overflow="visible" id="f4_glyph0-1"><path style="stroke:none;" d="M 8.641 -5.219 C 8.641 -7.172 7.359 -8.375 5.688 -8.375 C 3.141 -8.375 0.578 -5.641 0.578 -2.891 C 0.578 -1.031 1.812 0.25 3.531 0.25 C 6.031 0.25 8.641 -2.359 8.641 -5.219 Z M 3.609 -0.031 C 2.625 -0.031 1.594 -0.734 1.594 -2.594 C 1.594 -3.672 1.984 -5.453 2.969 -6.641 C 3.828 -7.688 4.828 -8.125 5.625 -8.125 C 6.672 -8.125 7.688 -7.359 7.688 -5.641 C 7.688 -4.578 7.234 -2.922 6.438 -1.797 C 5.578 -0.578 4.484 -0.031 3.609 -0.031 Z M 3.609 -0.031 " /></symbol><symbol overflow="visible" id="f4_glyph0-2"><path style="stroke:none;" d="M 2.031 -1.328 C 1.609 -0.625 1.203 -0.375 0.625 -0.344 C 0.5 -0.328 0.406 -0.328 0.406 -0.125 C 0.406 -0.047 0.469 0 0.547 0 C 0.766 0 1.297 -0.031 1.516 -0.031 C 1.859 -0.031 2.234 0 2.578 0 C 2.641 0 2.781 0 2.781 -0.219 C 2.781 -0.328 2.688 -0.344 2.625 -0.344 C 2.344 -0.375 2.125 -0.469 2.125 -0.75 C 2.125 -0.922 2.188 -1.047 2.344 -1.312 L 3.25 -2.812 L 6.281 -2.812 C 6.297 -2.703 6.297 -2.609 6.312 -2.5 C 6.344 -2.188 6.484 -0.953 6.484 -0.719 C 6.484 -0.375 5.875 -0.344 5.688 -0.344 C 5.562 -0.344 5.422 -0.344 5.422 -0.125 C 5.422 0 5.531 0 5.609 0 C 5.812 0 6.047 -0.031 6.25 -0.031 L 6.922 -0.031 C 7.656 -0.031 8.172 0 8.188 0 C 8.281 0 8.406 0 8.406 -0.219 C 8.406 -0.344 8.297 -0.344 8.125 -0.344 C 7.469 -0.344 7.453 -0.453 7.422 -0.812 L 6.688 -8.234 C 6.672 -8.484 6.625 -8.5 6.484 -8.5 C 6.375 -8.5 6.297 -8.484 6.188 -8.297 Z M 3.453 -3.156 L 5.844 -7.156 L 6.25 -3.156 Z M 3.453 -3.156 " /></symbol><symbol overflow="visible" id="f4_glyph0-3"><path style="stroke:none;" d="M 4.359 -7.328 C 4.469 -7.766 4.516 -7.781 4.984 -7.781 L 6.531 -7.781 C 7.875 -7.781 7.875 -6.641 7.875 -6.531 C 7.875 -5.578 6.906 -4.344 5.328 -4.344 L 3.625 -4.344 Z M 6.375 -4.25 C 7.672 -4.484 8.844 -5.391 8.844 -6.484 C 8.844 -7.422 8.031 -8.125 6.672 -8.125 L 2.859 -8.125 C 2.625 -8.125 2.531 -8.125 2.531 -7.906 C 2.531 -7.781 2.625 -7.781 2.812 -7.781 C 3.531 -7.781 3.531 -7.688 3.531 -7.562 C 3.531 -7.531 3.531 -7.469 3.484 -7.281 L 1.875 -0.875 C 1.781 -0.469 1.75 -0.344 0.922 -0.344 C 0.688 -0.344 0.578 -0.344 0.578 -0.125 C 0.578 0 0.641 0 0.875 0 L 4.969 0 C 6.781 0 8.188 -1.375 8.188 -2.578 C 8.188 -3.562 7.328 -4.156 6.375 -4.25 Z M 4.672 -0.344 L 3.078 -0.344 C 2.906 -0.344 2.875 -0.344 2.812 -0.359 C 2.672 -0.375 2.672 -0.391 2.672 -0.484 C 2.672 -0.578 2.688 -0.641 2.719 -0.75 L 3.547 -4.109 L 5.781 -4.109 C 7.188 -4.109 7.188 -2.797 7.188 -2.703 C 7.188 -1.562 6.156 -0.344 4.672 -0.344 Z M 4.672 -0.344 " /></symbol><symbol overflow="visible" id="f4_glyph0-4"><path style="stroke:none;" d="M 8.891 -8.281 C 8.891 -8.375 8.812 -8.375 8.781 -8.375 C 8.766 -8.375 8.719 -8.375 8.625 -8.266 L 7.797 -7.266 C 7.375 -7.984 6.734 -8.375 5.828 -8.375 C 3.266 -8.375 0.594 -5.781 0.594 -2.969 C 0.594 -0.984 1.984 0.25 3.734 0.25 C 4.672 0.25 5.516 -0.156 6.203 -0.734 C 7.234 -1.609 7.547 -2.766 7.547 -2.859 C 7.547 -2.969 7.453 -2.969 7.422 -2.969 C 7.312 -2.969 7.297 -2.891 7.281 -2.844 C 6.734 -0.984 5.125 -0.094 3.922 -0.094 C 2.672 -0.094 1.578 -0.906 1.578 -2.594 C 1.578 -2.969 1.688 -5.047 3.031 -6.609 C 3.688 -7.375 4.812 -8.031 5.938 -8.031 C 7.25 -8.031 7.828 -6.953 7.828 -5.734 C 7.828 -5.422 7.797 -5.172 7.797 -5.125 C 7.797 -5.016 7.922 -5.016 7.953 -5.016 C 8.078 -5.016 8.094 -5.031 8.141 -5.234 Z M 8.891 -8.281 " /></symbol><symbol overflow="visible" id="f4_glyph0-5"><path style="stroke:none;" d="M 1.875 -0.875 C 1.766 -0.469 1.734 -0.344 0.906 -0.344 C 0.672 -0.344 0.562 -0.344 0.562 -0.125 C 0.562 0 0.625 0 0.875 0 L 4.641 0 C 7.047 0 9.391 -2.484 9.391 -5.141 C 9.391 -6.859 8.375 -8.125 6.672 -8.125 L 2.844 -8.125 C 2.625 -8.125 2.516 -8.125 2.516 -7.906 C 2.516 -7.781 2.625 -7.781 2.797 -7.781 C 3.531 -7.781 3.531 -7.688 3.531 -7.562 C 3.531 -7.531 3.531 -7.469 3.484 -7.281 Z M 4.375 -7.328 C 4.484 -7.766 4.531 -7.781 5 -7.781 L 6.312 -7.781 C 7.422 -7.781 8.453 -7.172 8.453 -5.531 C 8.453 -4.938 8.219 -2.875 7.062 -1.562 C 6.734 -1.172 5.828 -0.344 4.453 -0.344 L 3.094 -0.344 C 2.922 -0.344 2.906 -0.344 2.828 -0.359 C 2.703 -0.375 2.688 -0.391 2.688 -0.484 C 2.688 -0.578 2.719 -0.641 2.734 -0.75 Z M 4.375 -7.328 " /></symbol></g></defs><g id="f4_surface1"><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,69.999695%);stroke-opacity:1;stroke-miterlimit:10;" d="M 19.965 -78.288 L 88.001 -78.288 L 122.018 -19.369 L 53.981 -19.369 Z M 19.965 -78.288" transform="matrix(0.996077,0,0,-0.996077,0,0)" /><path style="fill:none;stroke-width:0.79701;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,39.99939%,39.99939%);stroke-opacity:1;stroke-miterlimit:10;" d="M 19.965 -78.288 L 122.018 -19.369 M 88.001 -78.288 L 53.981 -19.369" transform="matrix(0.996077,0,0,-0.996077,0,0)" /><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 71.668 48.633 C 71.668 48.109 71.242 47.684 70.715 47.684 C 70.188 47.684 69.762 48.109 69.762 48.633 C 69.762 49.16 70.188 49.586 70.715 49.586 C 71.242 49.586 71.668 49.16 71.668 48.633 Z M 71.668 48.633 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-1" x="66.097" y="44.353" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 20.84 77.98 C 20.84 77.453 20.41 77.027 19.887 77.027 C 19.359 77.027 18.934 77.453 18.934 77.98 C 18.934 78.508 19.359 78.934 19.887 78.934 C 20.41 78.934 20.84 78.508 20.84 77.98 Z M 20.84 77.98 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-2" x="6.862" y="90.401" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 88.609 77.98 C 88.609 77.453 88.18 77.027 87.656 77.027 C 87.129 77.027 86.703 77.453 86.703 77.98 C 86.703 78.508 87.129 78.934 87.656 78.934 C 88.18 78.934 88.609 78.508 88.609 77.98 Z M 88.609 77.98 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-3" x="91.936" y="90.401" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 122.492 19.293 C 122.492 18.766 122.066 18.34 121.539 18.34 C 121.012 18.34 120.586 18.766 120.586 19.293 C 120.586 19.816 121.012 20.242 121.539 20.242 C 122.066 20.242 122.492 19.816 122.492 19.293 Z M 122.492 19.293 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-4" x="125.82" y="15.009" /></g><path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,69.999695%);fill-opacity:1;" d="M 54.723 19.293 C 54.723 18.766 54.297 18.34 53.77 18.34 C 53.242 18.34 52.816 18.766 52.816 19.293 C 52.816 19.816 53.242 20.242 53.77 20.242 C 54.297 20.242 54.723 19.816 54.723 19.293 Z M 54.723 19.293 " /><g style="fill:rgb(0%,0%,0%);fill-opacity:1;"><use xlink:href="#f4_glyph0-5" x="39.482" y="15.009" /></g></g></svg></div></div></div></div><div class="short-ans-group-slide"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-17_1" oninput="moveNextSlideAns(this, 2, 'slide-17')" onkeydown="movePrevSlideAns(event, this, null, 'slide-17')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-17_2" oninput="moveNextSlideAns(this, 3, 'slide-17')" onkeydown="movePrevSlideAns(event, this, 1, 'slide-17')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-17_3" oninput="moveNextSlideAns(this, 4, 'slide-17')" onkeydown="movePrevSlideAns(event, this, 2, 'slide-17')"><input type="text" class="short-ans-box-slide" maxlength="1" id="ans_slide-17_4" oninput="moveNextSlideAns(this, 5, 'slide-17')" onkeydown="movePrevSlideAns(event, this, 3, 'slide-17')"></div><div class="true-ans-text"></div></div><div class="solution-box"><div class="tp"><b>Lời giải chi tiết:</b> Hình thoi là hình bình hành nên $\widehat{DAB}=180^\circ-120^\circ=60^\circ$. Đường chéo $AC$ là phân giác góc $DAB$, do đó $\widehat{DAO}=30^\circ$.</div></div></div></div>
+        
+        <div class="controls">
+            <button class="btn-nav btn-toc" id="tocBtn" onclick="openToc()" aria-haspopup="dialog">📋 Mục lục</button>
+            <button class="btn-nav" id="prevBtn" onclick="changeSlide(-1)" aria-label="Câu trước">Quay lại</button>
+            <span class="slide-counter" id="slideCounter" aria-live="polite"></span>
+            <button class="btn-nav" id="nextBtn" onclick="changeSlide(1)" aria-label="Câu sau">Tiếp theo</button>
+            <button class="btn-nav btn-fs" id="fsBtn" onclick="toggleFullscreen()" title="Toàn màn hình (F)" aria-label="Toàn màn hình">⛶</button>
+        </div>
+        <div class="author-footer">Liên hệ NguyenVanDoai - 0936644768</div>
+    </div>
+
+    <!-- KHUNG POPUP MỤC LỤC -->
+    <div id="tocModal" class="toc-modal" role="dialog" aria-modal="true" aria-labelledby="tocTitle">
+        <div class="toc-content">
+            <div class="toc-handle" id="tocHandle" aria-hidden="true"><span></span></div>
+            <h3 id="tocTitle">Danh sách câu hỏi</h3>
+            <div class="toc-summary" id="tocSummary" aria-live="polite"></div>
+            <div class="toc-legend" aria-hidden="true">
+                <span class="toc-s-correct">✔ Đúng</span><span class="toc-s-wrong">✘ Sai</span><span class="toc-s-partial">½ Đúng một phần</span>
+                <span class="toc-s-picked">● Đã chọn, chưa kiểm tra</span><span class="toc-s-empty">Chưa làm</span>
+            </div>
+            <div class="toc-scroll" id="tocBody"></div>
+            <div class="toc-footer"><button type="button" class="btn-nav toc-close" onclick="closeToc()">Đóng</button></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) slide.classList.add('active');
+            });
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === slides.length - 1;
+            document.getElementById('slideCounter').textContent = (index + 1) + ' / ' + slides.length;
+            
+            const activeContent = slides[index].querySelector('.slide-content');
+            if (activeContent) activeContent.scrollTop = 0;
+
+            // slide vừa hiện ra mới đo được kích thước SVG/ảnh
+            requestAnimationFrame(initMedia);
+        }
+        
+        function changeSlide(step) {
+            currentSlide += step;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+            showSlide(currentSlide);
+        }
+        
+        function selectOption(element, slideId) {
+            const slide = document.getElementById(slideId);
+            if (slide.dataset.checked === "true") return; 
+            const options = slide.querySelectorAll('.options div');
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function selectTF(btn, slideId, rowIndex, value) {
+            const slide = document.getElementById(slideId);
+            if (slide.dataset.checked === "true") return;
+            const row = slide.querySelectorAll('.tf-row')[rowIndex];
+            row.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            btn.dataset.val = value;
+        }
+
+        function moveNextSlideAns(current, nextIdx, slideId) {
+            current.value = current.value.replace('.', ',');
+            if (current.value.length > 1) current.value = current.value.slice(0, 1);
+            if (current.value.length === 1) {
+                const nextInput = document.getElementById(`ans_${slideId}_${nextIdx}`);
+                if(nextInput) nextInput.focus();
+            }
+        }
+        function movePrevSlideAns(e, current, prevIdx, slideId) {
+            if (e.key === "Backspace" && current.value === "" && prevIdx >= 1) {
+                const prevInput = document.getElementById(`ans_${slideId}_${prevIdx}`);
+                if(prevInput) prevInput.focus();
+            }
+        }
+
+        function checkAnswer(btn, slideId) {
+            const slide = document.getElementById(slideId);
+            if (slide.dataset.checked === "true") return; 
+            const type = slide.dataset.type;
+
+            if (type === "1") { 
+                const selected = slide.querySelector('.options div.selected');
+                if (!selected) { alert("Vui lòng chọn một phương án!"); return; }
+                const isCorrect = selected.getAttribute('data-correct') === 'true';
+                if (isCorrect) selected.classList.add('correct');
+                else {
+                    selected.classList.add('incorrect');
+                    const correctOption = slide.querySelector('.options div[data-correct="true"]');
+                    if (correctOption) correctOption.classList.add('correct');
+                }
+                slide.querySelectorAll('.options div').forEach(opt => opt.classList.add('disabled'));
+            } 
+            else if (type === "2") { 
+                const rows = slide.querySelectorAll('.tf-row');
+                let allSelected = true;
+                rows.forEach(row => { if (!row.querySelector('.tf-btn.selected')) allSelected = false; });
+                if (!allSelected) { alert("Vui lòng chọn Đúng hoặc Sai cho tất cả các ý!"); return; }
+
+                rows.forEach(row => {
+                    const selectedBtn = row.querySelector('.tf-btn.selected');
+                    const correctVal = row.dataset.correct;
+                    if (selectedBtn.dataset.val === correctVal) {
+                        selectedBtn.classList.add('correct');
+                    } else {
+                        selectedBtn.classList.add('incorrect');
+                        row.querySelectorAll('.tf-btn').forEach(b => {
+                            if (b.innerText === correctVal) b.classList.add('correct');
+                        });
+                    }
+                    row.querySelectorAll('.tf-btn').forEach(b => {
+                        b.style.pointerEvents = 'none';
+                        if(!b.classList.contains('selected') && !b.classList.contains('correct')) b.style.opacity = '0.5';
+                    });
+                });
+            } 
+            else if (type === "3") { 
+                const inputs = slide.querySelectorAll('.short-ans-box-slide');
+                let userAns = "";
+                inputs.forEach(inp => userAns += inp.value);
+                if (userAns.trim() === "") { alert("Vui lòng nhập đáp án!"); return; }
+
+                const correctAns = slide.dataset.correctans;
+                let studentAnsClean = userAns.replace(/,/g, '.').replace(/\s+/g, '');
+                let trueAnsClean = correctAns.replace(/,/g, '.').replace(/\s+/g, '');
+
+                const isCorrect = (studentAnsClean === trueAnsClean);
+                inputs.forEach(inp => {
+                    inp.readOnly = true;
+                    if (isCorrect) inp.classList.add('correct');
+                    else inp.classList.add('incorrect');
+                });
+                
+                const trueAnsDiv = slide.querySelector('.true-ans-text');
+                trueAnsDiv.innerHTML = "Đáp án đúng: " + correctAns;
+                trueAnsDiv.style.display = 'block';
+            }
+
+            // ghi lại kết quả để mục lục tô màu
+            if (type === "1") slide.dataset.result = slide.querySelector('.options div.selected.correct') ? 'correct' : 'wrong';
+            else if (type === "2") {
+                let ok = 0;
+                const rs = slide.querySelectorAll('.tf-row');
+                rs.forEach(r => { const sb = r.querySelector('.tf-btn.selected'); if (sb && sb.dataset.val === r.dataset.correct) ok++; });
+                slide.dataset.result = ok === rs.length ? 'correct' : (ok === 0 ? 'wrong' : 'partial');
+            }
+            else if (type === "3") slide.dataset.result = slide.querySelector('.short-ans-box-slide.correct') ? 'correct' : 'wrong';
+
+            slide.dataset.checked = "true";
+            btn.disabled = true;
+        }
+        
+        function toggleSolution(btn, slideId) {
+            const slide = document.getElementById(slideId);
+            const solBox = slide.querySelector('.solution-box');
+            const contentDiv = slide.querySelector('.slide-content');
+            
+            if (!solBox) { alert("Câu hỏi này chưa có lời giải!"); return; }
+            
+            if (solBox.style.display === 'none' || solBox.style.display === '') {
+                solBox.style.display = 'block';
+                btn.innerHTML = "Ẩn lời giải";
+                btn.style.background = "#dc3545";
+                contentDiv.classList.add('scale-down'); 
+                requestAnimationFrame(initMedia);   // lời giải vừa hiện, đo lại SVG/ảnh bên trong
+            } else {
+                solBox.style.display = 'none';
+                btn.innerHTML = "Xem lời giải";
+                btn.style.background = "#28a745";
+                contentDiv.classList.remove('scale-down');
+            }
+        }
+
+        const MEDIA_SCOPE = '.slide';
+        // =====================================================================
+        // XỬ LÝ SVG / ẢNH (dùng chung cho quiz và trình chiếu)
+        // Mỗi template khai báo trước: const MEDIA_SCOPE = '.vung-chua-hinh, ...';
+        // =====================================================================
+        const MEDIA_SVG_SEL = MEDIA_SCOPE.split(',').map(s => s.trim() + ' svg').join(', ');
+        const MEDIA_ALL_SEL = MEDIA_SCOPE.split(',').map(s => s.trim()).flatMap(s => [s + ' svg', s + ' img']).join(', ');
+
+        // Chỉ nhận số thuần hoặc "px"; "10cm", "50%", "auto"... trả về NaN để không đọc sai đơn vị
+        function svgNum(v) {
+            if (v == null) return NaN;
+            const m = String(v).trim().match(/^([0-9]*\.?[0-9]+)(px)?$/i);
+            return m ? parseFloat(m[1]) : NaN;
+        }
+
+        // Đổi id trong từng SVG thành duy nhất để các hình không dùng nhầm clipPath/marker/gradient của nhau
+        let __svgSeq = 0;
+        function uniquifySvgIds(svg) {
+            if (svg.dataset.idsDone) return;
+            svg.dataset.idsDone = '1';
+            const withId = svg.querySelectorAll('[id]');
+            if (!withId.length) return;
+            const prefix = 'svg' + (++__svgSeq) + '_';
+            const map = {};
+            withId.forEach(n => { map[n.id] = prefix + n.id; });
+            const ids = Object.keys(map);
+            const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const urlRe = /url\(\s*(['"]?)#([^)'"\s]+)\1\s*\)/g;
+            const fixUrls = str => str.replace(urlRe, (m, q, id) => map[id] ? `url(${q}#${map[id]}${q})` : m);
+
+            svg.querySelectorAll('*').forEach(n => {
+                if (n.tagName.toLowerCase() === 'style') {
+                    let css = fixUrls(n.textContent);
+                    css = css.replace(new RegExp('#(' + ids.map(esc).join('|') + ')(?![\\w-])', 'g'), '#' + prefix + '$1');
+                    n.textContent = css;
+                    return;
+                }
+                Array.from(n.attributes).forEach(a => {
+                    if (a.name === 'id' || a.value.indexOf('#') < 0) return;
+                    if ((a.name === 'href' || a.name === 'xlink:href') && a.value.charAt(0) === '#') {
+                        const id = a.value.slice(1);
+                        if (map[id]) n.setAttribute(a.name, '#' + map[id]);
+                    } else {
+                        const nv = fixUrls(a.value);
+                        if (nv !== a.value) n.setAttribute(a.name, nv);
+                    }
+                });
+            });
+            withId.forEach(n => { n.id = map[n.id]; });
+        }
+
+        // Chuẩn hóa SVG: id duy nhất + thêm viewBox nếu thiếu để SVG co giãn đúng
+        function normalizeSvgs() {
+            document.querySelectorAll(MEDIA_SVG_SEL).forEach(svg => {
+                if (svg.closest('mjx-container')) return;
+                uniquifySvgIds(svg);
+                if (svg.dataset.normalized) return;
+                const w = svgNum(svg.getAttribute('width'));
+                const h = svgNum(svg.getAttribute('height'));
+
+                if (!svg.hasAttribute('viewBox')) {
+                    if (w > 0 && h > 0) {
+                        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+                    } else {
+                        try {   // đang bị ẩn thì getBBox lỗi -> sẽ thử lại khi phần chứa nó hiện ra
+                            const b = svg.getBBox();
+                            if (b.width && b.height)
+                                svg.setAttribute('viewBox', `${b.x - 2} ${b.y - 2} ${b.width + 4} ${b.height + 4}`);
+                        } catch (e) { return; }
+                    }
+                }
+                if (svg.hasAttribute('viewBox')) {
+                    if (w > 0) { svg.style.width = '100%'; svg.style.maxWidth = w + 'px'; }  // kích thước gốc làm trần
+                    svg.removeAttribute('height');
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                    svg.dataset.normalized = '1';
+                }
+            });
+        }
+
+        // Zoom: phóng to bằng cách tăng chiều rộng thật, khung tự cao theo, cuộn bằng thanh cuộn gốc
+        const __zoomRefresh = new Set();
+        let __zoomResizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(__zoomResizeTimer);
+            __zoomResizeTimer = setTimeout(() => __zoomRefresh.forEach(fn => fn()), 150);
+        });
+
+        function setupImageZoom() {
+            document.querySelectorAll(MEDIA_ALL_SEL).forEach(el => {
+                if (el.closest('.zoom-container') || el.closest('mjx-container') || el.classList.contains('no-zoom')) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'zoom-container';
+                const viewport = document.createElement('div');
+                viewport.className = 'zoom-viewport';
+                el.parentNode.insertBefore(wrapper, el);
+                viewport.appendChild(el);
+                wrapper.appendChild(viewport);
+                el.classList.add('zoom-media');
+
+                let scale = 1;
+                const STEP = 0.25, MIN = 1, MAX = 4;
+
+                const toolbar = document.createElement('div');
+                toolbar.className = 'zoom-toolbar';
+                const mk = (txt, title) => {
+                    const b = document.createElement('button');
+                    b.type = 'button'; b.className = 'zoom-btn'; b.innerHTML = txt; b.title = title;
+                    b.setAttribute('aria-label', title);
+                    return b;
+                };
+                const btnIn = mk('➕', 'Phóng to'), btnOut = mk('➖', 'Thu nhỏ'), btnReset = mk('↺', 'Mặc định');
+
+                function apply(newScale) {
+                    const cx = viewport.scrollWidth ? (viewport.scrollLeft + viewport.clientWidth / 2) / viewport.scrollWidth : 0.5;
+                    const cy = viewport.scrollHeight ? (viewport.scrollTop + viewport.clientHeight / 2) / viewport.scrollHeight : 0.5;
+
+                    scale = Math.min(MAX, Math.max(MIN, Math.round(newScale * 100) / 100));
+
+                    el.classList.remove('zoomed');
+                    el.style.removeProperty('--zw');
+                    const base = el.getBoundingClientRect().width;   // chiều rộng vừa khung hiện tại
+                    if (scale > 1 && base > 0) {
+                        el.style.setProperty('--zw', (base * scale) + 'px');
+                        el.classList.add('zoomed');
+                        viewport.scrollLeft = cx * viewport.scrollWidth - viewport.clientWidth / 2;
+                        viewport.scrollTop = cy * viewport.scrollHeight - viewport.clientHeight / 2;
+                    }
+                    viewport.classList.toggle('can-pan', el.classList.contains('zoomed'));
+                    btnIn.disabled = scale >= MAX;
+                    btnOut.disabled = scale <= MIN;
+                }
+
+                btnIn.onclick = () => apply(scale + STEP);
+                btnOut.onclick = () => apply(scale - STEP);
+                btnReset.onclick = () => apply(1);
+                __zoomRefresh.add(() => { if (scale > 1) apply(scale); });
+
+                // Ctrl + lăn chuột để zoom, nhấp đúp để phóng to/reset
+                viewport.addEventListener('wheel', e => {
+                    if (!e.ctrlKey) return;
+                    e.preventDefault();
+                    apply(scale + (e.deltaY < 0 ? STEP : -STEP));
+                }, { passive: false });
+                viewport.addEventListener('dblclick', () => apply(scale > 1 ? 1 : 2));
+
+                // Kéo thả bằng chuột (cảm ứng dùng cuộn gốc của trình duyệt)
+                let dragging = false, sx = 0, sy = 0, sl = 0, st = 0;
+                viewport.addEventListener('pointerdown', e => {
+                    if (e.pointerType !== 'mouse' || !el.classList.contains('zoomed')) return;
+                    dragging = true; sx = e.clientX; sy = e.clientY; sl = viewport.scrollLeft; st = viewport.scrollTop;
+                    viewport.setPointerCapture(e.pointerId);
+                    viewport.classList.add('dragging');
+                });
+                viewport.addEventListener('pointermove', e => {
+                    if (!dragging) return;
+                    viewport.scrollLeft = sl - (e.clientX - sx);
+                    viewport.scrollTop = st - (e.clientY - sy);
+                });
+                const stop = () => { dragging = false; viewport.classList.remove('dragging'); };
+                viewport.addEventListener('pointerup', stop);
+                viewport.addEventListener('pointercancel', stop);
+
+                toolbar.append(btnIn, btnOut, btnReset);
+                wrapper.appendChild(toolbar);
+                apply(1);
+            });
+        }
+
+        // Bọc từng <table> trong khung cuộn ngang (bỏ qua bảng của MathJax hoặc bảng đã được bọc)
+        const MEDIA_TABLE_SEL = MEDIA_SCOPE.split(',').map(s => s.trim() + ' table').join(', ');
+        function wrapTables() {
+            document.querySelectorAll(MEDIA_TABLE_SEL).forEach(t => {
+                if (t.closest('mjx-container, .table-scroll, .table-responsive')) return;
+                if (!t.parentNode) return;
+                const w = document.createElement('div');
+                w.className = 'table-scroll';
+                t.parentNode.insertBefore(w, t);
+                w.appendChild(t);
+            });
+        }
+
+        function initMedia() { wrapTables(); normalizeSvgs(); setupImageZoom(); }
+
+        window.addEventListener('load', () => setTimeout(initMedia, 300));
+
+
+        // --- MỤC LỤC ---
+        const TOC_GROUPS = { '1': 'Phần I · Trắc nghiệm', '2': 'Phần II · Đúng/Sai', '3': 'Phần III · Trả lời ngắn', '4': 'Phần IV · Tự luận', 'other': 'Câu khác' };
+        const TOC_MARK = { correct: '✔', wrong: '✘', partial: '½', picked: '●', empty: '', none: '' };
+        const TOC_TEXT = { correct: 'đúng', wrong: 'sai', partial: 'đúng một phần', picked: 'đã chọn, chưa kiểm tra', empty: 'chưa làm', none: '' };
+        let tocOpener = null;
+
+        // Trạng thái một câu: correct | wrong | partial | picked | empty | none (câu không chấm điểm)
+        function slideState(slide) {
+            const type = slide.dataset.type;
+            if (type !== '1' && type !== '2' && type !== '3') return 'none';
+            if (slide.dataset.checked === 'true') return slide.dataset.result || 'none';
+            if (type === '1' && slide.querySelector('.options div.selected')) return 'picked';
+            if (type === '2' && slide.querySelector('.tf-btn.selected')) return 'picked';
+            if (type === '3' && Array.from(slide.querySelectorAll('.short-ans-box-slide')).some(i => i.value.trim() !== '')) return 'picked';
+            return 'empty';
+        }
+
+        function buildToc() {
+            const body = document.getElementById('tocBody');
+            body.textContent = '';
+            const groups = {};
+            const n = { total: 0, done: 0, correct: 0, wrong: 0, partial: 0 };
+
+            slides.forEach((slide, i) => {
+                const st = slideState(slide);
+                const key = TOC_GROUPS[slide.dataset.type] && slide.dataset.type !== 'other' ? slide.dataset.type : 'other';
+                (groups[key] = groups[key] || []).push({ i, st });
+                if (st !== 'none') {
+                    n.total++;
+                    if (st === 'correct' || st === 'wrong' || st === 'partial') { n.done++; n[st]++; }
+                }
+            });
+
+            const keys = ['1', '2', '3', '4', 'other'].filter(k => groups[k]);
+            keys.forEach(k => {
+                if (keys.length > 1) {
+                    const h = document.createElement('h4');
+                    h.className = 'toc-group-title';
+                    h.textContent = TOC_GROUPS[k];
+                    body.appendChild(h);
+                }
+                const grid = document.createElement('div');
+                grid.className = 'toc-grid';
+                groups[k].forEach(({ i, st }) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'toc-item toc-s-' + st + (i === currentSlide ? ' current' : '');
+                    b.dataset.idx = i;
+                    const label = 'Câu ' + (i + 1) + (TOC_TEXT[st] ? ', ' + TOC_TEXT[st] : '') + (i === currentSlide ? ' (đang xem)' : '');
+                    b.setAttribute('aria-label', label);
+                    b.title = label;
+                    if (i === currentSlide) b.setAttribute('aria-current', 'true');
+                    const num = document.createElement('span'); num.textContent = i + 1;
+                    const mark = document.createElement('span'); mark.className = 'm'; mark.setAttribute('aria-hidden', 'true'); mark.textContent = TOC_MARK[st];
+                    b.append(num, mark);
+                    b.onclick = () => { currentSlide = i; showSlide(i); closeToc(true); };
+                    grid.appendChild(b);
+                });
+                body.appendChild(grid);
+            });
+
+            let txt = 'Đã kiểm tra ' + n.done + '/' + n.total + ' câu';
+            if (n.done) txt += ' · Đúng ' + n.correct + ' · Sai ' + n.wrong + (n.partial ? ' · Một phần ' + n.partial : '');
+            document.getElementById('tocSummary').textContent = n.total ? txt : '';
+        }
+
+        function openToc() {
+            const modal = document.getElementById('tocModal');
+            if (modal.classList.contains('active')) return;
+            tocOpener = document.activeElement;
+            buildToc();
+            modal.classList.add('active');
+            // đợi hộp hiện ra rồi mới chuyển tiêu điểm vào câu đang xem
+            setTimeout(() => {
+                const cur = modal.querySelector('.toc-item.current') || modal.querySelector('.toc-item');
+                if (cur) { cur.focus({ preventScroll: true }); cur.scrollIntoView({ block: 'center', inline: 'nearest' }); }
+            }, 60);
+        }
+
+        // toSlides = true khi vừa chọn một câu: đưa tiêu điểm về vùng trình chiếu để Space/mũi tên tiếp tục chuyển câu
+        function closeToc(toSlides) {
+            const modal = document.getElementById('tocModal');
+            if (!modal.classList.contains('active')) return;
+            modal.classList.remove('active');
+            if (toSlides) document.getElementById('mainContainer').focus({ preventScroll: true });
+            else if (tocOpener && document.contains(tocOpener) && tocOpener.focus) tocOpener.focus({ preventScroll: true });
+            tocOpener = null;
+        }
+
+        (function () {
+            const modal = document.getElementById('tocModal');
+
+            // bấm vào nền tối để đóng (bỏ qua khi kéo chuột từ trong hộp ra ngoài)
+            let downOnBackdrop = false;
+            modal.addEventListener('pointerdown', e => { downOnBackdrop = (e.target === modal); });
+            modal.addEventListener('click', e => { if (e.target === modal && downOnBackdrop) closeToc(); });
+
+            // bàn phím: mũi tên di chuyển giữa các ô, Tab quay vòng trong hộp thoại
+            function vertical(items, cur, dir) {
+                const r = items[cur].getBoundingClientRect(), cx = r.left + r.width / 2;
+                let best = null, bestDy = Infinity, bestDx = Infinity;
+                items.forEach(it => {
+                    if (it === items[cur]) return;
+                    const b = it.getBoundingClientRect();
+                    const dy = dir > 0 ? b.top - r.top : r.top - b.top;
+                    if (dy <= 4) return;                           // chỉ xét các hàng phía dưới (hoặc phía trên)
+                    const dx = Math.abs(b.left + b.width / 2 - cx);
+                    if (dy < bestDy - 4 || (Math.abs(dy - bestDy) <= 4 && dx < bestDx)) { best = it; bestDy = dy; bestDx = dx; }
+                });
+                return best;
+            }
+            modal.addEventListener('keydown', e => {
+                if (e.ctrlKey || e.metaKey || e.altKey) return;
+                if (e.key === 'Tab') {
+                    const f = Array.from(modal.querySelectorAll('button'));
+                    if (e.shiftKey && document.activeElement === f[0]) { f[f.length - 1].focus(); e.preventDefault(); }
+                    else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { f[0].focus(); e.preventDefault(); }
+                    return;
+                }
+                const items = Array.from(modal.querySelectorAll('.toc-item'));
+                const cur = items.indexOf(document.activeElement);
+                if (cur < 0) return;
+                let target;
+                switch (e.key) {
+                    case 'ArrowRight': target = items[cur + 1]; break;
+                    case 'ArrowLeft': target = items[cur - 1]; break;
+                    case 'ArrowDown': target = vertical(items, cur, 1); break;
+                    case 'ArrowUp': target = vertical(items, cur, -1); break;
+                    case 'Home': target = items[0]; break;
+                    case 'End': target = items[items.length - 1]; break;
+                    default: return;
+                }
+                if (target) target.focus();
+                e.preventDefault();
+            });
+
+            // điện thoại: vuốt thanh nắm xuống để đóng
+            const content = modal.querySelector('.toc-content'), handle = document.getElementById('tocHandle');
+            let y0 = 0, dy = 0, dragging = false;
+            handle.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; dy = 0; dragging = true; content.style.transition = 'none'; }, { passive: true });
+            handle.addEventListener('touchmove', e => { if (!dragging) return; dy = Math.max(0, e.touches[0].clientY - y0); content.style.transform = 'translateY(' + dy + 'px)'; }, { passive: true });
+            const endDrag = () => {
+                if (!dragging) return;
+                dragging = false;
+                content.style.transition = ''; content.style.transform = '';
+                if (dy > 90) closeToc();
+            };
+            handle.addEventListener('touchend', endDrag);
+            handle.addEventListener('touchcancel', endDrag);
+        })();
+
+                // --- ĐIỀU HƯỚNG BẰNG BÀN PHÍM, VUỐT VÀ TOÀN MÀN HÌNH ---
+        function toggleFullscreen() {
+            if (!document.fullscreenEnabled) return;
+            if (document.fullscreenElement) document.exitFullscreen();
+            else document.documentElement.requestFullscreen().catch(() => {});
+        }
+        if (!document.fullscreenEnabled) document.getElementById('fsBtn').style.display = 'none';
+
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            const t = e.target, tag = t && t.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;   // đang gõ đáp án
+            const tocOpen = document.getElementById('tocModal').classList.contains('active');
+
+            if (e.key === 'Escape') { if (tocOpen) { closeToc(); e.preventDefault(); } return; }
+            if (e.key === 't' || e.key === 'T') { tocOpen ? closeToc() : openToc(); e.preventDefault(); return; }
+            if (tocOpen) return;
+
+            switch (e.key) {
+                case 'ArrowRight': case 'PageDown': changeSlide(1); break;
+                case 'ArrowLeft': case 'PageUp': changeSlide(-1); break;
+                case ' ': if (tag === 'BUTTON') return; changeSlide(e.shiftKey ? -1 : 1); break;
+                case 'Home': currentSlide = 0; showSlide(0); break;
+                case 'End': currentSlide = slides.length - 1; showSlide(currentSlide); break;
+                case 'f': case 'F': toggleFullscreen(); break;
+                default: return;
+            }
+            e.preventDefault();
+        });
+
+        // Vuốt ngang để chuyển câu (bỏ qua khi vuốt trong ảnh đang phóng to, công thức, bảng, ô nhập)
+        (function () {
+            let x0 = 0, y0 = 0, t0 = 0, track = false;
+            const box = document.getElementById('mainContainer');
+            box.addEventListener('touchstart', e => {
+                const blocked = e.target.closest('.zoom-viewport.can-pan, mjx-container, .table-responsive, .table-scroll, input, textarea, .controls');
+                if (e.touches.length !== 1 || blocked) { track = false; return; }
+                x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); track = true;
+            }, { passive: true });
+            box.addEventListener('touchend', e => {
+                if (!track) return;
+                track = false;
+                const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+                if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy) && Date.now() - t0 < 800) changeSlide(dx < 0 ? 1 : -1);
+            }, { passive: true });
+        })();
+
+        if (slides.length) showSlide(currentSlide);
+    </script>
+</body>
+</html>
