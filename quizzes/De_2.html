@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ÔN THI GIỮA KÌ I - THẦY ĐOÀI</title>
+    <title>ÔN THI GIỮA KÌ I - CÔ HỒNG ĐIỆP CVA</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 15px; line-height: 1.6; padding-top: 70px; overflow-x: hidden; background: #f7fbff; }
         .header-bar { position: fixed; top: 0; left: 0; width: 100%; background: #1e88e5; color: white; padding: 10px 15px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; box-shadow: 0 2px 6px rgba(30,136,229,0.2); }
@@ -123,7 +123,7 @@
 </head>
 <body>
     <div class="header-bar">
-        <h2>ÔN THI GIỮA KÌ I - THẦY ĐOÀI</h2>
+        <h2>ÔN THI GIỮA KÌ I - CÔ HỒNG ĐIỆP CVA</h2>
         <div id="timer">Đang tải...</div>
     </div>
     
@@ -184,7 +184,7 @@
             document.getElementById("zaloWarning").style.display = "none";
         }
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzm0UEZDb41ICnXt3zv6jT7h4rhTdaUztutEs7wlZYigfPxZSFixCpqNUh-V846Gl0kXA/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw0R_PMJFBYgVt048qRKViQrSPrU6j7DQ3IYcyrz6_CO4iRxu-CwEK8rwf9M6WVzUL5gw/exec"; 
         const correctAnswers = {"P1_Cau_1": "A", "P1_Cau_2": "A", "P1_Cau_3": "D", "P1_Cau_4": "C", "P1_Cau_5": "A", "P1_Cau_6": "B", "P1_Cau_7": "D", "P1_Cau_8": "C", "P1_Cau_9": "B", "P1_Cau_10": "B", "P1_Cau_11": "D", "P1_Cau_12": "C", "P2_Cau_1_a": "Đúng", "P2_Cau_1_b": "Sai", "P2_Cau_1_c": "Đúng", "P2_Cau_1_d": "Đúng", "P2_Cau_2_a": "Đúng", "P2_Cau_2_b": "Sai", "P2_Cau_2_c": "Đúng", "P2_Cau_2_d": "Sai", "P3_Cau_1": "5", "P3_Cau_2": "-6", "P3_Cau_3": "80", "P3_Cau_4": "30"};
         let isSubmitted = false;
         
@@ -201,7 +201,7 @@
         // Thêm ?reset=1 vào đường dẫn để xóa trạng thái khi giáo viên muốn thử lại.
         // =====================================================================
         function hashStr(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
-        const STORE_KEY = 'quizstate:v2:' + location.pathname + '|' + document.title + '|' + hashStr(JSON.stringify(correctAnswers) + '|' + 90);
+        const STORE_KEY = 'quizstate:v2:' + location.pathname + '|' + document.title + '|' + hashStr(JSON.stringify(correctAnswers) + '|' + 60);
         if (/[?&]reset=1(&|$)/.test(location.search)) { try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
 
         function loadState() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { return null; } }
@@ -212,7 +212,7 @@
         }
         function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)); }
 
-        const DURATION_MS = 90 * 60 * 1000;
+        const DURATION_MS = 60 * 60 * 1000;
         if (!state.endTime) saveState({ endTime: Date.now() + DURATION_MS });
         if (!state.attemptId) saveState({ attemptId: newId() });
 
@@ -409,7 +409,7 @@
         
         function checkPassword() {
             const entered = document.getElementById('solPassword').value;
-            if (entered === "lop8B3@B6deso2") {
+            if (entered === "Lop8c7cv@") {
                 document.getElementById('passwordPrompt').style.display = 'none';
                 revealSolutions();
             } else {
